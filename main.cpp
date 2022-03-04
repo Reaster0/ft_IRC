@@ -4,13 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "clientList.hpp"
+#include "ClientList.hpp"
 #include "server.cpp"
 
 int main()
 {
 	int endpoint = create_server(1500);
-	clientList clients;
+	ClientList clients;
 
 	listen(endpoint, 1);
 	while(1)

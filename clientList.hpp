@@ -11,15 +11,15 @@
 
 using namespace std;
 
-class clientList
+class ClientList
 {
 	private:
 		vector<sockaddr_in> listClients;
 
 		sockaddr* newUser();
 	public:
-		clientList(){};
-		~clientList(){};
+		ClientList(){};
+		~ClientList(){};
 		
 		//print the list of users
 		void listDebug(void);

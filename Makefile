@@ -1,5 +1,5 @@
 SRCS		:= main.cpp\
-				clientList.cpp
+				ClientList.cpp
 
 OBJS		:= $(SRCS:.cpp=.o)
 DEP			:= $(SRCS:.cpp=.d)
