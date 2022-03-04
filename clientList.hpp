@@ -11,23 +11,19 @@
 
 using namespace std;
 
-class client_list
+class clientList
 {
 	private:
-		vector<sockaddr_in> list_clients;
+		vector<sockaddr_in> listClients;
 
-		sockaddr* new_user()
-		{
-			list_clients.push_back(sockaddr_in());
-			return (sockaddr *)&list_clients.back();
-		}
+		sockaddr* newUser();
 	public:
-		client_list(){};
-		~client_list(){};
+		clientList(){};
+		~clientList(){};
 		
 		//print the list of users
-		void list_debug(void);
+		void listDebug(void);
 
 		//accept a new client if there is one
-		int accept_new_client(const int &endpoint);
+		int acceptNewClient(const int &endpoint);
 };
