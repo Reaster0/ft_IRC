@@ -35,6 +35,13 @@ int create_server(const int &port_num)
 
 #define DELETESOCKET 0
 
+bool g_exit = false;
+
+void sighandler(int)
+{ 
+	g_exit = true;
+}
+
 void server_loop(int &endpoint)
 {
 	ClientList clients;
@@ -43,8 +50,10 @@ void server_loop(int &endpoint)
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
 	string input;
+	signal(SIGQUIT, sighandler);
+	signal(SIGINT, sighandler);
 		
-	while(1)
+	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
 		if (select(maxSockets, &availableSockets, 0, 0, 0) < 0)
@@ -80,4 +89,5 @@ void server_loop(int &endpoint)
 			}
 		}
 	}
+	close(endpoint);
 }
