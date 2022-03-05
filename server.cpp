@@ -76,11 +76,11 @@ void server_loop(int &endpoint)
 				else
 				{
 					//handle the operation for current socket with client[i]
-					testMessagesForAll(i, availableTest, maxSockets);
-					
-					if (DELETESOCKET)
+					if (!testMessagesForAll(i, availableTest, maxSockets))
 					{
+						cout << "were loosing " << getIPAddress(i) << "!!!!!!" << endl;
 						FD_CLR(i, &currentSockets);
+						close(i);
 					}
 					FD_CLR(i, &availableSockets);
 				}

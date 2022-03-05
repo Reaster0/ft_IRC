@@ -7,16 +7,18 @@ void sendToAll(fd_set& availableSockets, const int& maxSockets , const char* msg
 		if (FD_ISSET(i, &availableSockets) && i != exception)
 		{
 			cout << i << "is a fd valide" << endl;
-			send(i, msg, sizeof(msg), 0);
+			send(i, msg, strlen(msg), 0);
 		}
 		FD_CLR(i, &availableSockets);
 	}
 }
 
-void testMessagesForAll(const int& i, fd_set& availableSockets, const int& maxSockets)
+int testMessagesForAll(const int& i, fd_set& availableSockets, const int& maxSockets)
 {
 	char buf[1024];
 	bzero(buf, sizeof(buf));
-	recv(i, buf, sizeof(buf), 0);
+	if (!recv(i, buf, sizeof(buf), 0))
+		return 0;
 	sendToAll(availableSockets, maxSockets, buf, i);
+	return 1;
 }
