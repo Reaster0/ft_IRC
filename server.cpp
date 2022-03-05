@@ -29,9 +29,11 @@ int create_server(const int &port_num)
 	}
 	cout << "binding socket successfuly" << endl;
 	listen(endpoint, 1);
-	cout << "server listening on port " << port_num << endl;
+	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << port_num << endl;
 	return endpoint;
 }
+
+#define DELETESOCKET 0
 
 void server_loop(int &endpoint)
 {
@@ -62,6 +64,11 @@ void server_loop(int &endpoint)
 				else
 				{
 					//handle the operation for current socket with client[i]
+					if (DELETESOCKET)
+					{
+						clients.removeClient(i);
+						FD_CLR(i, &currentSockets);
+					}
 					FD_CLR(i, &availableSockets);
 				}
 			}
