@@ -45,7 +45,7 @@ void sighandler(int)
 
 void server_loop(int &endpoint)
 {
-	fd_set currentSockets, availableSockets, availableTest;
+	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
@@ -56,8 +56,8 @@ void server_loop(int &endpoint)
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
-		availableTest = currentSockets;
-		if (select(maxSockets, &availableSockets, &availableTest, 0, 0) < 0)
+		availableWSockets = currentSockets;
+		if (select(maxSockets, &availableSockets, &availableWSockets, 0, 0) < 0)
 		{
 			cout << "select error" << endl;
 			exit(0);
@@ -76,7 +76,7 @@ void server_loop(int &endpoint)
 				else
 				{
 					//handle the operation for current socket with client[i]
-					if (!testMessagesForAll(i, availableTest, maxSockets))
+					if (!testMessagesForAll(i, availableWSockets, maxSockets))
 					{
 						cout << "were loosing " << getIPAddress(i) << "!!!!!!" << endl;
 						FD_CLR(i, &currentSockets);
