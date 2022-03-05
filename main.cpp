@@ -10,12 +10,5 @@
 int main()
 {
 	int endpoint = create_server(1500);
-	ClientList clients;
-
-	listen(endpoint, 1);
-	while(1)
-	{
-		clients.acceptNewClient(endpoint);
-		clients.listDebug();
-	}
+	server_loop(endpoint);
 }

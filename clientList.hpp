@@ -1,3 +1,6 @@
+#ifndef CLIENTLIST
+#define CLIENTLIST
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -14,9 +17,9 @@ using namespace std;
 class ClientList
 {
 	private:
-		vector<sockaddr_in> listClients;
+		//vector<sockaddr_in> listClients;
+		map<int, sockaddr_in> listClients;
 
-		sockaddr* newUser();
 	public:
 		ClientList(){};
 		~ClientList(){};
@@ -26,4 +29,8 @@ class ClientList
 
 		//accept a new client if there is one
 		int acceptNewClient(const int &endpoint);
+
+		sockaddr_in& operator[](const int& value);
 };
+
+#endif

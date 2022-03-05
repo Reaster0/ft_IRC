@@ -1,7 +1,4 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <iostream>
+#include "server.hpp"
 
 using namespace std;
 
@@ -17,7 +14,6 @@ int create_endpoint(void)
 	return result;
 }
 
-//input the port number of the server and return the fd of the server socket
 int create_server(const int &port_num)
 {
 	sockaddr_in my_server;
@@ -32,5 +28,42 @@ int create_server(const int &port_num)
 		exit(0);
 	}
 	cout << "binding socket successfuly" << endl;
+	listen(endpoint, 1);
+	cout << "server listening on port " << port_num << endl;
 	return endpoint;
+}
+
+void server_loop(int &endpoint)
+{
+	ClientList clients;
+	fd_set currentSockets, availableSockets;
+	FD_ZERO(&currentSockets);
+	FD_SET(endpoint, &currentSockets);
+	
+	while(1)
+	{
+		availableSockets = currentSockets;
+		if (select(FD_SETSIZE, &availableSockets, 0, 0, 0) < 0)
+		{
+			cout << "select error" << endl;
+			exit(0);
+		}
+		for (int i = 0; i < FD_SETSIZE; i++)
+		{
+			if (FD_ISSET(i, &availableSockets))
+			{
+				if (i == endpoint)
+				{
+					int newClient = clients.acceptNewClient(endpoint);
+					FD_SET(newClient, &currentSockets);
+					cout << "got a new connection from: " << inet_ntoa(clients[newClient].sin_addr) << endl;
+				}
+				else
+				{
+					//handle the operation for current socket with client[i]
+					FD_CLR(i, &availableSockets);
+				}
+			}
+		}
+	}
 }
