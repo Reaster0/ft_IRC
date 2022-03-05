@@ -8,4 +8,6 @@ void sendToAll(fd_set& availableSockets, const int& maxSockets , const char* msg
 
 int testMessagesForAll(const int& i, fd_set& availableSockets, const int& maxSockets);
 
+int printConnexion(const int& i);
+
 #endif

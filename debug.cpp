@@ -22,3 +22,14 @@ int testMessagesForAll(const int& i, fd_set& availableSockets, const int& maxSoc
 	sendToAll(availableSockets, maxSockets, buf, i);
 	return 1;
 }
+
+int printConnexion(const int& i)
+{
+	char buf[1024];
+	bzero(buf, sizeof(buf));
+	if (!recv(i, buf, sizeof(buf), 0))
+		return 0;
+	cout << buf;
+	fflush(stdout);
+	return 1;
+}

@@ -76,9 +76,9 @@ void server_loop(int &endpoint)
 				else
 				{
 					//handle the operation for current socket with client[i]
-					if (!testMessagesForAll(i, availableWSockets, maxSockets))
+					if (!printConnexion(i))
 					{
-						cout << "were loosing " << getIPAddress(i) << "!!!!!!" << endl;
+						cout << "the client " << getIPAddress(i) << " has gone missing..." << endl;
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
