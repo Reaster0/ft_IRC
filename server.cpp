@@ -42,6 +42,8 @@ void server_loop(int &endpoint)
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
+	string input;
+		
 	while(1)
 	{
 		availableSockets = currentSockets;
@@ -63,6 +65,10 @@ void server_loop(int &endpoint)
 				}
 				else
 				{
+					input.clear();
+					recv(i, &input, 10024, 0);
+					cout << inet_ntoa(clients[i].sin_addr) << ": ";
+					cout << input << endl;
 					//handle the operation for current socket with client[i]
 					if (DELETESOCKET)
 					{

@@ -20,6 +20,7 @@ int main()
 	bzero(buffer, bufsize);
 	string ip_str = "127.0.0.1";
     char* ip = const_cast<char*>(ip_str.c_str());
+	string input;
 
     struct sockaddr_in server_addr;
 
@@ -30,7 +31,6 @@ int main()
         cout << "\nError establishing socket..." << endl;
         exit(1);
     }
-
     cout << "\n=> Socket client has been created..." << endl;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(portNum);
@@ -38,33 +38,24 @@ int main()
     if (connect(client,(struct sockaddr *)&server_addr, sizeof(server_addr)) == 0)
         cout << "=> Connection to the server port number: " << portNum << endl;
     cout << "=> Awaiting confirmation from the server..." << endl;
-    recv(client, buffer, bufsize, 0);
+   // recv(client, buffer, bufsize, 0);
     cout << "=> Connection confirmed";
     cout << "\n\n=> Enter # to end the connection\n" << endl;
+
+	
     while (!isExit)
 	{
         cout << "Client: ";
-        do {
-            cin >> buffer;
-            send(client, buffer, bufsize, 0);
-            if (*buffer == '#') {
-                send(client, buffer, bufsize, 0);
-                *buffer = '*';
-                isExit = true;
-            }
-        } while (*buffer != 42);
-
-        cout << "Server: ";
-        do {
-            recv(client, buffer, bufsize, 0);
-            cout << buffer << " ";
-            if (*buffer == '#') {
-                *buffer = '*';
-                isExit = true;
-            }
-
-        } while (*buffer != 42);
-        cout << endl;
+		input.clear();
+		getline(cin, input);
+		if (input == "EXIT")
+		{
+			cout << "exit client"<< endl;
+			input = "has quit";
+			send(client, &input, sizeof(input), 0);
+			break;
+		}
+		send(client, &input, sizeof(input), 0);
     } 
     cout << "\n=> Connection terminated.\nGoodbye...\n";
     close(client);
