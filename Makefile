@@ -1,5 +1,7 @@
 SRCS		:= main.cpp \
-				ClientList.cpp
+				socket.cpp \
+				server.cpp \
+				debug.cpp
 OBJS		:= $(SRCS:.cpp=.o)
 DEP			:= $(SRCS:.cpp=.d)
 NAME		:= ircserv
