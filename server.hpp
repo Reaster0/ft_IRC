@@ -9,6 +9,10 @@
 #include <netdb.h>
 #include "ClientList.hpp"
 
+#ifdef __linux__
+			#define exit _exit; //linux
+#endif
+
 
 int create_endpoint(void);
 

@@ -29,9 +29,11 @@ int create_server(const int &port_num)
 	}
 	cout << "binding socket successfuly" << endl;
 	listen(endpoint, 1);
-	cout << "server listening on port " << port_num << endl;
+	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << port_num << endl;
 	return endpoint;
 }
+
+#define DELETESOCKET 0
 
 void server_loop(int &endpoint)
 {
@@ -39,18 +41,18 @@ void server_loop(int &endpoint)
 	fd_set currentSockets, availableSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
-
+	int maxSockets = endpoint + 1;
 	string input;
 		
 	while(1)
 	{
 		availableSockets = currentSockets;
-		if (select(FD_SETSIZE, &availableSockets, 0, 0, 0) < 0)
+		if (select(maxSockets, &availableSockets, 0, 0, 0) < 0)
 		{
 			cout << "select error" << endl;
 			exit(0);
 		}
-		for (int i = 0; i < FD_SETSIZE; i++)
+		for (int i = 0; i < maxSockets; i++)
 		{
 			if (FD_ISSET(i, &availableSockets))
 			{
@@ -59,6 +61,7 @@ void server_loop(int &endpoint)
 					int newClient = clients.acceptNewClient(endpoint);
 					FD_SET(newClient, &currentSockets);
 					cout << "got a new connection from: " << inet_ntoa(clients[newClient].sin_addr) << endl;
+					maxSockets++;
 				}
 				else
 				{
@@ -67,6 +70,11 @@ void server_loop(int &endpoint)
 					cout << inet_ntoa(clients[i].sin_addr) << ": ";
 					cout << input << endl;
 					//handle the operation for current socket with client[i]
+					if (DELETESOCKET)
+					{
+						clients.removeClient(i);
+						FD_CLR(i, &currentSockets);
+					}
 					FD_CLR(i, &availableSockets);
 				}
 			}
