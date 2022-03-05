@@ -17,7 +17,9 @@ int main()
     bool isExit = false;
     int bufsize = 1024;
     char buffer[bufsize];
-    char* ip = "127.0.0.1";
+	bzero(buffer, bufsize);
+	string ip_str = "127.0.0.1";
+    char* ip = const_cast<char*>(ip_str.c_str());
 
     struct sockaddr_in server_addr;
 
@@ -30,7 +32,6 @@ int main()
     }
 
     cout << "\n=> Socket client has been created..." << endl;
-    
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(portNum);
 
@@ -38,9 +39,10 @@ int main()
         cout << "=> Connection to the server port number: " << portNum << endl;
     cout << "=> Awaiting confirmation from the server..." << endl;
     recv(client, buffer, bufsize, 0);
-    cout << "=> Connection confirmed, you are good to go...";
+    cout << "=> Connection confirmed";
     cout << "\n\n=> Enter # to end the connection\n" << endl;
-    do {
+    while (!isExit)
+	{
         cout << "Client: ";
         do {
             cin >> buffer;
@@ -63,11 +65,8 @@ int main()
 
         } while (*buffer != 42);
         cout << endl;
-
-    } while (!isExit);
-
+    } 
     cout << "\n=> Connection terminated.\nGoodbye...\n";
-
     close(client);
     return 0;
 }
