@@ -39,7 +39,9 @@ void server_loop(int &endpoint)
 	fd_set currentSockets, availableSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
-	
+
+	string input;
+		
 	while(1)
 	{
 		availableSockets = currentSockets;
@@ -60,6 +62,10 @@ void server_loop(int &endpoint)
 				}
 				else
 				{
+					input.clear();
+					recv(i, &input, 10024, 0);
+					cout << inet_ntoa(clients[i].sin_addr) << ": ";
+					cout << input << endl;
 					//handle the operation for current socket with client[i]
 					FD_CLR(i, &availableSockets);
 				}
