@@ -39,16 +39,16 @@ void server_loop(int &endpoint)
 	fd_set currentSockets, availableSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
-	
+	int maxSockets = endpoint + 1;
 	while(1)
 	{
 		availableSockets = currentSockets;
-		if (select(FD_SETSIZE, &availableSockets, 0, 0, 0) < 0)
+		if (select(maxSockets, &availableSockets, 0, 0, 0) < 0)
 		{
 			cout << "select error" << endl;
 			exit(0);
 		}
-		for (int i = 0; i < FD_SETSIZE; i++)
+		for (int i = 0; i < maxSockets; i++)
 		{
 			if (FD_ISSET(i, &availableSockets))
 			{
@@ -57,6 +57,7 @@ void server_loop(int &endpoint)
 					int newClient = clients.acceptNewClient(endpoint);
 					FD_SET(newClient, &currentSockets);
 					cout << "got a new connection from: " << inet_ntoa(clients[newClient].sin_addr) << endl;
+					maxSockets++;
 				}
 				else
 				{

@@ -17,7 +17,6 @@ using namespace std;
 class ClientList
 {
 	private:
-		//vector<sockaddr_in> listClients;
 		map<int, sockaddr_in> listClients;
 
 	public:
