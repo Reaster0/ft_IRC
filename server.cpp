@@ -50,6 +50,10 @@ void server_loop(int &endpoint)
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
 	string input;
+
+	int bufsize = 1024;
+	char buffer[bufsize];
+
 	signal(SIGQUIT, sighandler);
 	signal(SIGINT, sighandler);
 		
@@ -74,10 +78,16 @@ void server_loop(int &endpoint)
 				}
 				else
 				{
-					input.clear();
-					recv(i, &input, 10024, 0);
+					bzero(buffer, bufsize);
+					if (recv(i, buffer, bufsize, 0) < 0)
+					{
+						cout << "client" << i << "is disconnected" << endl;
+						clients.removeClient(i);
+						FD_CLR(i, &currentSockets);
+						break;
+					}
 					cout << inet_ntoa(clients[i].sin_addr) << ": ";
-					cout << input << endl;
+					cout << buffer << endl;
 					//handle the operation for current socket with client[i]
 					if (DELETESOCKET)
 					{

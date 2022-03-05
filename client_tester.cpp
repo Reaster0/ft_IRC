@@ -20,7 +20,7 @@ void sighandler(int)
 int main()
 {
     int client;
-    int portNum = 1500;
+    int portNum = 1600;
     bool isExit = false;
     int bufsize = 1024;
     char buffer[bufsize];
