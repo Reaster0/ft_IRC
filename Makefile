@@ -6,6 +6,7 @@ NAME		:= ircserv
 
 SRCS_2		:= client_tester.cpp
 OBJS_2		:= $(SRCS_2:.cpp=.o)
+DEP_2		:= $(SRCS_2:.cpp=.d)
 NAME_2		:= client
 
 CXX			:= clang++
@@ -21,7 +22,7 @@ $(NAME_2): $(OBJS_2)
 
 clean:
 			$(RM) $(OBJS) $(DEP)
-			$(RM) $(OBJS_2)
+			$(RM) $(OBJS_2) $(DEP_2)
 		
 fclean:		clean
 			$(RM) $(NAME) 
