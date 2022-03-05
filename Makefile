@@ -1,4 +1,5 @@
 SRCS		:= main.cpp \
+				random_password.cpp \
 				socket.cpp \
 				server.cpp \
 				debug.cpp

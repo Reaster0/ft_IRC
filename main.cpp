@@ -6,8 +6,13 @@
 #include <map>
 #include "server.hpp"
 
+std::string g_pwd;
+
 int main()
 {
-	int endpoint = create_server(1500);
+	g_pwd = random_pwd(10);
+	std::cout << "password:\n	";
+	std::cout << g_pwd <<std::endl;
+	int endpoint = create_server(1600);
 	server_loop(endpoint);
 }
