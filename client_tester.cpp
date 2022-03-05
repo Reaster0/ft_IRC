@@ -10,6 +10,13 @@
 
 using namespace std;
 
+bool g_exit = false;
+
+void sighandler(int)
+{ 
+	g_exit = true;
+}
+
 int main()
 {
     int client;
@@ -23,6 +30,8 @@ int main()
 	string input;
 
     struct sockaddr_in server_addr;
+	signal(SIGQUIT, sighandler);
+	signal(SIGINT, sighandler);
 
     client = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -42,8 +51,7 @@ int main()
     cout << "=> Connection confirmed";
     cout << "\n\n=> Enter # to end the connection\n" << endl;
 
-	
-    while (!isExit)
+    while (g_exit == false)
 	{
         cout << "Client: ";
 		input.clear();
