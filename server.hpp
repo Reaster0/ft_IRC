@@ -1,5 +1,5 @@
-#ifndef SERVER
-#define SERVER
+#ifndef _SERVER_
+#define _SERVER_
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -7,11 +7,13 @@
 #include <iostream>
 #include <sys/select.h>
 #include <netdb.h>
-#include "ClientList.hpp"
+#include <string>
+#include "socket.hpp"
+#include "debug.hpp"
 
-#ifdef __linux__
-			#define exit _exit; //linux
-#endif
+// #ifdef __linux__
+// 			#define exit _exit; //linux
+// #endif
 
 
 int create_endpoint(void);

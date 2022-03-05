@@ -1,5 +1,6 @@
 #include "server.hpp"
 
+
 using namespace std;
 
 int create_endpoint(void)
@@ -37,17 +38,18 @@ int create_server(const int &port_num)
 
 void server_loop(int &endpoint)
 {
-	ClientList clients;
-	fd_set currentSockets, availableSockets;
+	fd_set currentSockets, availableSockets, availableTest;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
 	string input;
-		
+	struct timeval tv = {3, 0};
+	
 	while(1)
 	{
 		availableSockets = currentSockets;
-		if (select(maxSockets, &availableSockets, 0, 0, 0) < 0)
+		availableTest = currentSockets;
+		if (select(maxSockets, &availableSockets, &availableTest, 0, 0) < 0)
 		{
 			cout << "select error" << endl;
 			exit(0);
@@ -58,21 +60,18 @@ void server_loop(int &endpoint)
 			{
 				if (i == endpoint)
 				{
-					int newClient = clients.acceptNewClient(endpoint);
+					int newClient = acceptNewClient(endpoint);
 					FD_SET(newClient, &currentSockets);
-					cout << "got a new connection from: " << inet_ntoa(clients[newClient].sin_addr) << endl;
+					cout << "new connection from :" << getIPAddress(newClient) << endl;
 					maxSockets++;
 				}
 				else
 				{
-					input.clear();
-					recv(i, &input, 10024, 0);
-					cout << inet_ntoa(clients[i].sin_addr) << ": ";
-					cout << input << endl;
 					//handle the operation for current socket with client[i]
+					testMessagesForAll(i, availableTest, maxSockets);
+					
 					if (DELETESOCKET)
 					{
-						clients.removeClient(i);
 						FD_CLR(i, &currentSockets);
 					}
 					FD_CLR(i, &availableSockets);

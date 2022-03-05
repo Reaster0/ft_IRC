@@ -4,8 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "ClientList.hpp"
-#include "server.cpp"
+#include "server.hpp"
 
 int main()
 {
