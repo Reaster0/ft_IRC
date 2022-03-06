@@ -2,18 +2,32 @@
 #define _MESSAGESIRC_
 #include "UserIRC.hpp"
 #include <string>
+#include <vector>
 
 using namespace std;
 
 struct UserIRC;
 
+struct PayloadIRC
+{
+	string command;
+	vector<string> params;
+	string prefix;
+	string trailer;
+	
+	PayloadIRC(){}
+	PayloadIRC(const PayloadIRC& other):
+	command(other.command), params(other.params),
+	prefix(other.prefix), trailer(other.trailer){}
+};
+
 struct MsgIRC
 {
 	UserIRC* sender;
 	UserIRC* receiver;
-	string payload;
+	PayloadIRC payload;
 	MsgIRC() : sender(0), receiver(0){}
-	MsgIRC(UserIRC* _sender, UserIRC* _receiver, const string& _payload):
+	MsgIRC(UserIRC* _sender, UserIRC* _receiver, const PayloadIRC& _payload):
 	sender(_sender), receiver(_receiver), payload(_payload){}
 	~MsgIRC(){}
 	//add the function to call payload later
