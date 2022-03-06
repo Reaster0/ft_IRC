@@ -2,7 +2,9 @@ SRCS		:= main.cpp \
 				random_password.cpp \
 				socket.cpp \
 				server.cpp \
-				debug.cpp
+				debug.cpp \
+				MsgIRC.cpp \
+				UserIRC.cpp
 OBJS		:= $(SRCS:.cpp=.o)
 DEP			:= $(SRCS:.cpp=.d)
 NAME		:= ircserv

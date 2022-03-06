@@ -2,7 +2,7 @@
 
 void UserList::addUser(UserIRC& user)
 {
-	list[user.username] = user;
+	listC.push_back(user);
 }
 
 int UserList::acceptNew()
@@ -10,7 +10,18 @@ int UserList::acceptNew()
 	return 1; //wip
 }
 
-UserIRC& UserList::operator[](const string& value)
+UserIRC* UserList::findByUsername(const string& value)
 {
-	return list[value];
+	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
+		if ((*it).username == value)
+			return &(*it);
+	return 0;
+}
+
+UserIRC* UserList::findBySocket(const int& value)
+{
+	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
+		if ((*it).fdSocket == value)
+			return &(*it);
+	return 0;
 }

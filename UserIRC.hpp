@@ -1,7 +1,10 @@
 #ifndef _USERIRC_
 #define _USERIRC_
 #include "server.hpp"
-#include <map>
+#include <algorithm>
+#include <list>
+
+using namespace std;
 
 struct UserIRC
 {
@@ -16,7 +19,7 @@ struct UserIRC
 class UserList
 {
 	private:
-	map<string, UserIRC> list;
+	list<UserIRC> listC;
 
 	public:
 	UserList(){}
@@ -24,7 +27,8 @@ class UserList
 	
 	void addUser(UserIRC& user);
 	int acceptNew();
-	UserIRC& operator[](const string& value);
+	UserIRC* findByUsername(const string& value);
+	UserIRC* findBySocket(const int& value);
 };
 
 #endif
