@@ -13,6 +13,6 @@ int main()
 	g_pwd = random_pwd(10);
 	std::cout << "password:\n	";
 	std::cout << g_pwd <<std::endl;
-	int endpoint = create_server(1600);
+	int endpoint = create_server(6667);
 	server_loop(endpoint);
 }
