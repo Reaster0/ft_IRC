@@ -2,7 +2,7 @@
 #define _socket_hpp_
 #include "server.hpp"
 
-int acceptNewClient(const int& endpoint);
+int acceptNewClient(const int& endpoint, sockaddr_in* addr = 0, socklen_t* len_s = 0);
 
 char *getIPAddress(const int& socket);
 
