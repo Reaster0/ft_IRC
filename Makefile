@@ -1,8 +1,8 @@
 SRCS		:= main.cpp \
 				random_password.cpp \
 				socket.cpp \
-				server.cpp \
 				debug.cpp \
+				server.cpp \
 				MsgIRC.cpp \
 				UserIRC.cpp
 OBJS		:= $(SRCS:.cpp=.o)

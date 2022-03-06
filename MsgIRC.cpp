@@ -26,9 +26,35 @@ size_t receiveMsg(const int& socket, fd_set &availableSockets, MsgIRC& msg)
 	bzero(buffer, BUFFERMAX);
 
 	result = recv(socket, buffer, BUFFERMAX, 0);
-	msg.payload.command = buffer;
+	parsingToPayload(buffer, msg.payload);
 	//make all of the parsing and set msg accordingly
 
 	FD_CLR(socket, &availableSockets);
 	return result;
+}
+
+void parsingToPayload(char* buffer, PayloadIRC& payload)
+{
+	char *token;
+	if (!*buffer)
+		return;
+	if (*buffer == ':')
+	{
+		token = strtok(buffer, " \r\n");
+		payload.prefix = token;
+		token = strtok(0, " \r\n");
+	}
+	else
+		token = strtok(buffer, " \r\n");
+	if (token)
+		payload.command = token;
+	while ((token = strtok(NULL, " \r\n")) && *token != ':')
+	{
+		payload.params.push_back(token);
+	}
+	if (token)
+		payload.trailer = token + 1;
+	token = strtok(NULL, "\r\n");
+	if (token)
+		payload.trailer += " " + (string)token;
 }

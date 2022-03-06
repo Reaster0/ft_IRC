@@ -2,7 +2,9 @@
 #define _MESSAGESIRC_
 #include "UserIRC.hpp"
 #include <string>
+#include <cstring>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -38,5 +40,7 @@ size_t sendMsg(fd_set &availableWSockets, const MsgIRC& msg);
 
 //read and parse the msg 
 size_t receiveMsg(const int& socket, fd_set &availableRSockets, MsgIRC& msg);
+
+void parsingToPayload(char* buffer, PayloadIRC& payload);
 
 #endif

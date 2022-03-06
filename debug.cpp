@@ -33,3 +33,16 @@ int printConnexion(const int& i)
 	fflush(stdout);
 	return 1;
 }
+
+void printPayload(PayloadIRC& payload)
+{
+	cout << "**************debugPayload*****************" << endl;
+	cout << "command:" << payload.command << endl;
+	for (vector<string>::iterator it = payload.params.begin(); it != payload.params.end(); ++it)
+	{
+		cout << "params:" << *it << endl;
+	}
+	cout << "prefix:" << payload.prefix << endl;
+	cout << "trailer:" << payload.trailer << endl;
+	cout << "*********************************************" << endl;
+}

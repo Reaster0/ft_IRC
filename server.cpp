@@ -87,7 +87,7 @@ void server_loop(int &endpoint)
 						close(i);
 					}
 					//for testing purpose
-					cout << newOne.payload.command << flush;
+					printPayload(newOne.payload);
 				}
 			}
 			if (FD_ISSET(i, &availableWSockets))

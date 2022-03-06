@@ -18,8 +18,6 @@
 			#define exit _exit; //linux
 #endif
 
-
-
 int create_endpoint(void);
 
 //input the port number of the server and return the fd of the server socket
