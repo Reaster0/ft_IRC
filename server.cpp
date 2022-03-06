@@ -79,24 +79,23 @@ void server_loop(int &endpoint)
 				}
 				else
 				{
-					// bzero(buffer, bufsize);
-					// if (recv(i, buffer, bufsize, 0) < 0)
-					// {
-					// 	cout << "client" << i << "is disconnected" << endl;
-					// 	clients.removeClient(i);
-					// 	FD_CLR(i, &currentSockets);
-					// 	break;
-					// }
-					// cout << inet_ntoa(clients[i].sin_addr) << ": ";
-					// cout << buffer << endl;
-					//handle the operation for current socket with client[i]
-					if (!printConnexion(i))
+					MsgIRC newOne;
+					if (!receiveMsg(i, availableSockets, newOne))
 					{
 						cout << "the client " << getIPAddress(i) << " has gone missing..." << endl;
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
-					FD_CLR(i, &availableSockets);
+					//for testing purpose
+					cout << newOne.payload.command << flush;
+				}
+			}
+			if (FD_ISSET(i, &availableWSockets))
+			{
+				MsgIRC AMsg;
+				if (0) //if there's messages to send
+				{
+					sendMsg(availableWSockets, AMsg);
 				}
 			}
 		}

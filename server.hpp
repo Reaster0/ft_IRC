@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include "socket.hpp"
 #include "debug.hpp"
+#include "MsgIRC.hpp"
+#include "UserIRC.hpp"
 
 #ifdef __linux__
 			#define exit _exit; //linux
