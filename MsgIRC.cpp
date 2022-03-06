@@ -1,6 +1,6 @@
 #include "MsgIRC.hpp"
 
-#define BUFFERMAX 4242 //need to change accordingly
+#define BUFFERMAX 512 //need to change accordingly
 
 size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 {
