@@ -4,7 +4,9 @@ SRCS		:= main.cpp \
 				debug.cpp \
 				server.cpp \
 				MsgIRC.cpp \
-				UserIRC.cpp
+				UserIRC.cpp \
+				Channel.cpp \
+
 OBJS		:= $(SRCS:.cpp=.o)
 DEP			:= $(SRCS:.cpp=.d)
 NAME		:= ircserv
