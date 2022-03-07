@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int create_endpoint(void)
+int createEndpoint(void)
 {
 	int result = socket(AF_INET, SOCK_STREAM, 0);
 	if (result < 0)
@@ -15,10 +15,10 @@ int create_endpoint(void)
 	return result;
 }
 
-int create_server(const int &port_num)
+int createServer(const int &port_num)
 {
 	sockaddr_in my_server;
-	int endpoint = create_endpoint();
+	int endpoint = createEndpoint();
 
 	my_server.sin_family = AF_INET;
 	my_server.sin_addr.s_addr = htons(INADDR_ANY);
@@ -30,7 +30,12 @@ int create_server(const int &port_num)
 	}
 	cout << "binding socket successfuly" << endl;
 	listen(endpoint, 1);
-	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << port_num << endl;
+	char host[256];
+  	struct hostent *host_entry;
+	int hostname;// maybe not usefull in the end
+	hostname = gethostname(host, sizeof(host));
+	host_entry = gethostbyname(host);
+	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << port_num << endl;
 	return endpoint;
 }
 
@@ -43,7 +48,7 @@ void sighandler(int)
 	g_exit = true;
 }
 
-void server_loop(int &endpoint)
+void serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
@@ -74,9 +79,9 @@ void server_loop(int &endpoint)
 			{
 				if (i == endpoint)
 				{
-					int userSocket = users.acceptNew(endpoint);
-					FD_SET(userSocket, &currentSockets);
-					cout << "new connection from :" << getIPAddress(userSocket) << endl;
+					UserIRC* newOne = users.acceptNew(endpoint);
+					FD_SET(newOne->fdSocket, &currentSockets);
+					cout << "new connection from :" << getIPAddress(newOne) << endl;
 					maxSockets++;
 				}
 				else
@@ -84,7 +89,7 @@ void server_loop(int &endpoint)
 					MsgIRC newOne;
 					if (!receiveMsg(i, availableSockets, newOne))
 					{
-						cout << "the client " << getIPAddress(i) << " has gone missing..." << endl;
+						cout << "the client " << getIPAddress(users.findBySocket(i)) << " has gone missing..." << endl;
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
