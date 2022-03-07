@@ -1,3 +1,4 @@
+/*
 #include <string>
 #include <string.h>
 #include <poll.h>
@@ -17,8 +18,8 @@ int main()
 	int endpoint = create_server(6667);
 	server_loop(endpoint);
 }
+*/
 
-/*
 #include <iostream>
 #include <string.h>
 #include <sys/types.h>
@@ -27,6 +28,8 @@ int main()
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "Channel.hpp"
+#include "UserIRC.hpp"
 
 using namespace std;
 
@@ -66,6 +69,7 @@ int main()
     if (server < 0) 
         cout << "=> Error on accepting..." << endl;
 	cout << "=> Connection with IP " << inet_ntoa(server_addr.sin_addr) << std::endl;
+
 	cout << "creation of user..." << std::endl;
 	UserIRC user;
 	user.nickname = "polo";
@@ -73,22 +77,29 @@ int main()
 	user.fdSocket = client;
 	
 	cout << "creation of chan...\n\n" << std::endl;
-
 	Channel chan("random_chan");
 
 	chan.banned_users.push_back(&user);
 	chan.acceptUser(&user);
 	chan.getInfo();
 
+	MsgIRC msg;
+
     while (server > 0) 
     {
-        send(server, buffer, bufsize, 0);
-        cout << "Client: ";
+        //send(server, buffer, bufsize, 0);
+        
 		recv(server, buffer, bufsize, 0);
-		cout << buffer << std::endl;
+		parsingToPayload(buffer, msg.payload);
+
+		// std::cout << "Client:" << std::endl;
+		// std::cout << "buffer: " << buffer << std::endl;
+		std::cout << "payload: \n";
+		printPayload(msg.payload);
+		msg = MsgIRC();
+		std::cout << std::endl;
     }
 	close(server);
     close(client);
     return 0;
 }
-*/
