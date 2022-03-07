@@ -50,6 +50,6 @@ size_t receiveMsg(const int& socket, fd_set &availableRSockets, MsgIRC& msg);
 
 void parsingToPayload(char* buffer, PayloadIRC& payload);
 
-int bigParser(const PayloadIRC& payload, queue<MsgIRC>& msgQueue, UserList& users);
+void bigParser(const PayloadIRC& payload, queue<MsgIRC>& msgQueue, UserList& users);
 
 #endif

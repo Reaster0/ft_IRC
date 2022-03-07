@@ -12,6 +12,7 @@ struct UserIRC
 	int fdSocket;
 	string username;
 	string nickname;
+	string realName;
 	sockaddr_in addr;
 	socklen_t sockLen;
 	bool needFill;
