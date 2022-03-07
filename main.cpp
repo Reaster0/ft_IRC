@@ -12,11 +12,11 @@ std::string g_pwd;
 
 int main()
 {
-	g_pwd = random_pwd(10);
+	g_pwd = randomPwd(10);
 	std::cout << "password:\n	";
 	std::cout << g_pwd <<std::endl;
-	int endpoint = create_server(6667);
-	server_loop(endpoint);
+	int endpoint = createServer(6667);
+	serverLoop(endpoint);
 }
 */
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <time.h>
 
-std::string random_pwd(const int len) 
+std::string randomPwd(const int len) 
 {
 	srand(time(NULL));
 	std::string pwd;

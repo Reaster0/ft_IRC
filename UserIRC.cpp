@@ -6,13 +6,13 @@ void UserList::addUser(UserIRC& user)
 }
 
 //accept and fill a newuser that's added to the list (need to fill furthermore the client after)(return the socket)
-int UserList::acceptNew(const int& endpoint)
+UserIRC* UserList::acceptNew(const int& endpoint)
 {
 	UserIRC newOne;
 	newOne.fdSocket = accept(endpoint, (sockaddr*)&newOne.addr, &newOne.sockLen);
 	newOne.needFill = true;
 	listC.push_back(newOne);
-	return newOne.fdSocket;
+	return &listC.back();
 }
 
 UserIRC* UserList::findByUsername(const string& value)
