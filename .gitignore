@@ -3,3 +3,6 @@
 *.d
 ircserv
 client
+**/*.o
+**/*.d
+**/*.DS_Store

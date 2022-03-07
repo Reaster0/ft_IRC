@@ -2,10 +2,10 @@ SRCS		:= main.cpp \
 				random_password.cpp \
 				socket.cpp \
 				debug.cpp \
-				server.cpp \
 				MsgIRC.cpp \
 				UserIRC.cpp \
 				Channel.cpp \
+				ServerClass.cpp \
 
 OBJS		:= $(SRCS:.cpp=.o)
 DEP			:= $(SRCS:.cpp=.d)

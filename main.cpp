@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "server.hpp"
+// #include "server.hpp"
+#include "ServerClass.hpp"
 #include "Channel.hpp"
 
 std::string g_pwd;
@@ -13,9 +14,11 @@ int main()
 {
 	g_pwd = random_pwd(10);
 	std::cout << "password:\n	";
-	std::cout << g_pwd <<std::endl;
-	int endpoint = create_server(6667);
-	server_loop(endpoint);
+	std::cout << g_pwd << std::endl;
+	// int endpoint = create_server(6667);
+	// server_loop(endpoint);
+    Server server;
+    server.launch();
 }
 
 /*

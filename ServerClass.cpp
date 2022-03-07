@@ -1,9 +1,31 @@
-#include "server.hpp"
-
+#include "ServerClass.hpp"
 
 using namespace std;
 
-int create_endpoint(void)
+bool g_exit = false;
+
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _users(new list<UserIRC*>), _endpoint(createEndpoint()) {
+	bindEndpoint();
+}
+
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _users(new list<UserIRC*>), _endpoint(createEndpoint()) {
+	bindEndpoint();
+}
+
+Server::~Server() {
+	delete _users;
+}
+
+void Server::launch() {
+	serverLoop(_endpoint);
+}
+
+string Server::getDateTime() {
+	time_t now = time(0);
+	return ctime(&now);
+}
+
+int Server::createEndpoint(void)
 {
 	int result = socket(AF_INET, SOCK_STREAM, 0);
 	if (result < 0)
@@ -15,35 +37,25 @@ int create_endpoint(void)
 	return result;
 }
 
-int create_server(const int &port_num)
+void Server::bindEndpoint(void)
 {
 	sockaddr_in my_server;
-	int endpoint = create_endpoint();
 
 	my_server.sin_family = AF_INET;
 	my_server.sin_addr.s_addr = htons(INADDR_ANY);
-	my_server.sin_port = htons(port_num);
-	if (bind(endpoint, (struct sockaddr *)&my_server, sizeof(my_server)) < 0)
+	my_server.sin_port = htons(_port);
+	if (bind(_endpoint, (struct sockaddr *)&my_server, sizeof(my_server)) < 0)
 	{
 		cout << "binding error" << endl;
 		exit(0);
 	}
 	cout << "binding socket successfuly" << endl;
-	listen(endpoint, 1);
-	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << port_num << endl;
-	return endpoint;
+	listen(_endpoint, 1);
+	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << _port << endl;
 }
 
-#define DELETESOCKET 0
 
-bool g_exit = false;
-
-void sighandler(int)
-{ 
-	g_exit = true;
-}
-
-void server_loop(int &endpoint)
+void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
@@ -51,11 +63,7 @@ void server_loop(int &endpoint)
 	int maxSockets = endpoint + 1;
 	string input;
 
-	int bufsize = 1024;
-	char buffer[bufsize];
-
-	signal(SIGQUIT, sighandler);
-	signal(SIGINT, sighandler);
+	char buffer[BUFFER_SIZE];
 		
 	while(g_exit == false)
 	{
