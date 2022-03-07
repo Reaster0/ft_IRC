@@ -38,7 +38,7 @@ void printPayload(PayloadIRC& payload)
 {
 	cout << "**************debugPayload*****************" << endl;
 	cout << "command:" << payload.command << endl;
-	for (vector<string>::iterator it = payload.params.begin(); it != payload.params.end(); ++it)
+	for (list<string>::iterator it = payload.params.begin(); it != payload.params.end(); ++it)
 	{
 		cout << "params:" << *it << endl;
 	}

@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <string>
 #include <unistd.h>
+#include <queue>
 #include "socket.hpp"
 #include "debug.hpp"
 #include "MsgIRC.hpp"

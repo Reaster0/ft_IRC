@@ -2,20 +2,33 @@
 
 #define BUFFERMAX 512 //need to change accordingly
 
+bool PayloadIRC::empty()
+{
+	return (command.empty() && params.empty() && prefix.empty() && trailer.empty());
+}
+
 size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 {
 	string buffer;
-	if (msg.payload.command != "")
-		buffer += msg.payload.command;
-	for (vector<string>::iterator it = msg.payload.params.begin(); it != msg.payload.params.end(); ++it)
+
+	if (msg.payload.empty())
+		return 0;
+	if (!msg.payload.prefix.empty())
+		buffer += ":" + msg.payload.prefix;
+	if (!msg.payload.command.empty())
+		buffer += " " + msg.payload.command;
+	while (!msg.payload.params.empty())
 	{
-		buffer += *it;
+		buffer += " " + msg.payload.params.front();
+		msg.payload.params.pop_front();
 	}
-	if (msg.payload.prefix != "")
-		buffer += msg.payload.prefix;
-	if (msg.payload.trailer != "")
-		buffer += msg.payload.trailer;
+	if (!msg.payload.trailer.empty())
+		buffer += " :" + msg.payload.trailer;
+	buffer += "\r\n";
 	FD_CLR(msg.receiver->fdSocket, &availableWSockets);
+	cout << "buffer_print+++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+	cout << buffer << endl;
+	cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	return send(msg.receiver->fdSocket, buffer.c_str(), buffer.length(), 0);
 }
 
@@ -57,4 +70,59 @@ void parsingToPayload(char* buffer, PayloadIRC& payload)
 	token = strtok(NULL, "\r\n");
 	if (token)
 		payload.trailer += " " + (string)token;
+}
+
+void welcomeMessage(UserIRC* user, queue<MsgIRC>& msgQueue)
+{
+	PayloadIRC test;
+
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "001";
+	test.params.push_back("nickname");
+	test.trailer = "Welcome to the Internet Relay Network nickname";
+	msgQueue.push(MsgIRC(user, test));
+	
+	test = PayloadIRC();
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "002";
+	test.params.push_back("nickname");
+	test.trailer = "Your host is Reaster.lolLand.fr, running version 1.0";
+	msgQueue.push(MsgIRC(user, test));
+
+	test = PayloadIRC();
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "003";
+	test.params.push_back("nickname");
+	test.trailer = "This server was created Mon Feb 21 17:32:09 2022";
+	msgQueue.push(MsgIRC(user, test));
+
+	test = PayloadIRC();
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "004";
+	test.params.push_back("nickname");
+	test.trailer = "master.ircgod.com 1.0 aiwroOs OovaimnpsrtklbeI";
+	msgQueue.push(MsgIRC(user, test));
+
+	test = PayloadIRC();
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "375";
+	test.params.push_back("nickname");
+	test.trailer = "- master.ircgod.com Message of the day - ";
+	msgQueue.push(MsgIRC(user, test));
+
+	test = PayloadIRC();
+	test.prefix = "Reaster.lolLand.fr";
+	test.command = "372";
+	test.params.push_back("nickname");
+	test.trailer = "bienvenue cher tester!";
+	msgQueue.push(MsgIRC(user, test));
+}
+
+int bigParser(const PayloadIRC& payload, queue<MsgIRC>& msgQueue, UserList& users)
+{
+	if (payload.command == "CAP")
+		return 0;
+	//if (payload.command == "NICK")
+	if (payload.command == "USER")
+		welcomeMessage(users.findFirstUnfilled(), msgQueue);
 }
