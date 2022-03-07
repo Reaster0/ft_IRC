@@ -50,6 +50,8 @@ void server_loop(int &endpoint)
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
 	string input;
+	UserList users;
+	queue<MsgIRC> msgQueue;
 
 	int bufsize = 1024;
 	char buffer[bufsize];
@@ -72,9 +74,9 @@ void server_loop(int &endpoint)
 			{
 				if (i == endpoint)
 				{
-					int newClient = acceptNewClient(endpoint);
-					FD_SET(newClient, &currentSockets);
-					cout << "new connection from :" << getIPAddress(newClient) << endl;
+					int userSocket = users.acceptNew(endpoint);
+					FD_SET(userSocket, &currentSockets);
+					cout << "new connection from :" << getIPAddress(userSocket) << endl;
 					maxSockets++;
 				}
 				else
@@ -86,17 +88,17 @@ void server_loop(int &endpoint)
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
-					//for testing purpose
 					printPayload(newOne.payload);
+					bigParser(newOne.payload, msgQueue, users);
+					//need to process the payload
 				}
 			}
-			if (FD_ISSET(i, &availableWSockets))
+			if (!msgQueue.empty() && FD_ISSET(i, &availableWSockets) && msgQueue.front().receiver->fdSocket == i)
 			{
-				MsgIRC AMsg;
-				if (0) //if there's messages to send
-				{
-					sendMsg(availableWSockets, AMsg);
-				}
+				cout << "i send the packet:";
+				printPayload(msgQueue.front().payload);
+				sendMsg(availableWSockets, msgQueue.front());
+				msgQueue.pop();
 			}
 		}
 	}
