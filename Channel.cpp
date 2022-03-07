@@ -31,7 +31,7 @@ void	Channel::acceptUser(UserIRC *user)
 	}
 	if (isAuthorizedUser(user) == false)
 	{
-		cout << user->username << "(" << getIPAddress(user->fdSocket) <<  ")";
+		cout << user->username << "(" << getIPAddress(user) <<  ")";
 		cout << " cannot connect to " << _name << endl;
 		return;
 	}
@@ -44,7 +44,7 @@ void	Channel::acceptUser(UserIRC *user)
 		}
 	}
 	current_users.push_back(user);
-	cout << user->username << "(" << getIPAddress(user->fdSocket) <<  ")";
+	cout << user->username << "(" << getIPAddress(user) <<  ")";
 	cout << " is connected to " << _name << endl;
 }
 
@@ -61,15 +61,15 @@ void	Channel::getInfo(void)
 
 	std::cout << "\nCURENT_USERS" << std::endl;
 	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
-		std::cout  << (*iter)->nickname << std::setw(20) << (*iter)->username  << std::setw(10) << getIPAddress((*iter)->fdSocket) << std::endl;
+		std::cout  << (*iter)->nickname << std::setw(20) << (*iter)->username  << std::setw(10) << getIPAddress((*iter)) << std::endl;
 
 	std::cout << "\nBANNED_USERS" << std::endl;
 	for(std::vector<UserIRC*>::iterator iter = banned_users.begin(); iter != banned_users.end(); ++iter)
-		std::cout   << (*iter)->nickname << std::setw(20) << (*iter)->username << std::setw(10) << getIPAddress((*iter)->fdSocket) << std::endl;
+		std::cout   << (*iter)->nickname << std::setw(20) << (*iter)->username << std::setw(10) << getIPAddress((*iter)) << std::endl;
 
 	std::cout << "\nINVITED_USERS" << std::endl;
 	for(std::vector<UserIRC*>::iterator iter = invited_users.begin(); iter != invited_users.end(); ++iter)
-		std::cout  << (*iter)->nickname << std::setw(20) << (*iter)->username << std::setw(10) << getIPAddress((*iter)->fdSocket) << std::endl;
+		std::cout  << (*iter)->nickname << std::setw(20) << (*iter)->username << std::setw(10) << getIPAddress((*iter)) << std::endl;
 
 	// int x = 0;
 	//  while (x < 10)

@@ -29,7 +29,7 @@ class UserList
 	~UserList(){}
 	
 	void addUser(UserIRC& user);
-	int acceptNew(const int& endpoint);
+	UserIRC* acceptNew(const int& endpoint);
 	UserIRC* findByUsername(const string& value);
 	UserIRC* findBySocket(const int& value);
 	UserIRC* findFirstUnfilled();
