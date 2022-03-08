@@ -30,7 +30,7 @@ $(NAME):	$(OBJS_PATH) $(OBJS)
 			$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
 $(NAME_2): $(OBJS_PATH) $(OBJS_2)
-			$(CXX) $(CXXFLAGS) $(OBJS_2) -o $(NAME_2)
+			$(CXX) $(CXXFLAGS) $(OBJS_2) -lreadline -ltermcap  -o $(NAME_2)
 
 $(OBJS_PATH):
 	mkdir -p $(OBJS_PATH)
