@@ -71,11 +71,5 @@ void	Channel::getInfo(void)
 	for(std::vector<UserIRC*>::iterator iter = invited_users.begin(); iter != invited_users.end(); ++iter)
 		std::cout  << (*iter)->nickname << std::setw(20) << (*iter)->username << std::setw(10) << getIPAddress((*iter)) << std::endl;
 
-	// int x = 0;
-	//  while (x < 10)
-	//  {
-    //     cout <<  x << setw(10) << right << setw(10) << (x*x) << endl;
-	// 	x++;
-	//  }
 	std::cout << "===========================================" << std::endl;
 }
