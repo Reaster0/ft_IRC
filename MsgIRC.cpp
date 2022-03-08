@@ -46,42 +46,55 @@ size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 	return send(msg.receiver->fdSocket, buffer.c_str(), buffer.length(), 0);
 }
 
-size_t receiveMsg(const int& socket, fd_set &availableSockets, MsgIRC& msg)
+size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg)
 {
 	size_t result;
 	char buffer[BUFFERMAX];
+	queue<char*> buf;
+	char *temp;
 	bzero(buffer, BUFFERMAX);
 
-	result = recv(socket, buffer, BUFFERMAX, 0);
-	parsingToPayload(buffer, msg.payload);
-	//make all of the parsing and set msg accordingly
-
-	FD_CLR(socket, &availableSockets);
+	result = recv(user->fdSocket, buffer, BUFFERMAX, 0);
+	temp = strtok(buffer, "\r\n");
+	do
+	{
+		buf.push(temp);
+		temp = strtok(0, "\r\n");
+	} while(temp);
+	while (!buf.empty())
+	{
+		msg.push(MsgIRC(user, parsingToPayload(buf.front())));
+		buf.pop();
+	}
+	FD_CLR(user->fdSocket, &availableSockets);
 	return result;
 }
 
-void parsingToPayload(char* buffer, PayloadIRC& payload)
+PayloadIRC parsingToPayload(char* buffer)
 {
+	PayloadIRC payload;
+
 	char *token;
-	if (!*buffer)
-		return;
+	if (!buffer || !*buffer)
+		return payload;
 	if (*buffer == ':')
 	{
-		token = strtok(buffer, " \r\n");
+		token = strtok(buffer, " ");
 		payload.prefix = token;
-		token = strtok(0, " \r\n");
+		token = strtok(0, " ");
 	}
 	else
-		token = strtok(buffer, " \r\n");
+		token = strtok(buffer, " ");
 	if (token)
 		payload.command = token;
-	while ((token = strtok(NULL, " \r\n")) && *token != ':')
+	while ((token = strtok(NULL, " ")) && *token != ':')
 	{
 		payload.params.push_back(token);
 	}
 	if (token)
 		payload.trailer = token + 1;
-	token = strtok(NULL, "\r\n");
+	token = strtok(NULL, "");
 	if (token)
 		payload.trailer += " " + (string)token;
+	return payload;
 }
