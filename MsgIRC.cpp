@@ -61,13 +61,13 @@ void parsingToPayload(char* buffer, PayloadIRC& payload)
 		token = strtok(buffer, " \r\n");
 	if (token)
 		payload.command = token;
-	while ((token = strtok(NULL, " ")) && *token != ':')
+	while ((token = strtok(NULL, " \r\n")) && *token != ':')
 	{
 		payload.params.push_back(token);
 	}
 	if (token)
 		payload.trailer = token + 1;
-	token = strtok(NULL, "");
+	token = strtok(NULL, "\r\n");
 	if (token)
 		payload.trailer += " " + (string)token;
 }
