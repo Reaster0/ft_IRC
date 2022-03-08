@@ -9,6 +9,7 @@ void Server::initializeMap()
 	_handlerFunction["CAP"] = funCap;
 	_handlerFunction["NICK"] = NICKParser;
 	_handlerFunction["USER"] = USERParser;
+	_handlerFunction["JOIN"] = JOINParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _endpoint(createEndpoint()) {

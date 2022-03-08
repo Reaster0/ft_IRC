@@ -2,6 +2,20 @@
 
 #define BUFFERMAX 512 //need to change accordingly
 
+MsgIRC::MsgIRC()
+{
+	UserIRC nul_usr;
+	sockaddr_in null_sockaddr;
+
+	nul_usr.fdSocket = 0;
+	nul_usr.username = "nul_user";
+	nul_usr.nickname = "nul_user";
+	nul_usr.addr = null_sockaddr;
+
+	sender = &nul_usr;
+	receiver = &nul_usr;
+}
+
 bool PayloadIRC::empty()
 {
 	return (command.empty() && params.empty() && prefix.empty() && trailer.empty());

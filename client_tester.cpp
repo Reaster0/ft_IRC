@@ -35,8 +35,8 @@ int main()
 	char *line = NULL;
 
     struct sockaddr_in server_addr;
-	signal(SIGQUIT, sighandler);
-	signal(SIGINT, sighandler);
+	// signal(SIGQUIT, sighandler);
+	// signal(SIGINT, sighandler);
 
     client = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -66,6 +66,9 @@ int main()
 		free(line);
 		line = readline("Client=> ");
 		send(client, line, strlen(line), 0);
+		bzero(buffer, bufsize);
+		recv(client, buffer, bufsize, 0);
+		std::cout << buffer << std::endl;
     } 
     cout << "\n=> Connection terminated.\nGoodbye...\n";
     close(client);

@@ -88,3 +88,24 @@ int USERParser(MsgIRC& msg, Server& server)
 	welcomeMessage(newOne, server);
 	return 0;
 }
+
+int JOINParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	if (msg.payload.params.empty())
+		return 1;
+	if (msg.payload.params.front()[0] != '#')
+		msg.payload.params.front() = '#' + msg.payload.params.front();
+	std::string chan_name = msg.payload.params.front();
+	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.sender) == false)
+		return 2;
+	server._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
+	server._channels[chan_name].acceptUser(msg.sender);
+	// server._channels[chan_name].getInfo();
+	payload.prefix = msg.sender->nickname + "@" + getIPAddress(msg.sender);
+	payload.command = "JOIN";
+	payload.params.push_back(chan_name);
+	// sending to all participants of the chan
+	server._channels[chan_name].sendToAll(payload, server);
+	return 0;
+}
