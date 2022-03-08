@@ -42,7 +42,6 @@ private:
 	void 	bindEndpoint();
 	int		createEndpoint(void);
 	void	serverLoop(int &endpoint);
-	string	getDateTime();
 
 	const int 				_port;
 	const string 			_startTime;
@@ -56,5 +55,6 @@ private:
 };
 
 std::string randomPwd(const int len);
+string getDateTime();
 
 #endif

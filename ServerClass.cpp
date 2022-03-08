@@ -4,6 +4,7 @@ using namespace std;
 
 bool g_exit = false;
 
+
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _endpoint(createEndpoint()) {
 	bindEndpoint();
 }
@@ -18,7 +19,7 @@ void Server::launch() {
 	serverLoop(_endpoint);
 }
 
-string Server::getDateTime() {
+string getDateTime() {
 	time_t now = time(0);
 	return ctime(&now);
 }
@@ -55,7 +56,8 @@ void Server::bindEndpoint(void)
 	int hostname;// maybe not usefull in the end
 	hostname = gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
-	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << endl;
+	time_t now = time(0);
+	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime <<endl;
 }
 
 
@@ -67,7 +69,6 @@ void Server::serverLoop(int &endpoint)
 	int maxSockets = endpoint + 1;
 	string input;
 	char buffer[BUFFER_SIZE];
-		
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
