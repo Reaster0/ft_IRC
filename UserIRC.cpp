@@ -23,6 +23,14 @@ UserIRC* UserList::findByUsername(const string& value)
 	return 0;
 }
 
+UserIRC* UserList::findByNickname(const string& value)
+{
+	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
+		if ((*it).nickname == value)
+			return &(*it);
+	return 0;
+}
+
 UserIRC* UserList::findBySocket(const int& value)
 {
 	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
@@ -30,6 +38,7 @@ UserIRC* UserList::findBySocket(const int& value)
 			return &(*it);
 	return 0;
 }
+
 
 //return the first user that need filling or nothing
 UserIRC* UserList::findFirstUnfilled()

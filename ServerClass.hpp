@@ -37,18 +37,20 @@ public:
 	~Server();
 	
 	void launch();
+	UserList				_users;
+	queue<MsgIRC>			_msgQueue;
+	map<string, Channel>	_channels;
+	const string 			_startTime;
 
 private:
 	void 	bindEndpoint();
 	int		createEndpoint(void);
 	void	serverLoop(int &endpoint);
+	void	initializeMap();
 
 	const int 				_port;
-	const string 			_startTime;
-	UserList				_users;
-	map<string, Channel>	_channels;
 	int						_endpoint;
-	queue<MsgIRC>			_msgQueue;
+	map<string, int(*)(MsgIRC&, Server&)>	_handlerFunction;
 
 	static const int DEFAULT_PORT = 6667;
 	static const int BUFFER_SIZE = 1024;
@@ -56,5 +58,16 @@ private:
 
 std::string randomPwd(const int len);
 string getDateTime();
+
+/*
+-------handlerFunction--------
+please put your functions here using the template [int function(MsgIRC&, ServerClass&)]
+and in initializeMap() for the referencement
+all functions here may broke msg so don't use it afterward
+*/
+
+int funCap(MsgIRC& msg, Server& server);
+int NICKParser(MsgIRC& msg, Server& server);
+int USERParser(MsgIRC& msg, Server& server);
 
 #endif
