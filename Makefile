@@ -6,6 +6,7 @@ SRCS		:= main.cpp \
 				MsgIRC.cpp \
 				UserIRC.cpp \
 				Channel.cpp \
+				handlerFunction.cpp
 
 OBJS_PATH 	= objs
 DEPS    	= $(patsubst %, $(OBJS_PATH)/%, $(SRCS:.cpp=.d))
@@ -24,7 +25,7 @@ RM       	= rm -rf
 all:		$(NAME) $(NAME_2)
 
 $(OBJS_PATH)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(NAME):	$(OBJS_PATH) $(OBJS)
 			$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
