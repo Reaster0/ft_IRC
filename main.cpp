@@ -14,8 +14,6 @@ int main()
 	g_pwd = randomPwd(10);
 	std::cout << "password:\n	";
 	std::cout << g_pwd << std::endl;
-	// int endpoint = create_server(6667);
-	// server_loop(endpoint);
     Server server;
     server.launch();
 }
@@ -33,11 +31,11 @@ int main()
 
 // using namespace std;
 
-// int main()
+// int main2()
 // {
 // 	std::cout << "[DEBUG MODE]" << std::endl;
 //     int client, server;
-//     int portNum = 1600;
+//     int portNum = 20000;
 //     bool isExit = false;
 //     int bufsize = 1024;
 //     char buffer[bufsize];
@@ -74,28 +72,53 @@ int main()
 // 	UserIRC user;
 // 	user.nickname = "polo";
 // 	user.username = "polo_username59";
-// 	user.fdSocket = client;
+// 	user.fdSocket = server;
 	
 // 	cout << "creation of chan...\n\n" << std::endl;
 // 	Channel chan("random_chan");
 
-// 	chan.banned_users.push_back(&user);
-// 	chan.acceptUser(&user);
+// 	// chan.banned_users.push_back(&user);
+// 	// chan.acceptUser(&user);
 // 	chan.getInfo();
 
 // 	MsgIRC msg;
+// 	MsgIRC response;
+// 	Server server_class;
+
+// 	msg.sender = &user; 
 
 //     while (server > 0) 
-//     {
-//         //send(server, buffer, bufsize, 0);
-        
+//     {     
+// 		bzero(buffer, bufsize);   
 // 		recv(server, buffer, bufsize, 0);
 // 		parsingToPayload(buffer, msg.payload);
-
-// 		// std::cout << "Client:" << std::endl;
-// 		// std::cout << "buffer: " << buffer << std::endl;
-// 		std::cout << "payload: \n";
 // 		printPayload(msg.payload);
+
+// 		std::cout << "CMD =>[" << msg.payload.command << "]" <<std::endl;
+// 		if (msg.payload.command == "/JOIN")
+// 		{
+// 			if (msg.payload.params.empty())
+// 				break;
+// 			if (msg.payload.params.front()[0] != '#')
+// 				msg.payload.params.front() = '#' + msg.payload.params.front();
+// 			std::string chan_name = msg.payload.params.front();
+// 			if (server_class._channels.find(chan_name) != server_class._channels.end() && server_class._channels[chan_name].isAuthorizedUser(msg.sender) == false)
+// 				break;
+// 			server_class._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
+
+// 			server_class._channels[chan_name].acceptUser(msg.sender);
+// 			response.payload.prefix = msg.sender->nickname + "@" + getIPAddress(msg.sender);
+// 			response.payload.command = "JOIN";
+// 			response.payload.params.push_back(chan_name);
+
+// 			//sending to all participants of the chan
+// 			//server_class._channels[chan_name].sendToAll(response.payload, server);
+// 				std::string temp =  msg.sender->nickname + "@" + getIPAddress(msg.sender) + " JOIN " + chan_name;
+// 				std::cout << temp << std::endl;
+// 				for(std::vector<UserIRC*>::iterator iter = server_class._channels[chan_name].current_users.begin(); iter != server_class._channels[chan_name].current_users.end(); ++iter)
+// 					send((*iter)->fdSocket, &temp, sizeof(temp), 0);
+
+// 		}
 // 		msg = MsgIRC();
 // 		std::cout << std::endl;
 //     }

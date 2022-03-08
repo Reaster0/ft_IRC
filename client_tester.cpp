@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 using namespace std;
 
@@ -17,10 +20,11 @@ void sighandler(int)
 	g_exit = true;
 }
 
+
 int main()
 {
     int client;
-    int portNum = 1600;
+    int portNum = 20000;
     bool isExit = false;
     int bufsize = 1024;
     char buffer[bufsize];
@@ -28,10 +32,11 @@ int main()
 	string ip_str = "127.0.0.1";
     char* ip = const_cast<char*>(ip_str.c_str());
 	string input;
+	char *line = NULL;
 
     struct sockaddr_in server_addr;
-	signal(SIGQUIT, sighandler);
-	signal(SIGINT, sighandler);
+	// signal(SIGQUIT, sighandler);
+	// signal(SIGINT, sighandler);
 
     client = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -53,17 +58,17 @@ int main()
 
     while (g_exit == false)
 	{
-        cout << "Client: ";
-		input.clear();
-		getline(cin, input);
-		if (input == "EXIT")
-		{
-			cout << "exit client"<< endl;
-			input = "has quit";
-			send(client, &input, sizeof(input), 0);
-			break;
-		}
-		send(client, &input, sizeof(input), 0);
+		// input.clear();
+		// getline(cin, input);
+		// std::cout << "[" << input <<"]" << std::endl;
+		// send(client, &input, sizeof(input), 0);
+
+		free(line);
+		line = readline("Client=> ");
+		send(client, line, strlen(line), 0);
+		bzero(buffer, bufsize);
+		recv(client, buffer, bufsize, 0);
+		std::cout << buffer << std::endl;
     } 
     cout << "\n=> Connection terminated.\nGoodbye...\n";
     close(client);

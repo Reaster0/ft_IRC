@@ -69,5 +69,6 @@ all functions here may broke msg so don't use it afterward
 int funCap(MsgIRC& msg, Server& server);
 int NICKParser(MsgIRC& msg, Server& server);
 int USERParser(MsgIRC& msg, Server& server);
+int JOINParser(MsgIRC& msg, Server& server);
 
 #endif
