@@ -4,11 +4,11 @@ using namespace std;
 
 bool g_exit = false;
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _users(new list<UserIRC*>), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _users(new UserList), _endpoint(createEndpoint()) {
 	bindEndpoint();
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _users(new list<UserIRC*>), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _users(new UserList), _endpoint(createEndpoint()) {
 	bindEndpoint();
 }
 

@@ -1,8 +1,8 @@
 #ifndef _USERIRC_
 #define _USERIRC_
-#include "server.hpp"
 #include <algorithm>
 #include <list>
+#include "ServerClass.hpp"
 
 using namespace std;
 

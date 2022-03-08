@@ -1,6 +1,6 @@
 #ifndef _my_debug_
 #define _my_debug_
-#include "server.hpp"
+#include "ServerClass.hpp"
 
 using namespace std;
 

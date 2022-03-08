@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+struct UserIRC;
 #include "UserIRC.hpp"
 
 class Channel
