@@ -4,12 +4,20 @@ using namespace std;
 
 bool g_exit = false;
 
+void Server::initializeMap()
+{
+	_handlerFunction["CAP"] = funCap;
+	_handlerFunction["NICK"] = NICKParser;
+	_handlerFunction["USER"] = USERParser;
+}
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _endpoint(createEndpoint()) {
+	initializeMap();
 	bindEndpoint();
 }
 
 Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _endpoint(createEndpoint()) {
+	initializeMap();
 	bindEndpoint();
 }
 
@@ -99,8 +107,10 @@ void Server::serverLoop(int &endpoint)
 						close(i);
 					}
 					printPayload(newOne.payload);
-					//bigParser(newOne.payload, _msgQueue, _users);
-					//need to process the payload
+					if (_handlerFunction.find(newOne.payload.command) != _handlerFunction.end())
+						_handlerFunction[newOne.payload.command](newOne, *this);
+					else
+						cout << "the function " << newOne.payload.command << " dosen't exist (yet?)" << endl;
 				}
 			}
 			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets) && _msgQueue.front().receiver->fdSocket == i)

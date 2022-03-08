@@ -34,6 +34,7 @@ class UserList
 	void addUser(UserIRC& user);
 	UserIRC* acceptNew(const int& endpoint);
 	UserIRC* findByUsername(const string& value);
+	UserIRC* findByNickname(const string& value);
 	UserIRC* findBySocket(const int& value);
 	UserIRC* findFirstUnfilled();
 };
