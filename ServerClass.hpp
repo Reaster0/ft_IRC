@@ -11,10 +11,12 @@
 #include <unistd.h>
 
 #include <map>
+#include <queue>
+class MsgIRC;
+#include "MsgIRC.hpp"
 #include "UserIRC.hpp"
 #include "socket.hpp"
 #include "debug.hpp"
-#include "MsgIRC.hpp"
 #include "Channel.hpp"
 // #include "server.hpp"
 
@@ -42,14 +44,15 @@ private:
 
 	const int 				_port;
 	const string 			_startTime;
-	UserList*				_users;
+	UserList				_users;
 	map<string, Channel>	_channels;
 	int						_endpoint;
+	queue<MsgIRC>			_msgQueue;
 
 	static const int DEFAULT_PORT = 6667;
 	static const int BUFFER_SIZE = 1024;
 };
 
-std::string random_pwd(const int len);
+std::string randomPwd(const int len);
 
 #endif

@@ -4,17 +4,15 @@ using namespace std;
 
 bool g_exit = false;
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _users(new UserList), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _endpoint(createEndpoint()) {
 	bindEndpoint();
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _users(new UserList), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _endpoint(createEndpoint()) {
 	bindEndpoint();
 }
 
-Server::~Server() {
-	delete _users;
-}
+Server::~Server() { }
 
 void Server::launch() {
 	serverLoop(_endpoint);
@@ -50,8 +48,14 @@ void Server::bindEndpoint(void)
 		exit(0);
 	}
 	cout << "binding socket successfuly" << endl;
+	
 	listen(_endpoint, 1);
-	cout << "server ip: " << inet_ntoa(my_server.sin_addr) << " listening on port " << _port << endl;
+	char host[256];
+  	struct hostent *host_entry;
+	int hostname;// maybe not usefull in the end
+	hostname = gethostname(host, sizeof(host));
+	host_entry = gethostbyname(host);
+	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << endl;
 }
 
 
@@ -62,7 +66,6 @@ void Server::serverLoop(int &endpoint)
 	FD_SET(endpoint, &currentSockets);
 	int maxSockets = endpoint + 1;
 	string input;
-
 	char buffer[BUFFER_SIZE];
 		
 	while(g_exit == false)
@@ -80,9 +83,9 @@ void Server::serverLoop(int &endpoint)
 			{
 				if (i == endpoint)
 				{
-					int newClient = acceptNewClient(endpoint);
-					FD_SET(newClient, &currentSockets);
-					cout << "new connection from :" << getIPAddress(newClient) << endl;
+					UserIRC* newOne = _users.acceptNew(endpoint);
+					FD_SET(newOne->fdSocket, &currentSockets);
+					cout << "new connection from :" << getIPAddress(newOne) << endl;
 					maxSockets++;
 				}
 				else
@@ -90,21 +93,21 @@ void Server::serverLoop(int &endpoint)
 					MsgIRC newOne;
 					if (!receiveMsg(i, availableSockets, newOne))
 					{
-						cout << "the client " << getIPAddress(i) << " has gone missing..." << endl;
+						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has gone missing..." << endl;
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
-					//for testing purpose
 					printPayload(newOne.payload);
+					bigParser(newOne.payload, _msgQueue, _users);
+					//need to process the payload
 				}
 			}
-			if (FD_ISSET(i, &availableWSockets))
+			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets) && _msgQueue.front().receiver->fdSocket == i)
 			{
-				MsgIRC AMsg;
-				if (0) //if there's messages to send
-				{
-					sendMsg(availableWSockets, AMsg);
-				}
+				cout << "i send the packet:";
+				printPayload(_msgQueue.front().payload);
+				sendMsg(availableWSockets, _msgQueue.front());
+				_msgQueue.pop();
 			}
 		}
 	}

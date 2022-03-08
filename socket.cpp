@@ -9,10 +9,11 @@ int acceptNewClient(const int& endpoint, sockaddr_in* addr, socklen_t* len_s)
 	return accept(endpoint, (sockaddr *)&newOne, &size);
 }
 
-char *getIPAddress(const int& socket)
+string getIPAddress(const UserIRC* user)
 {
-	sockaddr_in tempAddr;
-	socklen_t osef;
-	getsockname(socket, (sockaddr*)&tempAddr, &osef);
-	return inet_ntoa(tempAddr.sin_addr);
+	if (!user)
+		return "";
+	char buffer[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &user->addr.sin_addr.s_addr, buffer, INET_ADDRSTRLEN);
+	return buffer;
 }
