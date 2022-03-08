@@ -98,7 +98,7 @@ void Server::serverLoop(int &endpoint)
 						close(i);
 					}
 					printPayload(newOne.payload);
-					bigParser(newOne.payload, _msgQueue, _users);
+					//bigParser(newOne.payload, _msgQueue, _users);
 					//need to process the payload
 				}
 			}

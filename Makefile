@@ -1,11 +1,11 @@
 SRCS		:= main.cpp \
+				ServerClass.cpp \
 				random_password.cpp \
 				socket.cpp \
 				debug.cpp \
 				MsgIRC.cpp \
 				UserIRC.cpp \
 				Channel.cpp \
-				ServerClass.cpp \
 
 OBJS_PATH 	= objs
 DEPS    	= $(patsubst %, $(OBJS_PATH)/%, $(SRCS:.cpp=.d))

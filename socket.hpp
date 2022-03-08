@@ -8,6 +8,4 @@ struct UserIRC;
 
 int acceptNewClient(const int& endpoint, sockaddr_in* addr = 0, socklen_t* len_s = 0);
 
-string getIPAddress(const UserIRC* user);
-
 #endif

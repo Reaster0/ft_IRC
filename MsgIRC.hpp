@@ -1,17 +1,15 @@
 #ifndef _MESSAGESIRC_
 #define _MESSAGESIRC_
+#include "UserIRC.hpp"
 #include <string>
 #include <cstring>
 #include <vector>
 #include <list>
 #include <sstream>
-#include <queue>
-#include "UserIRC.hpp"
 
 using namespace std;
 
 struct UserIRC;
-class UserList;
 
 struct PayloadIRC
 {

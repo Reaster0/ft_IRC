@@ -11,8 +11,10 @@
 #include <unistd.h>
 
 #include <map>
+#include <list>
 #include <queue>
-class MsgIRC;
+#include <sstream>
+#include <cstring>
 #include "MsgIRC.hpp"
 #include "UserIRC.hpp"
 #include "socket.hpp"
@@ -24,7 +26,7 @@ class MsgIRC;
 	#define exit _exit; //linux
 #endif
 
-class UserList;
+class MsgIRC;
 class Channel;
 
 using namespace std;

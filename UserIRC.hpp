@@ -1,10 +1,12 @@
 #ifndef _USERIRC_
 #define _USERIRC_
-
-#include "MsgIRC.hpp"
 #include <algorithm>
 #include <list>
-#include "ServerClass.hpp"
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string>
+#include <iostream>
+#include <queue>
 
 using namespace std;
 
@@ -35,5 +37,8 @@ class UserList
 	UserIRC* findBySocket(const int& value);
 	UserIRC* findFirstUnfilled();
 };
+
+string getIPAddress(const UserIRC* user);
+
 
 #endif

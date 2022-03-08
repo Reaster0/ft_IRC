@@ -39,3 +39,12 @@ UserIRC* UserList::findFirstUnfilled()
 			return &(*it);
 	return 0;
 }
+
+string getIPAddress(const UserIRC* user)
+{
+	if (!user)
+		return "";
+	char buffer[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &user->addr.sin_addr.s_addr, buffer, INET_ADDRSTRLEN);
+	return buffer;
+}
