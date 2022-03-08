@@ -5,6 +5,13 @@ void UserList::addUser(UserIRC& user)
 	listC.push_back(user);
 }
 
+void UserList::removeUser(int& fd)
+{
+	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
+		if ((*it).fdSocket == fd)
+			listC.erase(it);
+}
+
 //accept and fill a newuser that's added to the list (need to fill furthermore the client after)(return the socket)
 UserIRC* UserList::acceptNew(const int& endpoint)
 {

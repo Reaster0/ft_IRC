@@ -28,7 +28,7 @@ void welcomeMessage(UserIRC* user, Server& server)
 	temp.prefix = "EpikEkipEkolegram";
 	temp.command = "004";
 	temp.params.push_back(user->nickname);
-	temp.trailer = "master 1.0 aiwroOs OovaimnpsrtklbeI";
+	temp.trailer = "EpikEkipEkolegram 42.69 aiwroOs OovaimnpsrtklbeI";
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
@@ -78,7 +78,7 @@ int NICKParser(MsgIRC& msg, Server& server)
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByNickname(msg.payload.params.front())
+	if (server._users.findByUsername(msg.payload.params.front())
 	|| !server._users.findFirstUnfilled())
 		return 1;
 	UserIRC* newOne = server._users.findFirstUnfilled();

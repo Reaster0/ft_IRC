@@ -44,8 +44,8 @@ struct MsgIRC
 size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg);
 
 //read and parse the msg 
-size_t receiveMsg(const int& socket, fd_set &availableRSockets, MsgIRC& msg);
+size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg);
 
-void parsingToPayload(char* buffer, PayloadIRC& payload);
+PayloadIRC parsingToPayload(char* buffer);
 
 #endif

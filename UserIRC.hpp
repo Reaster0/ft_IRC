@@ -32,6 +32,7 @@ class UserList
 	~UserList(){}
 	
 	void addUser(UserIRC& user);
+	void removeUser(int& fd);
 	UserIRC* acceptNew(const int& endpoint);
 	UserIRC* findByUsername(const string& value);
 	UserIRC* findByNickname(const string& value);

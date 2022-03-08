@@ -99,18 +99,23 @@ void Server::serverLoop(int &endpoint)
 				}
 				else
 				{
-					MsgIRC newOne;
-					if (!receiveMsg(i, availableSockets, newOne))
+					queue<MsgIRC> newOnes;
+					if (!receiveMsg(_users.findBySocket(i), availableSockets, newOnes))
 					{
 						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has gone missing..." << endl;
+						_users.removeUser(i);
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
-					printPayload(newOne.payload);
-					if (_handlerFunction.find(newOne.payload.command) != _handlerFunction.end())
-						_handlerFunction[newOne.payload.command](newOne, *this);
-					else
-						cout << "the function " << newOne.payload.command << " dosen't exist (yet?)" << endl;
+					while (newOnes.size())
+					{
+						printPayload(newOnes.front().payload);
+						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
+							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+						else
+							cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
+						newOnes.pop();
+					}
 				}
 			}
 			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets) && _msgQueue.front().receiver->fdSocket == i)
