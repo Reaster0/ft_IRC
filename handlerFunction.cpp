@@ -94,3 +94,41 @@ int QUITParser(MsgIRC& msg, Server& server)
 	PayloadIRC payload;
 	cout << ":" << msg.receiver->username << "!" << msg.receiver->realName << getIPAddress(msg.sender) << " QUIT " << ":Quit: " << msg.payload.trailer << endl;
 }
+
+int JOINParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	if (msg.payload.params.empty())
+		return 1;
+	if (msg.payload.params.front()[0] != '#')
+		msg.payload.params.front() = '#' + msg.payload.params.front();
+	std::string chan_name = msg.payload.params.front();
+	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
+		return 2;
+	server._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
+	server._channels[chan_name].acceptUser(msg.receiver);
+	// server._channels[chan_name].getInfo();
+
+	// JOIN INFO
+	payload.prefix = msg.receiver->nickname + "@" + getIPAddress(msg.receiver);
+	payload.command = "JOIN";
+	payload.params.push_back(chan_name);
+	server._channels[chan_name].sendToAll(payload, server);
+	// 353
+	payload = PayloadIRC();
+	payload.command = "353";
+	payload.prefix = "EpikEkipEkolegram";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back("=");
+	payload.params.push_back(chan_name);
+	payload.trailer = "@";
+	for(std::vector<UserIRC*>::iterator iter = server._channels[chan_name].current_users.begin(); iter != server._channels[chan_name].current_users.end(); ++iter)
+	{
+		payload.trailer += (*iter)->nickname;
+		payload.trailer += " ";
+	}
+	payload.trailer.erase(payload.trailer.find_last_not_of(" ") + 1);
+	MsgIRC response(msg.receiver, payload);
+	server._msgQueue.push(response);
+	return 0;
+}

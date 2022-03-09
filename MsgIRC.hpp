@@ -30,12 +30,12 @@ struct MsgIRC
 	UserIRC* sender;
 	UserIRC* receiver;
 	PayloadIRC payload;
-
-	MsgIRC() : sender(0), receiver(0){}
+	
 	MsgIRC(UserIRC* _receiver, const PayloadIRC& _payload):
 	sender(0), receiver(_receiver), payload(_payload){}
 	MsgIRC(UserIRC* _sender,UserIRC* _receiver, const PayloadIRC& _payload):
 	sender(_sender), receiver(_receiver), payload(_payload){}
+	MsgIRC();
 	~MsgIRC(){}
 	//add the function to call payload later
 };

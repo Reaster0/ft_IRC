@@ -21,6 +21,7 @@ class Channel
 		vector<UserIRC*> banned_users;
 		vector<UserIRC*> invited_users;
 
+		Channel();
 		Channel(string name);
 		~Channel();
 

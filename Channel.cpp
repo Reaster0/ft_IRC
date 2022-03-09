@@ -11,6 +11,16 @@ Channel::Channel(std::string name)
 	_topic = "undefined_topic";
 }
 
+Channel::Channel()
+{
+	_name = "undefined_name";
+	_private = false;
+	_secrete = false;
+	_limited_capacity = false;
+	_maximum_users = 0;
+	_topic = "undefined_topic";
+}
+
 Channel::~Channel(){}
 
 // return false if the user in argument has been kicked from chan
@@ -31,8 +41,8 @@ void	Channel::acceptUser(UserIRC *user)
 	}
 	if (isAuthorizedUser(user) == false)
 	{
-		cout << user->username << "(" << getIPAddress(user) <<  ")";
-		cout << " cannot connect to " << _name << endl;
+		// cout << user->username << "(" << getIPAddress(user) <<  ")";
+		// cout << " cannot connect to " << _name << endl;
 		return;
 	}
 	for(std::vector<UserIRC*>::iterator iter = invited_users.begin(); iter != invited_users.end(); ++iter)
@@ -44,8 +54,8 @@ void	Channel::acceptUser(UserIRC *user)
 		}
 	}
 	current_users.push_back(user);
-	cout << user->username << "(" << getIPAddress(user) <<  ")";
-	cout << " is connected to " << _name << endl;
+	// cout << user->username << "(" << getIPAddress(user) <<  ")";
+	// cout << " is connected to " << _name << endl;
 }
 
 void	Channel::getInfo(void)
