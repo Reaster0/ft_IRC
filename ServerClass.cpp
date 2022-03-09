@@ -12,17 +12,17 @@ void Server::initializeMap()
 	_handlerFunction["JOIN"] = JOINParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
 
-Server::~Server() { }
+Server::~Server(){}
 
 void Server::launch() {
 	serverLoop(_endpoint);
@@ -110,7 +110,7 @@ void Server::serverLoop(int &endpoint)
 					}
 					while (newOnes.size())
 					{
-						printPayload(newOnes.front().payload);
+						// printPayload(newOnes.front().payload);
 						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
 							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
 						else
@@ -121,8 +121,8 @@ void Server::serverLoop(int &endpoint)
 			}
 			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets) && _msgQueue.front().receiver->fdSocket == i)
 			{
-				cout << "i send the packet:";
-				printPayload(_msgQueue.front().payload);
+				// cout << "i send the packet:";
+				// printPayload(_msgQueue.front().payload);
 				sendMsg(availableWSockets, _msgQueue.front());
 				_msgQueue.pop();
 			}

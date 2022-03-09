@@ -110,7 +110,7 @@ int JOINParser(MsgIRC& msg, Server& server)
 	// 332
 	payload = PayloadIRC();
 	payload.command = "332";
-	payload.prefix = "EpikEkipEkolegram";
+	payload.prefix = server._hostName;
 	payload.params.push_back(msg.receiver->nickname);
 	payload.params.push_back(chan_name);
 	payload.trailer = server._channels[chan_name]._topic;
