@@ -92,19 +92,18 @@ void Server::serverLoop(int &endpoint)
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
-	int maxSockets = endpoint + 1;
 	string input;
 	char buffer[BUFFER_SIZE];
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
 		availableWSockets = currentSockets;
-		if (select(maxSockets, &availableSockets, &availableWSockets, 0, 0) < 0)
+		if (select(1024, &availableSockets, &availableWSockets, 0, 0) < 0)
 		{
 			cout << "select error" << endl;
 			exit(0);
 		}
-		for (int i = 0; i < maxSockets; i++)
+		for (int i = 0; i < 1024; i++)
 		{
 			if (FD_ISSET(i, &availableSockets))
 			{
@@ -113,7 +112,6 @@ void Server::serverLoop(int &endpoint)
 					UserIRC* newOne = _users.acceptNew(endpoint);
 					FD_SET(newOne->fdSocket, &currentSockets);
 					cout << "new connection from :" << getIPAddress(newOne) << endl;
-					maxSockets++;
 				}
 				else
 				{

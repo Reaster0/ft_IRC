@@ -55,6 +55,8 @@ size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg)
 	bzero(buffer, BUFFERMAX);
 
 	result = recv(user->fdSocket, buffer, BUFFERMAX, 0);
+	if (!result)
+		return result;
 	temp = strtok(buffer, "\r\n");
 	do
 	{
