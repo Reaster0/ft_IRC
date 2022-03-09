@@ -102,3 +102,22 @@ bool	Channel::isInChannel(UserIRC *user)
     }
 	return false;
 }
+
+vector<UserIRC*>::iterator Channel::UserIterator(UserIRC *user)
+{
+	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
+    {
+        if ((*iter) == user)
+			return iter;
+    }
+	return current_users.end();
+}
+
+void	Channel::removeUsersFromChan(UserIRC *user)
+{
+	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
+    {
+        if ((*iter) == user)
+			current_users.erase(iter);
+    }
+}

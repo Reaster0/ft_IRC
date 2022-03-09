@@ -96,6 +96,8 @@ int QUITParser(MsgIRC& msg, Server& server)
 	payload.trailer = "Quit: " + msg.payload.trailer;
 	payload.prefix = msg.receiver->username + "!" + msg.receiver->realName + getIPAddress(msg.sender);
 	sendToAllChan(payload, msg.receiver, server);
+	removeUsersFromAllChans(msg.receiver, server);
+	server._users.removeUser(msg.receiver->fdSocket);
 	return 0;
 }
 

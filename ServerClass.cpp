@@ -79,6 +79,14 @@ void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
 	}
 }
 
+void removeUsersFromAllChans(UserIRC *user, Server &server)
+{
+	for (map<string, Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it)
+	{
+		(*it).second.removeUsersFromChan(user);
+	}
+}
+
 void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
@@ -113,7 +121,11 @@ void Server::serverLoop(int &endpoint)
 					if (!receiveMsg(_users.findBySocket(i), availableSockets, newOnes))
 					{
 						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has gone missing..." << endl;
-						_users.removeUser(i);
+						if (_users.findBySocket(i))
+						{
+							_users.removeUser(i);
+							removeUsersFromAllChans(_users.findBySocket(i), *this);
+						}
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}

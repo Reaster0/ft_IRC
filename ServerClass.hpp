@@ -62,6 +62,9 @@ string getDateTime();
 //send a message to all users that are on the same channel that input user
 void sendToAllChan(PayloadIRC& payload, UserIRC *user, Server &server);
 
+//remove the user from all channels it was connected
+void removeUsersFromAllChans(UserIRC *user, Server &server);
+
 /*
 -------handlerFunction--------
 please put your functions here using the template [int function(MsgIRC&, ServerClass&)]

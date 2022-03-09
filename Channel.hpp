@@ -30,6 +30,12 @@ class Channel
 		void	getInfo(void);
 		void	sendToAll(PayloadIRC& payload, Server& server);
 		bool	isInChannel(UserIRC *user);
+		//is protected against user that dosen't are in the chan
+		void	removeUsersFromChan(UserIRC *user);
+		
+	private:
+		//return current_users.end() if not found
+		vector<UserIRC*>::iterator UserIterator(UserIRC *user);
 
 };
 
