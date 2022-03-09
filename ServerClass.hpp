@@ -41,6 +41,7 @@ public:
 	queue<MsgIRC>			_msgQueue;
 	map<string, Channel>	_channels;
 	const string 			_startTime;
+	const string			_hostName;
 
 private:
 	void 	bindEndpoint();
