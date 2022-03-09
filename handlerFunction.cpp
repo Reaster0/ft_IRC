@@ -1,4 +1,5 @@
 #include "ServerClass.hpp"
+#include "replies.hpp"
 
 void welcomeMessage(UserIRC* user, Server& server)
 {
@@ -33,9 +34,9 @@ void welcomeMessage(UserIRC* user, Server& server)
 
 	temp = PayloadIRC();
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "375";
+	temp.command = REPLIES::toString(RPL_MOTDSTART);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "- master Message of the day - ";
+	temp.trailer = REPLIES::RPL_MOTDSTART("Le meilleur serveur");
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
