@@ -118,6 +118,9 @@ void	Channel::removeUsersFromChan(UserIRC *user)
 	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
     {
         if ((*iter) == user)
+		{
 			current_users.erase(iter);
+			return;
+		}
     }
 }

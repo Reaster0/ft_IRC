@@ -19,7 +19,7 @@ DEP_2		:= $(patsubst %, $(OBJS_PATH)/%, $(SRCS_2:.cpp=.d))
 NAME_2		:= client
 
 CXX			:= clang++
-CXXFLAGS	:= -std=c++98 -g3 -fstandalone-debug -MMD -MP #-Wall -Wextra -Werror
+CXXFLAGS	:= -std=c++98 -g3 -fstandalone-debug -fsanitize=address -MMD -MP #-Wall -Wextra -Werror
 RM       	= rm -rf
 
 all:		$(NAME) $(NAME_2)
