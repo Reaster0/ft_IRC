@@ -128,7 +128,7 @@ void Server::serverLoop(int &endpoint)
 					{
 						// printPayload(newOnes.front().payload);
 						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
-							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this)
+							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
 						else
 							cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
 						newOnes.pop();
