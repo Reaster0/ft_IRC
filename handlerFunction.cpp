@@ -92,12 +92,17 @@ int USERParser(MsgIRC& msg, Server& server)
 
 int QUITParser(MsgIRC& msg, Server& server)
 {
-	PayloadIRC payload;
+	
+	
+	PayloadIRC payloaderror;
+	payloaderror.command = "ERROR";
+	payloaderror.trailer = "Closing link " + "Quit: " + msg.payload.trailer;
+	server._msgQueue.push(MsgIRC(msg.receiver, payloaderror));
+	
 	payload.command = "QUIT";
 	payload.trailer = "Quit: " + msg.payload.trailer;
 	payload.prefix = msg.receiver->username + "!" + msg.receiver->realName + getIPAddress(msg.sender);
-	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	//sendToAllChan(payload, msg.receiver, server);
+	sendToAllChan(payload, msg.receiver, server);
 	//removeUsersFromAllChans(msg.receiver, server);
 	//cout << "quit removing socketuser:" << msg.receiver->fdSocket << endl;
 	//server._users.removeUser(msg.receiver->fdSocket);
