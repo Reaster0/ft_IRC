@@ -178,3 +178,12 @@ int MODEParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(response324);
 	return 0;
 }
+
+int PRIVMSGParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload = msg.payload;
+	Channel chan = server._channels[payload.params.front()];
+
+	chan.sendToAll(msg.payload, server, msg.receiver);
+	return 0;
+}

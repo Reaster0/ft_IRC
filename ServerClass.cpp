@@ -12,6 +12,7 @@ void Server::initializeMap()
 	_handlerFunction["QUIT"] = QUITParser;
 	_handlerFunction["JOIN"] = JOINParser;
 	_handlerFunction["MODE"] = MODEParser;
+	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
@@ -127,7 +128,7 @@ void Server::serverLoop(int &endpoint)
 					}
 					while (newOnes.size())
 					{
-						// printPayload(newOnes.front().payload);
+						printPayload(newOnes.front().payload);
 						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
 							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
 						else
