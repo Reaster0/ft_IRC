@@ -3,8 +3,10 @@
 #include <iostream>
 #include <vector>
 #include "UserIRC.hpp"
+#include "MsgIRC.hpp"
+#include "ServerClass.hpp"
 
-
+class Server;
 class Channel
 {
 	public:
@@ -25,7 +27,7 @@ class Channel
 		bool	isAuthorizedUser(UserIRC *user);
 		void	acceptUser(UserIRC *user);
 		void	getInfo(void);
-
+		void	sendToAll(PayloadIRC& payload, Server& server);
 
 };
 

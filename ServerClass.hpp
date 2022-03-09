@@ -58,6 +58,7 @@ private:
 
 std::string randomPwd(const int len);
 string getDateTime();
+void sendToAllChan(PayloadIRC& payload, UserIRC *user, Server &server);
 
 /*
 -------handlerFunction--------
@@ -65,9 +66,9 @@ please put your functions here using the template [int function(MsgIRC&, ServerC
 and in initializeMap() for the referencement
 all functions here may broke msg so don't use it afterward
 */
-
 int funCap(MsgIRC& msg, Server& server);
 int NICKParser(MsgIRC& msg, Server& server);
 int USERParser(MsgIRC& msg, Server& server);
+int QUITParser(MsgIRC& msg, Server& server);
 
 #endif

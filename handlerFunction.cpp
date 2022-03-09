@@ -88,3 +88,9 @@ int USERParser(MsgIRC& msg, Server& server)
 	welcomeMessage(newOne, server);
 	return 0;
 }
+
+int QUITParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	cout << ":" << msg.receiver->username << "!" << msg.receiver->realName << getIPAddress(msg.sender) << " QUIT " << ":Quit: " << msg.payload.trailer << endl;
+}
