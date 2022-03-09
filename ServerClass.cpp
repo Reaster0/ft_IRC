@@ -119,12 +119,9 @@ void Server::serverLoop(int &endpoint)
 					queue<MsgIRC> newOnes;
 					if (!receiveMsg(_users.findBySocket(i), availableSockets, newOnes))
 					{
-						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has gone missing..." << endl;
-						if (_users.findBySocket(i))
-						{
-							_users.removeUser(i);
-							removeUsersFromAllChans(_users.findBySocket(i), *this);
-						}
+						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has ctrl.c..." << endl;
+						removeUsersFromAllChans(_users.findBySocket(i), *this);
+						_users.removeUser(i);
 						FD_CLR(i, &currentSockets);
 						close(i);
 					}
@@ -139,12 +136,20 @@ void Server::serverLoop(int &endpoint)
 					}
 				}
 			}
-			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets) && _msgQueue.front().receiver->fdSocket == i)
+			if (!_msgQueue.empty() && FD_ISSET(i, &availableWSockets))
 			{
-				// cout << "i send the packet:";
-				// printPayload(_msgQueue.front().payload);
+				if (_msgQueue.front().receiver->fdSocket == i)
+				{
 				sendMsg(availableWSockets, _msgQueue.front());
+				if (_msgQueue.front().payload.command == "QUIT")
+				{
+					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
+					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
+					close(i);
+					_users.removeUser(_msgQueue.front().receiver->fdSocket);
+				}
 				_msgQueue.pop();
+				}
 			}
 		}
 	}

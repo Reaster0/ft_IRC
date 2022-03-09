@@ -9,7 +9,10 @@ void UserList::removeUser(int& fd)
 {
 	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
 		if ((*it).fdSocket == fd)
+		{
 			listC.erase(it);
+			return;
+		}
 }
 
 //accept and fill a newuser that's added to the list (need to fill furthermore the client after)(return the socket)
