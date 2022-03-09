@@ -78,5 +78,7 @@ int NICKParser(MsgIRC& msg, Server& server);
 int USERParser(MsgIRC& msg, Server& server);
 int QUITParser(MsgIRC& msg, Server& server);
 int JOINParser(MsgIRC& msg, Server& server);
+int MODEParser(MsgIRC& msg, Server& server);
+
 
 #endif

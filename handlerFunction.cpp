@@ -106,7 +106,7 @@ int QUITParser(MsgIRC& msg, Server& server)
 
 int JOINParser(MsgIRC& msg, Server& server)
 {
-	PayloadIRC payload;
+	
 	if (msg.payload.params.empty())
 		return 1;
 	if (msg.payload.params.front()[0] != '#')
@@ -114,11 +114,14 @@ int JOINParser(MsgIRC& msg, Server& server)
 	std::string chan_name = msg.payload.params.front();
 	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
 		return 2;
+	if (server._channels[chan_name].isInChannel(msg.receiver))
+		return 3;
 	server._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
 	server._channels[chan_name].acceptUser(msg.receiver);
 	// server._channels[chan_name].getInfo();
 	// JOIN INFO
-	payload.prefix = msg.receiver->nickname + "@" + getIPAddress(msg.receiver);
+	PayloadIRC payload;
+	payload.prefix = msg.receiver->nickname + "!~" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	payload.command = "JOIN";
 	payload.params.push_back(chan_name);
 	server._channels[chan_name].sendToAll(payload, server);
@@ -156,5 +159,22 @@ int JOINParser(MsgIRC& msg, Server& server)
 	payload.trailer = "End of NAMES list";
 	MsgIRC response366(msg.receiver, payload);
 	server._msgQueue.push(response366);
+	// 329
+
+	return 0;
+}
+
+int MODEParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	string origin_chan_name = msg.payload.params.front();
+
+	payload.prefix = server._hostName;
+	payload.command = "324";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(origin_chan_name);
+	payload.params.push_back("+n");
+	MsgIRC response324(msg.receiver, payload);
+	server._msgQueue.push(response324);
 	return 0;
 }
