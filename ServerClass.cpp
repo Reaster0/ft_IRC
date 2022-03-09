@@ -70,12 +70,12 @@ void Server::bindEndpoint(void)
 	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime <<endl;
 }
 
-//send a message to all users that are on the same channel that input user
 void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
 {
 	for (map<string, Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it)
 	{
-		(*it).second.sendToAll(payload, server);
+		if ((*it).second.isInChannel(user))
+			(*it).second.sendToAll(payload, server);
 	}
 }
 

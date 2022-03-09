@@ -92,7 +92,11 @@ int USERParser(MsgIRC& msg, Server& server)
 int QUITParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
-	cout << ":" << msg.receiver->username << "!" << msg.receiver->realName << getIPAddress(msg.sender) << " QUIT " << ":Quit: " << msg.payload.trailer << endl;
+	payload.command = "QUIT";
+	payload.trailer = "Quit: " + msg.payload.trailer;
+	payload.prefix = msg.receiver->username + "!" + msg.receiver->realName + getIPAddress(msg.sender);
+	sendToAllChan(payload, msg.receiver, server);
+	return 0;
 }
 
 int JOINParser(MsgIRC& msg, Server& server)

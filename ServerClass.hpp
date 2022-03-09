@@ -58,6 +58,8 @@ private:
 
 std::string randomPwd(const int len);
 string getDateTime();
+
+//send a message to all users that are on the same channel that input user
 void sendToAllChan(PayloadIRC& payload, UserIRC *user, Server &server);
 
 /*

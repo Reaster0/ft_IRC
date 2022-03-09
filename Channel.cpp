@@ -92,3 +92,13 @@ void    Channel::sendToAll(PayloadIRC& payload, Server &server)
         server._msgQueue.push(msg);
     }
 }
+
+bool	Channel::isInChannel(UserIRC *user)
+{
+	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
+    {
+        if ((*iter) == user)
+			return true;
+    }
+	return false;
+}

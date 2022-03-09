@@ -29,6 +29,7 @@ class Channel
 		void	acceptUser(UserIRC *user);
 		void	getInfo(void);
 		void	sendToAll(PayloadIRC& payload, Server& server);
+		bool	isInChannel(UserIRC *user);
 
 };
 
