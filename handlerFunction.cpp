@@ -33,9 +33,9 @@ void welcomeMessage(UserIRC* user, Server& server)
 
 	temp = PayloadIRC();
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "375";
+	temp.command = REPLIES::codeToString(RPL_MOTDSTART);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "- master Message of the day - ";
+	temp.trailer = REPLIES::RPL_MOTDSTART("Le meilleur serveur");
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();

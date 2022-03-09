@@ -20,13 +20,14 @@
 #include "socket.hpp"
 #include "debug.hpp"
 #include "Channel.hpp"
+#include "replies.hpp"
 // #include "server.hpp"
 
 #ifdef __linux__
 	#define exit _exit; //linux
 #endif
 
-class MsgIRC;
+struct MsgIRC;
 class Channel;
 
 using namespace std;
