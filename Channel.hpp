@@ -28,7 +28,7 @@ class Channel
 		bool	isAuthorizedUser(UserIRC *user);
 		void	acceptUser(UserIRC *user);
 		void	getInfo(void);
-		void	sendToAll(PayloadIRC& payload, Server& server);
+		void	sendToAll(PayloadIRC& payload, Server& server, UserIRC* exception = 0);
 		bool	isInChannel(UserIRC *user);
 		//is protected against user that dosen't are in the chan
 		void	removeUsersFromChan(UserIRC *user);
