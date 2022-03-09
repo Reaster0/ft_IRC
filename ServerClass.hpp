@@ -20,7 +20,7 @@
 #include "socket.hpp"
 #include "debug.hpp"
 #include "Channel.hpp"
-#include "replies.hpp"
+// #include "replies.hpp"
 // #include "server.hpp"
 
 #ifdef __linux__

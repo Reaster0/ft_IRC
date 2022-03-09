@@ -301,11 +301,13 @@ namespace REPLIES {
 	string ERR_USERSDONTMATCH(void) { return ":Cannot change mode for other users"; }
 
 
-	string codeToString(int code) {
+	string toString(int code) {
 		stringstream sstream;
 
 		sstream << code;
-		return sstream.str();
+		string codeString = sstream.str();
+
+		return string(3 - codeString.length(), '0').append(codeString);
 	};
 }
 
