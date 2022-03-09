@@ -11,6 +11,7 @@ void Server::initializeMap()
 	_handlerFunction["USER"] = USERParser;
 	_handlerFunction["QUIT"] = QUITParser;
 	_handlerFunction["JOIN"] = JOINParser;
+	_handlerFunction["MODE"] = MODEParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
