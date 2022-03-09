@@ -112,16 +112,24 @@ int JOINParser(MsgIRC& msg, Server& server)
 	server._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
 	server._channels[chan_name].acceptUser(msg.receiver);
 	// server._channels[chan_name].getInfo();
-
 	// JOIN INFO
 	payload.prefix = msg.receiver->nickname + "@" + getIPAddress(msg.receiver);
 	payload.command = "JOIN";
 	payload.params.push_back(chan_name);
 	server._channels[chan_name].sendToAll(payload, server);
-	// 353
+	// 332
 	payload = PayloadIRC();
-	payload.command = "353";
+	payload.command = "332";
 	payload.prefix = "EpikEkipEkolegram";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(chan_name);
+	payload.trailer = server._channels[chan_name]._topic;
+	MsgIRC response332(msg.receiver, payload);
+	server._msgQueue.push(response332);
+	// 353
+	payload.params.clear();
+	payload.trailer.clear();
+	payload.command = "353";
 	payload.params.push_back(msg.receiver->nickname);
 	payload.params.push_back("=");
 	payload.params.push_back(chan_name);
@@ -132,7 +140,16 @@ int JOINParser(MsgIRC& msg, Server& server)
 		payload.trailer += " ";
 	}
 	payload.trailer.erase(payload.trailer.find_last_not_of(" ") + 1);
-	MsgIRC response(msg.receiver, payload);
-	server._msgQueue.push(response);
+	MsgIRC response353(msg.receiver, payload);
+	server._msgQueue.push(response353);
+	// 366
+	payload.command = "366";
+	payload.params.clear();
+	payload.trailer.clear();
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(chan_name);
+	payload.trailer = "End of NAMES list";
+	MsgIRC response366(msg.receiver, payload);
+	server._msgQueue.push(response366);
 	return 0;
 }
