@@ -11,7 +11,6 @@ MsgIRC::MsgIRC()
 	nul_usr.username = "nul_user";
 	nul_usr.nickname = "nul_user";
 	nul_usr.addr = null_sockaddr;
-
 	sender = &nul_usr;
 	receiver = &nul_usr;
 }
@@ -40,9 +39,9 @@ size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 		buffer += " :" + msg.payload.trailer;
 	buffer += "\r\n";
 	FD_CLR(msg.receiver->fdSocket, &availableWSockets);
-	cout << "buffer_print+++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-	cout << buffer << endl;
-	cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+	// cout << "buffer_print+++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+	cout << buffer;
+	// cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	return send(msg.receiver->fdSocket, buffer.c_str(), buffer.length(), 0);
 }
 
