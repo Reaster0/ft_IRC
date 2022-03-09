@@ -84,10 +84,12 @@ void	Channel::getInfo(void)
 	std::cout << "===========================================" << std::endl;
 }
 
-void    Channel::sendToAll(PayloadIRC& payload, Server &server)
+void    Channel::sendToAll(PayloadIRC& payload, Server &server, UserIRC* exception)
 {
     for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
     {
+		if (exception && *iter == exception)
+			continue;
         MsgIRC msg(*iter, payload);
         server._msgQueue.push(msg);
     }

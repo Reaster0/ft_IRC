@@ -75,7 +75,7 @@ void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
 	for (map<string, Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it)
 	{
 		if ((*it).second.isInChannel(user))
-			(*it).second.sendToAll(payload, server);
+			(*it).second.sendToAll(payload, server, user);
 	}
 }
 
