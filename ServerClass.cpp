@@ -79,6 +79,19 @@ void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
 	}
 }
 
+void sendToAllChanInfo(PayloadIRC& payload, UserIRC *user, Server &server)
+{
+	for (map<string, Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it)
+	{
+		if ((*it).second.isInChannel(user))
+		{
+			payload.params.push_back((*it).second._name);
+			(*it).second.sendToAll(payload, server, user);
+			payload.params.pop_back();
+		}
+	}
+}
+
 void removeUsersFromAllChans(UserIRC *user, Server &server)
 {
 	for (map<string, Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it)
@@ -140,7 +153,7 @@ void Server::serverLoop(int &endpoint)
 				if (_msgQueue.front().receiver->fdSocket == i)
 				{
 				sendMsg(availableWSockets, _msgQueue.front());
-				if (_msgQueue.front().payload.command == "QUIT")
+				if (_msgQueue.front().payload.command == "ERROR")
 				{
 					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
 					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
