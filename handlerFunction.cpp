@@ -98,12 +98,10 @@ int QUITParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payloaderror));
 	
 	PayloadIRC payload;
-	payload.command = "PART";
-	payload.trailer = msg.payload.trailer;
-	if (payload.trailer == "")
-		payload.trailer = "has ragequit life";
+	payload.command = "QUIT";
+	payload.trailer = "Quit: " + msg.payload.trailer;
 	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
-	sendToAllChanInfo(payload, msg.receiver, server);
+	sendToAllChan(payload, msg.receiver, server);
 	return 1;
 }
 

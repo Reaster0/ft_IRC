@@ -90,6 +90,7 @@ void    Channel::sendToAll(PayloadIRC& payload, Server &server, UserIRC* excepti
     {
 		if (exception && *iter == exception)
 			continue;
+		cout << "sending payload:" << payload.command << " to user:" << (*iter)->nickname << std::endl;
         MsgIRC msg(*iter, payload);
         server._msgQueue.push(msg);
     }
