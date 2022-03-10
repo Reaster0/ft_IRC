@@ -18,6 +18,8 @@ void Server::initializeMap()
 	_handlerFunction["INFO"] = INFOParser;
 	_handlerFunction["TIME"] = TIME;
 	_handlerFunction["USERHOST"] = USERHOSTParser;
+	_handlerFunction["ison"] = IsonParser;
+	_handlerFunction["ISON"] = IsonParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _endpoint(createEndpoint()) {
