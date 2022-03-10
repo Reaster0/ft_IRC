@@ -256,3 +256,30 @@ int MOTD(MsgIRC& msg, Server& server) {
 	server.sendMessage(msg.receiver, payload);
 	return 0;
 }
+
+int INFOParser(MsgIRC& msg, Server& server)
+{
+	if (!msg.payload.params.empty())
+		return 0;
+	PayloadIRC payload;
+	payload.command = "371";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+
+	payload.trailer = "BEST SERVER OF THE WORLD";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "started in a hacking house!";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "special thanks to:";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "Luciano the away one, Lpassera";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "Alexandrie, the man who love beer without alcool like a chad, Adenhez";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, Earnaud";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "374";
+	payload.trailer = "End of INFO list";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}

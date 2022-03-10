@@ -15,6 +15,7 @@ void Server::initializeMap()
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
 	_handlerFunction["NAMES"] = NAMESParser;
 	_handlerFunction["MOTD"] = MOTD;
+	_handlerFunction["INFO"] = INFOParser;
 }
 
 Server::Server() : _name(SERVER_NAME), _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {

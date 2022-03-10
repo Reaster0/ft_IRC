@@ -92,7 +92,6 @@ int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
 int NAMESParser(MsgIRC& msg, Server& server);
 int MOTD(MsgIRC& msg, Server& server);
-
-
+int INFOParser(MsgIRC& msg, Server& server);
 
 #endif
