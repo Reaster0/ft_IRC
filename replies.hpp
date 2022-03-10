@@ -201,7 +201,7 @@ namespace REPLIES {
 	string RPL_YOUREOPER(void) { return ":You are now an IRC operator"; }
 	string RPL_REHASHING(string configFile) { return configFile + " :Rehashing"; } // Won't use
 	string RPL_YOURESERVICE(string service) { return "You are service " + service; }
-	string RPL_TIME(string server, string time) { return server + " :" + time; }
+	string RPL_TIME(Server& server) { return server.name() + " :" + getDateTime(); }
 	string RPL_USERSSTART(void) { return ":UserID   Terminal  Host"; }
 	string RPL_USERS(string username, string ttyline, string hostname) { return ":" + username + " " + ttyline + " " + hostname; }
 	string RPL_ENDOFUSERS(void) { return ":End of users"; }
