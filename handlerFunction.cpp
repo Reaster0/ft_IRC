@@ -283,3 +283,31 @@ int INFOParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int AWAY(MsgIRC& msg, Server& server) {
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	
+	if (msg.payload.trailer.empty()) {
+		msg.receiver->awayMessage = "";
+	} else {
+		msg.receiver->awayMessage = msg.payload.trailer;
+	}
+
+	if (msg.receiver->away) {
+		msg.receiver->away = false;
+
+		payload.command = REPLIES::toString(RPL_UNAWAY);
+		payload.trailer = REPLIES::RPL_UNAWAY();
+	} else {
+		msg.receiver->away = true;
+
+		payload.command = REPLIES::toString(RPL_NOWAWAY);
+		payload.trailer = REPLIES::RPL_NOWAWAY();
+	}
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}

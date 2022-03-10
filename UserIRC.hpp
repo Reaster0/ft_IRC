@@ -19,6 +19,9 @@ struct UserIRC
 	sockaddr_in addr;
 	socklen_t sockLen;
 	bool needFill;
+
+	bool away;
+	string awayMessage;
 };
 
 
