@@ -188,3 +188,34 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 	chan.sendToAll(msg.payload, server, msg.receiver);
 	return 0;
 }
+
+int NAMESParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	if (!chanExist(msg.payload.params.front(), server))
+	{
+		payload.command = "403";
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "No such channel";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 0;
+	}
+	payload.command = "353";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back("=");
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = server._channels[msg.payload.params.front()].userList();
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload = PayloadIRC();
+	payload.command = "366";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = "End of /NAMES list.";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
