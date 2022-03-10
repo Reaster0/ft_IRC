@@ -351,3 +351,23 @@ int USERHOSTParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int IsonParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.command = "303";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	UserIRC* user;
+	for (list<string>::iterator iter = msg.payload.params.begin(); iter != msg.payload.params.end(); ++iter)
+	{
+		user = server._users.findByNickname(*iter);
+		if (!payload.trailer.empty() && user)
+			payload.trailer += " ";
+		if (user)
+			payload.trailer += user->nickname;
+	}
+	payload.trailer += " ";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
