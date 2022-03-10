@@ -94,6 +94,7 @@ int WHOParser(MsgIRC& msg, Server& server);
 int NAMESParser(MsgIRC& msg, Server& server);
 int MOTD(MsgIRC& msg, Server& server);
 int INFOParser(MsgIRC& msg, Server& server);
+int AWAY(MsgIRC& msg, Server& server);
 int TIME(MsgIRC& msg, Server& server);
 int USERHOSTParser(MsgIRC& msg, Server& server);
 int IsonParser(MsgIRC& msg, Server& server);

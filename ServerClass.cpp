@@ -19,6 +19,7 @@ void Server::initializeMap()
 	_handlerFunction["INFO"]		= INFOParser;
 	_handlerFunction["TIME"] 		= TIME;
 	_handlerFunction["USERHOST"] 	= USERHOSTParser;
+	_handlerFunction["AWAY"] 		= AWAY;
 	_handlerFunction["ison"] = IsonParser;
 	_handlerFunction["ISON"] = IsonParser;
 }
