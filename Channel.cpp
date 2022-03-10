@@ -31,6 +31,28 @@ bool	Channel::isAuthorizedUser(UserIRC *user)
 	return true;
 }
 
+Channel::Channel(const Channel &chan)
+{
+	*this = chan;
+}
+
+Channel& Channel::operator=(const Channel &rhs)
+{
+	if (this != &rhs)
+	{
+		_name = rhs._name;
+		_private = rhs._private;
+		_secrete = rhs._secrete;
+		_limited_capacity = rhs._limited_capacity;
+		_maximum_users = rhs._maximum_users;
+		_topic = rhs._topic;
+		current_users = rhs.current_users;
+		invited_users = rhs.invited_users;
+		banned_users = rhs.banned_users;
+	}
+	return *this;
+}
+
 // include authorized user inside chan's current_users and remove from chan's invited list
 void	Channel::acceptUser(UserIRC *user)
 {
@@ -86,6 +108,7 @@ void	Channel::getInfo(void)
 
 void    Channel::sendToAll(PayloadIRC& payload, Server &server, UserIRC* exception)
 {
+
     for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
     {
 		if (exception && *iter == exception)

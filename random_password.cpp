@@ -17,12 +17,3 @@ std::string randomPwd(const int len)
         pwd += alphanum[rand() % (sizeof(alphanum) - 1)];
     return pwd;
 }
-
-// int main(int argc, char **argv)
-// {
-// 	if (argc != 2)
-// 		return 2;
-// 	int n = atoi(argv[1]);
-// 	std::cout << random_pwd(n) << std::endl;
-// 	return 0;
-// }

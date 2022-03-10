@@ -108,7 +108,6 @@ int QUITParser(MsgIRC& msg, Server& server)
 
 int JOINParser(MsgIRC& msg, Server& server)
 {
-	
 	if (msg.payload.params.empty())
 		return 1;
 	if (msg.payload.params.front()[0] != '#')
@@ -116,12 +115,12 @@ int JOINParser(MsgIRC& msg, Server& server)
 	std::string chan_name = msg.payload.params.front();
 	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
 		return 2;
+	if (server._channels.find(chan_name) == server._channels.end())
+		server._channels[chan_name] = Channel(chan_name);
 	if (server._channels[chan_name].isInChannel(msg.receiver))
 		return 3;
-	server._channels.insert( std::pair<string, Channel>(chan_name, Channel(chan_name)) );
 	server._channels[chan_name].acceptUser(msg.receiver);
-	// server._channels[chan_name].getInfo();
-	// JOIN INFO
+	// JOIN simple payload
 	PayloadIRC payload;
 	payload.prefix = msg.receiver->nickname + "!" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	payload.command = "JOIN";
@@ -185,8 +184,45 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload = msg.payload;
 	Channel chan = server._channels[payload.params.front()];
+	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	chan.sendToAll(payload, server, msg.receiver);
+	return 0;
+}
 
-	chan.sendToAll(msg.payload, server, msg.receiver);
+int WHOParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	Channel chan = server._channels[msg.payload.params.front()];
+	// 352
+	for(std::vector<UserIRC*>::iterator iter = chan.current_users.begin(); iter != chan.current_users.end(); ++iter)
+    {
+		
+		payload.prefix = server._hostName;
+		payload.command = "352";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(chan._name);
+		payload.params.push_back((*iter)->username);
+		payload.params.push_back(getIPAddress((*iter)));
+		payload.params.push_back(server._hostName);
+		payload.params.push_back((*iter)->nickname);
+		// last params option can change in some ways
+		payload.params.push_back("H");
+		MsgIRC response352(msg.receiver, payload);
+		server._msgQueue.push(response352);
+		payload = PayloadIRC();
+		//chan.sendToAll(payload, server);
+	}
+
+	// 315
+	payload = PayloadIRC();
+	payload.prefix = server._hostName;
+	payload.command = "315";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(chan._name);
+	payload.trailer = "End of WHO list";
+	MsgIRC response315(msg.receiver, payload);
+	server._msgQueue.push(response315);
+
 	return 0;
 }
 
@@ -253,6 +289,19 @@ int MOTD(MsgIRC& msg, Server& server) {
 
 	payload.command = REPLIES::toString(RPL_ENDOFMOTD);
 	payload.trailer = REPLIES::RPL_ENDOFMOTD();
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int TIME(MsgIRC& msg, Server& server) {
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+
+	payload.command = REPLIES::toString(RPL_TIME);
+	payload.trailer = REPLIES::RPL_TIME(server);
 	server.sendMessage(msg.receiver, payload);
 	return 0;
 }
@@ -309,5 +358,24 @@ int AWAY(MsgIRC& msg, Server& server) {
 	}
 
 	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int USERHOSTParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.command = "302";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	UserIRC* user;
+	for (list<string>::iterator iter = msg.payload.params.begin(); iter != msg.payload.params.end(); ++iter)
+	{
+		if (!payload.trailer.empty())
+			payload.trailer += " ";
+		user = server._users.findByNickname(*iter);
+		if (user)
+			payload.trailer += user->nickname + "=+" + user->username + "@" + getIPAddress(user);
+	}
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }

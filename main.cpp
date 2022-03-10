@@ -7,14 +7,16 @@
 #include "ServerClass.hpp"
 #include "Channel.hpp"
 
-std::string g_pwd;
-
-int main()
+int main(int argc, char **argv)
 {
-	g_pwd = randomPwd(10);
-	std::cout << "password:\n	";
-	std::cout << g_pwd << std::endl;
-    Server server;
+	int port;
+	if (argc > 2)
+		return 1;
+	if (argc == 2)
+		port = atoi(argv[1]);
+	else
+		port = 6667;
+	Server server(port);
     server.launch();
 }
 
