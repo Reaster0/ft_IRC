@@ -15,6 +15,7 @@ void Server::initializeMap()
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
 	_handlerFunction["NAMES"] = NAMESParser;
 	_handlerFunction["MOTD"] = MOTD;
+	_handlerFunction["INFO"] = INFOParser;
 	_handlerFunction["TIME"] = TIME;
 }
 
