@@ -49,6 +49,7 @@ public:
 	map<string, Channel>	_channels;
 	const string 			_startTime;
 	const string			_hostName;
+	const string			_password;
 
 private:
 	void 	bindEndpoint();
@@ -89,6 +90,7 @@ int QUITParser(MsgIRC& msg, Server& server);
 int JOINParser(MsgIRC& msg, Server& server);
 int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
+int WHOParser(MsgIRC& msg, Server& server);
 int NAMESParser(MsgIRC& msg, Server& server);
 int MOTD(MsgIRC& msg, Server& server);
 int INFOParser(MsgIRC& msg, Server& server);

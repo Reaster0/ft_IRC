@@ -6,28 +6,33 @@ bool g_exit = false;
 
 void Server::initializeMap()
 {
-	_handlerFunction["CAP"] = funCap;
-	_handlerFunction["NICK"] = NICKParser;
-	_handlerFunction["USER"] = USERParser;
-	_handlerFunction["QUIT"] = QUITParser;
-	_handlerFunction["JOIN"] = JOINParser;
-	_handlerFunction["MODE"] = MODEParser;
-	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
-	_handlerFunction["NAMES"] = NAMESParser;
-	_handlerFunction["MOTD"] = MOTD;
-	_handlerFunction["INFO"] = INFOParser;
-	_handlerFunction["TIME"] = TIME;
-	_handlerFunction["USERHOST"] = USERHOSTParser;
+	_handlerFunction["CAP"]			= funCap;
+	_handlerFunction["NICK"]		= NICKParser;
+	_handlerFunction["USER"]		= USERParser;
+	_handlerFunction["QUIT"]		= QUITParser;
+	_handlerFunction["JOIN"]		= JOINParser;
+	_handlerFunction["MODE"]		= MODEParser;
+	_handlerFunction["PRIVMSG"]		= PRIVMSGParser;
+	_handlerFunction["WHO"]			= WHOParser;
+	_handlerFunction["NAMES"]		= NAMESParser;
+	_handlerFunction["MOTD"] 		= MOTD;
+	_handlerFunction["INFO"]		= INFOParser;
+	_handlerFunction["TIME"] 		= TIME;
+	_handlerFunction["USERHOST"] 	= USERHOSTParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+{
 	initializeMap();
 	bindEndpoint();
+	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+{
 	initializeMap();
 	bindEndpoint();
+	std::cout << "password:\n	" << _password << std::endl;
 }
 
 Server::~Server(){}
@@ -87,7 +92,7 @@ void Server::bindEndpoint(void)
 	hostname = gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
 	time_t now = time(0);
-	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime <<endl;
+	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime;
 }
 
 void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
