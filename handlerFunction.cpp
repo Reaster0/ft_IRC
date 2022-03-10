@@ -253,6 +253,19 @@ int MOTD(MsgIRC& msg, Server& server) {
 
 	payload.command = REPLIES::toString(RPL_ENDOFMOTD);
 	payload.trailer = REPLIES::RPL_ENDOFMOTD();
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int TIME(MsgIRC& msg, Server& server) {
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+
+	payload.command = REPLIES::toString(RPL_TIME);
+	payload.trailer = REPLIES::RPL_TIME(server);
 	server.sendMessage(msg.receiver, payload);
 	return 0;
 }
