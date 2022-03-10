@@ -23,6 +23,8 @@ class Channel
 
 		Channel();
 		Channel(string name);
+		Channel(const Channel &chan);
+		Channel& operator=(const Channel &rhs);
 		~Channel();
 
 		bool	isAuthorizedUser(UserIRC *user);

@@ -6,13 +6,14 @@ bool g_exit = false;
 
 void Server::initializeMap()
 {
-	_handlerFunction["CAP"] = funCap;
-	_handlerFunction["NICK"] = NICKParser;
-	_handlerFunction["USER"] = USERParser;
-	_handlerFunction["QUIT"] = QUITParser;
-	_handlerFunction["JOIN"] = JOINParser;
-	_handlerFunction["MODE"] = MODEParser;
-	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
+	_handlerFunction["CAP"]			= funCap;
+	_handlerFunction["NICK"]		= NICKParser;
+	_handlerFunction["USER"]		= USERParser;
+	_handlerFunction["QUIT"]		= QUITParser;
+	_handlerFunction["JOIN"]		= JOINParser;
+	_handlerFunction["MODE"]		= MODEParser;
+	_handlerFunction["PRIVMSG"]		= PRIVMSGParser;
+	_handlerFunction["WHO"]			= WHOParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _password(randomPwd(10)), _endpoint(createEndpoint()) {

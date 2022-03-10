@@ -7,9 +7,16 @@
 #include "ServerClass.hpp"
 #include "Channel.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
-	Server server;
+	int port;
+	if (argc > 2)
+		return 1;
+	if (argc == 2)
+		port = atoi(argv[1]);
+	else
+		port = 6667;
+	Server server(port);
     server.launch();
 }
 
