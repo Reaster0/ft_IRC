@@ -56,7 +56,6 @@ private:
 	void	serverLoop(int &endpoint);
 	void	initializeMap();
 
-	const string			_name;
 	const int 				_port;
 	int						_endpoint;
 	map<string, int(*)(MsgIRC&, Server&)>	_handlerFunction;
@@ -92,6 +91,7 @@ int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
 int NAMESParser(MsgIRC& msg, Server& server);
 int MOTD(MsgIRC& msg, Server& server);
+int TIME(MsgIRC& msg, Server& server);
 
 
 
