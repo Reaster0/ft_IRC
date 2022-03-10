@@ -127,3 +127,15 @@ void	Channel::removeUsersFromChan(UserIRC *user)
 		}
     }
 }
+
+string	Channel::userList()
+{
+	string result = "";
+	for (std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
+	{
+		if (result != "")
+			result += " ";
+		result += (*iter)->nickname;
+	}
+	return result;
+}
