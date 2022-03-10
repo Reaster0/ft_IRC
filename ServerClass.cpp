@@ -16,6 +16,7 @@ void Server::initializeMap()
 	_handlerFunction["NAMES"] = NAMESParser;
 	_handlerFunction["MOTD"] = MOTD;
 	_handlerFunction["INFO"] = INFOParser;
+	_handlerFunction["USERHOST"] = USERHOSTParser;
 }
 
 Server::Server() : _name(SERVER_NAME), _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {

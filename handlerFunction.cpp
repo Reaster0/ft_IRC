@@ -283,3 +283,22 @@ int INFOParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int USERHOSTParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.command = "302";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	UserIRC* user;
+	for (list<string>::iterator iter = msg.payload.params.begin(); iter != msg.payload.params.end(); ++iter)
+	{
+		if (!payload.trailer.empty())
+			payload.trailer += " ";
+		user = server._users.findByNickname(*iter);
+		if (user)
+			payload.trailer += user->nickname + "=+" + user->username + "@" + getIPAddress(user);
+	}
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
