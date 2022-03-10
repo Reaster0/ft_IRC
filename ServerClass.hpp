@@ -6,10 +6,10 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <sys/select.h>
+
 #include <netdb.h>
 #include <string>
 #include <unistd.h>
-
 #include <map>
 #include <list>
 #include <queue>
@@ -31,6 +31,8 @@ struct MsgIRC;
 class Channel;
 
 using namespace std;
+
+# define SERVER_NAME "EpikEkipEkolegram"
 class Server {
 public:
 	Server();
@@ -38,6 +40,8 @@ public:
 	~Server();
 	
 	void launch();
+	const string& name() const;
+
 	UserList				_users;
 	queue<MsgIRC>			_msgQueue;
 	map<string, Channel>	_channels;
@@ -50,6 +54,7 @@ private:
 	void	serverLoop(int &endpoint);
 	void	initializeMap();
 
+	const string			_name;
 	const int 				_port;
 	int						_endpoint;
 	map<string, int(*)(MsgIRC&, Server&)>	_handlerFunction;
@@ -81,6 +86,7 @@ int QUITParser(MsgIRC& msg, Server& server);
 int JOINParser(MsgIRC& msg, Server& server);
 int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
+int MOTD(MsgIRC& msg, Server& server);
 
 
 

@@ -13,14 +13,15 @@ void Server::initializeMap()
 	_handlerFunction["JOIN"] = JOINParser;
 	_handlerFunction["MODE"] = MODEParser;
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
+	_handlerFunction["MOTD"] = MOTD;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server() : _name(SERVER_NAME), _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _name(SERVER_NAME), _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
@@ -29,6 +30,10 @@ Server::~Server(){}
 
 void Server::launch() {
 	serverLoop(_endpoint);
+}
+
+const string& Server::name() const {
+	return _name;
 }
 
 string getDateTime() {
