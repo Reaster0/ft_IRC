@@ -36,6 +36,15 @@ const string& Server::name() const {
 	return _name;
 }
 
+void Server::sendMessage(UserIRC* receiver, PayloadIRC payload) {
+	sendMessage(NULL, receiver, payload);
+}
+
+void Server::sendMessage(UserIRC* sender, UserIRC* receiver, PayloadIRC payload) {
+	MsgIRC message(sender, receiver, payload);
+	_msgQueue.push(message);
+}
+
 string getDateTime() {
 	time_t now = time(0);
 	return ctime(&now);

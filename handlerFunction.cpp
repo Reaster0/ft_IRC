@@ -1,5 +1,6 @@
 #include "ServerClass.hpp"
 #include "replies.hpp"
+#include <fstream>
 
 void welcomeMessage(UserIRC* user, Server& server)
 {
@@ -36,7 +37,7 @@ void welcomeMessage(UserIRC* user, Server& server)
 	temp.prefix = "EpikEkipEkolegram";
 	temp.command = REPLIES::toString(RPL_MOTDSTART);
 	temp.params.push_back(user->nickname);
-	temp.trailer = REPLIES::RPL_MOTDSTART("Le meilleur serveur");
+	temp.trailer = REPLIES::RPL_MOTDSTART(server);
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
@@ -186,5 +187,41 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 	Channel chan = server._channels[payload.params.front()];
 
 	chan.sendToAll(msg.payload, server, msg.receiver);
+	return 0;
+}
+
+int MOTD(MsgIRC& msg, Server& server) {
+	static const int MAX_MOTD_SIZE = 80;
+
+	PayloadIRC payload;
+	fstream file("config/motd");
+	string line;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	if (!file.is_open()) {
+		payload.command = REPLIES::toString(ERR_NOMOTD);
+		payload.trailer = REPLIES::ERR_NOMOTD();
+
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
+	payload.command = REPLIES::toString(RPL_MOTDSTART);
+	payload.trailer = REPLIES::RPL_MOTDSTART(server);
+	server.sendMessage(msg.receiver, payload);
+
+	while (getline(file, line)) {
+		payload.command = REPLIES::toString(RPL_MOTD);
+		
+		for (size_t i = 0; i < line.length(); i += MAX_MOTD_SIZE) {
+			payload.trailer = REPLIES::RPL_MOTD(line.substr(i, MAX_MOTD_SIZE));
+			server.sendMessage(msg.receiver, payload);
+		}
+	}
+
+	payload.command = REPLIES::toString(RPL_ENDOFMOTD);
+	payload.trailer = REPLIES::RPL_ENDOFMOTD();
+	server.sendMessage(msg.receiver, payload);
 	return 0;
 }

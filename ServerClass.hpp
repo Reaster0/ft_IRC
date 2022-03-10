@@ -41,6 +41,8 @@ public:
 	
 	void launch();
 	const string& name() const;
+	void sendMessage(UserIRC* receiver, PayloadIRC payload);
+	void sendMessage(UserIRC* sender, UserIRC* receiver, PayloadIRC payload);
 
 	UserList				_users;
 	queue<MsgIRC>			_msgQueue;
