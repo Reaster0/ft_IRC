@@ -124,7 +124,7 @@ int JOINParser(MsgIRC& msg, Server& server)
 	// server._channels[chan_name].getInfo();
 	// JOIN INFO
 	PayloadIRC payload;
-	payload.prefix = msg.receiver->nickname + "!~" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.prefix = msg.receiver->nickname + "!" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	payload.command = "JOIN";
 	payload.params.push_back(chan_name);
 	server._channels[chan_name].sendToAll(payload, server);
