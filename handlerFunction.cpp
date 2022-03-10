@@ -1,5 +1,6 @@
 #include "ServerClass.hpp"
 #include "replies.hpp"
+#include <fstream>
 
 void welcomeMessage(UserIRC* user, Server& server)
 {
@@ -36,7 +37,7 @@ void welcomeMessage(UserIRC* user, Server& server)
 	temp.prefix = "EpikEkipEkolegram";
 	temp.command = REPLIES::toString(RPL_MOTDSTART);
 	temp.params.push_back(user->nickname);
-	temp.trailer = REPLIES::RPL_MOTDSTART("Le meilleur serveur");
+	temp.trailer = REPLIES::RPL_MOTDSTART(server);
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
@@ -98,12 +99,10 @@ int QUITParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payloaderror));
 	
 	PayloadIRC payload;
-	payload.command = "PART";
-	payload.trailer = msg.payload.trailer;
-	if (payload.trailer == "")
-		payload.trailer = "has ragequit life";
+	payload.command = "QUIT";
+	payload.trailer = "Quit: " + msg.payload.trailer;
 	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
-	sendToAllChanInfo(payload, msg.receiver, server);
+	sendToAllChan(payload, msg.receiver, server);
 	return 1;
 }
 
@@ -224,5 +223,131 @@ int WHOParser(MsgIRC& msg, Server& server)
 	MsgIRC response315(msg.receiver, payload);
 	server._msgQueue.push(response315);
 
+	return 0;
+}
+
+int NAMESParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	if (!chanExist(msg.payload.params.front(), server))
+	{
+		payload.command = "403";
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "No such channel";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 0;
+	}
+	payload.command = "353";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back("=");
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = server._channels[msg.payload.params.front()].userList();
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload = PayloadIRC();
+	payload.command = "366";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = "End of /NAMES list.";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int MOTD(MsgIRC& msg, Server& server) {
+	static const int MAX_MOTD_SIZE = 80;
+
+	PayloadIRC payload;
+	fstream file("config/motd");
+	string line;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	if (!file.is_open()) {
+		payload.command = REPLIES::toString(ERR_NOMOTD);
+		payload.trailer = REPLIES::ERR_NOMOTD();
+
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
+	payload.command = REPLIES::toString(RPL_MOTDSTART);
+	payload.trailer = REPLIES::RPL_MOTDSTART(server);
+	server.sendMessage(msg.receiver, payload);
+
+	while (getline(file, line)) {
+		payload.command = REPLIES::toString(RPL_MOTD);
+		
+		for (size_t i = 0; i < line.length(); i += MAX_MOTD_SIZE) {
+			payload.trailer = REPLIES::RPL_MOTD(line.substr(i, MAX_MOTD_SIZE));
+			server.sendMessage(msg.receiver, payload);
+		}
+	}
+
+	payload.command = REPLIES::toString(RPL_ENDOFMOTD);
+	payload.trailer = REPLIES::RPL_ENDOFMOTD();
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int TIME(MsgIRC& msg, Server& server) {
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+
+	payload.command = REPLIES::toString(RPL_TIME);
+	payload.trailer = REPLIES::RPL_TIME(server);
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int INFOParser(MsgIRC& msg, Server& server)
+{
+	if (!msg.payload.params.empty())
+		return 0;
+	PayloadIRC payload;
+	payload.command = "371";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+
+	payload.trailer = "BEST SERVER OF THE WORLD";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "started in a hacking house!";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "special thanks to:";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "Luciano the away one, Lpassera";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "Alexandrie, the man who love beer without alcool like a chad, Adenhez";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, Earnaud";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "374";
+	payload.trailer = "End of INFO list";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int USERHOSTParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.command = "302";
+	payload.prefix = server._hostName;
+	payload.params.push_back(msg.receiver->nickname);
+	UserIRC* user;
+	for (list<string>::iterator iter = msg.payload.params.begin(); iter != msg.payload.params.end(); ++iter)
+	{
+		if (!payload.trailer.empty())
+			payload.trailer += " ";
+		user = server._users.findByNickname(*iter);
+		if (user)
+			payload.trailer += user->nickname + "=+" + user->username + "@" + getIPAddress(user);
+	}
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }

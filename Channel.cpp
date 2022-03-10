@@ -113,6 +113,7 @@ void    Channel::sendToAll(PayloadIRC& payload, Server &server, UserIRC* excepti
     {
 		if (exception && *iter == exception)
 			continue;
+		cout << "sending payload:" << payload.command << " to user:" << (*iter)->nickname << std::endl;
         MsgIRC msg(*iter, payload);
         server._msgQueue.push(msg);
     }
@@ -148,4 +149,16 @@ void	Channel::removeUsersFromChan(UserIRC *user)
 			return;
 		}
     }
+}
+
+string	Channel::userList()
+{
+	string result = "";
+	for (std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)
+	{
+		if (result != "")
+			result += " ";
+		result += (*iter)->nickname;
+	}
+	return result;
 }

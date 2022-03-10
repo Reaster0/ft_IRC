@@ -2,6 +2,7 @@
 #define REPLIES_HPP
 #include <string>
 #include <sstream>
+#include "ServerClass.hpp"
 
 using namespace std;
 enum numeric_replies_t {
@@ -193,14 +194,14 @@ namespace REPLIES {
 	string RPL_INFO(string info) { return ":" + info; }
 	string RPL_ENDOFINFO(void) { return ":End of INFO list"; }
 
-	string RPL_MOTDSTART(string server) { return ":- " + server + " Message of the day - "; }
+	string RPL_MOTDSTART(Server& server) { return ":- " + server.name() + " Message of the day - "; }
 	string RPL_MOTD(string text) { return ":- " + text; }
 	string RPL_ENDOFMOTD(void) { return ":End of MOTD command"; }
 
 	string RPL_YOUREOPER(void) { return ":You are now an IRC operator"; }
 	string RPL_REHASHING(string configFile) { return configFile + " :Rehashing"; } // Won't use
 	string RPL_YOURESERVICE(string service) { return "You are service " + service; }
-	string RPL_TIME(string server, string time) { return server + " :" + time; }
+	string RPL_TIME(Server& server) { return server.name() + " :" + getDateTime(); }
 	string RPL_USERSSTART(void) { return ":UserID   Terminal  Host"; }
 	string RPL_USERS(string username, string ttyline, string hostname) { return ":" + username + " " + ttyline + " " + hostname; }
 	string RPL_ENDOFUSERS(void) { return ":End of users"; }

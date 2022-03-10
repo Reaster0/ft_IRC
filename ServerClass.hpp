@@ -6,10 +6,10 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <sys/select.h>
+
 #include <netdb.h>
 #include <string>
 #include <unistd.h>
-
 #include <map>
 #include <list>
 #include <queue>
@@ -31,6 +31,8 @@ struct MsgIRC;
 class Channel;
 
 using namespace std;
+
+# define SERVER_NAME "EpikEkipEkolegram"
 class Server {
 public:
 	Server();
@@ -38,6 +40,10 @@ public:
 	~Server();
 	
 	void launch();
+	const string& name() const;
+	void sendMessage(UserIRC* receiver, PayloadIRC payload);
+	void sendMessage(UserIRC* sender, UserIRC* receiver, PayloadIRC payload);
+
 	UserList				_users;
 	queue<MsgIRC>			_msgQueue;
 	map<string, Channel>	_channels;
@@ -69,6 +75,8 @@ void sendToAllChanInfo(PayloadIRC& payload, UserIRC *user, Server &server);
 //remove the user from all channels it was connected
 void removeUsersFromAllChans(UserIRC *user, Server &server);
 
+bool chanExist(const string& channel, Server &server);
+
 /*
 -------handlerFunction--------
 please put your functions here using the template [int function(MsgIRC&, ServerClass&)]
@@ -83,5 +91,10 @@ int JOINParser(MsgIRC& msg, Server& server);
 int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
 int WHOParser(MsgIRC& msg, Server& server);
+int NAMESParser(MsgIRC& msg, Server& server);
+int MOTD(MsgIRC& msg, Server& server);
+int INFOParser(MsgIRC& msg, Server& server);
+int TIME(MsgIRC& msg, Server& server);
+int USERHOSTParser(MsgIRC& msg, Server& server);
 
 #endif

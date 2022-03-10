@@ -14,15 +14,22 @@ void Server::initializeMap()
 	_handlerFunction["MODE"]		= MODEParser;
 	_handlerFunction["PRIVMSG"]		= PRIVMSGParser;
 	_handlerFunction["WHO"]			= WHOParser;
+	_handlerFunction["NAMES"]		= NAMESParser;
+	_handlerFunction["MOTD"] 		= MOTD;
+	_handlerFunction["INFO"]		= INFOParser;
+	_handlerFunction["TIME"] 		= TIME;
+	_handlerFunction["USERHOST"] 	= USERHOSTParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _password(randomPwd(10)), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+{
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _password(randomPwd(10)), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+{
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
@@ -32,6 +39,19 @@ Server::~Server(){}
 
 void Server::launch() {
 	serverLoop(_endpoint);
+}
+
+const string& Server::name() const {
+	return _hostName;
+}
+
+void Server::sendMessage(UserIRC* receiver, PayloadIRC payload) {
+	sendMessage(NULL, receiver, payload);
+}
+
+void Server::sendMessage(UserIRC* sender, UserIRC* receiver, PayloadIRC payload) {
+	MsgIRC message(sender, receiver, payload);
+	_msgQueue.push(message);
 }
 
 string getDateTime() {
@@ -103,6 +123,11 @@ void removeUsersFromAllChans(UserIRC *user, Server &server)
 	{
 		(*it).second.removeUsersFromChan(user);
 	}
+}
+
+bool chanExist(const string& channel, Server &server)
+{
+	return server._channels.find(channel) != server._channels.end();
 }
 
 void Server::serverLoop(int &endpoint)
