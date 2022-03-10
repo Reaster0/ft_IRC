@@ -7,14 +7,9 @@
 #include "ServerClass.hpp"
 #include "Channel.hpp"
 
-std::string g_pwd;
-
 int main()
 {
-	g_pwd = randomPwd(10);
-	std::cout << "password:\n	";
-	std::cout << g_pwd << std::endl;
-    Server server;
+	Server server;
     server.launch();
 }
 

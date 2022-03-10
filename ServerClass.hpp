@@ -43,6 +43,7 @@ public:
 	map<string, Channel>	_channels;
 	const string 			_startTime;
 	const string			_hostName;
+	const string			_password;
 
 private:
 	void 	bindEndpoint();

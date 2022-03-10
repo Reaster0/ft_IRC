@@ -15,14 +15,16 @@ void Server::initializeMap()
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _password(randomPwd(10)), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
+	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _password(randomPwd(10)), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
+	std::cout << "password:\n	" << _password << std::endl;
 }
 
 Server::~Server(){}
@@ -69,7 +71,7 @@ void Server::bindEndpoint(void)
 	hostname = gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
 	time_t now = time(0);
-	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime <<endl;
+	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime;
 }
 
 void	sendToAllChan(PayloadIRC& payload, UserIRC *user,  Server &server)
