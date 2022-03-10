@@ -2,6 +2,7 @@
 #define REPLIES_HPP
 #include <string>
 #include <sstream>
+#include "ServerClass.hpp"
 
 using namespace std;
 enum numeric_replies_t {
@@ -193,7 +194,7 @@ namespace REPLIES {
 	string RPL_INFO(string info) { return ":" + info; }
 	string RPL_ENDOFINFO(void) { return ":End of INFO list"; }
 
-	string RPL_MOTDSTART(string server) { return ":- " + server + " Message of the day - "; }
+	string RPL_MOTDSTART(Server& server) { return ":- " + server.name() + " Message of the day - "; }
 	string RPL_MOTD(string text) { return ":- " + text; }
 	string RPL_ENDOFMOTD(void) { return ":End of MOTD command"; }
 

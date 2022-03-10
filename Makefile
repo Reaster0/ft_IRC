@@ -6,7 +6,7 @@ SRCS		:= main.cpp \
 				MsgIRC.cpp \
 				UserIRC.cpp \
 				Channel.cpp \
-				handlerFunction.cpp
+				handlerFunction.cpp \
 
 OBJS_PATH 	= objs
 DEPS    	= $(patsubst %, $(OBJS_PATH)/%, $(SRCS:.cpp=.d))

@@ -14,14 +14,15 @@ void Server::initializeMap()
 	_handlerFunction["MODE"] = MODEParser;
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
 	_handlerFunction["NAMES"] = NAMESParser;
+	_handlerFunction["MOTD"] = MOTD;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server() : _name(SERVER_NAME), _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
+Server::Server(const int& port) : _name(SERVER_NAME), _port(port), _startTime(getDateTime()), _hostName("EpikEkipEkolegram"), _endpoint(createEndpoint()) {
 	initializeMap();
 	bindEndpoint();
 }
@@ -30,6 +31,19 @@ Server::~Server(){}
 
 void Server::launch() {
 	serverLoop(_endpoint);
+}
+
+const string& Server::name() const {
+	return _name;
+}
+
+void Server::sendMessage(UserIRC* receiver, PayloadIRC payload) {
+	sendMessage(NULL, receiver, payload);
+}
+
+void Server::sendMessage(UserIRC* sender, UserIRC* receiver, PayloadIRC payload) {
+	MsgIRC message(sender, receiver, payload);
+	_msgQueue.push(message);
 }
 
 string getDateTime() {
