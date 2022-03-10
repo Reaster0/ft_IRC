@@ -13,6 +13,7 @@ void Server::initializeMap()
 	_handlerFunction["JOIN"] = JOINParser;
 	_handlerFunction["MODE"] = MODEParser;
 	_handlerFunction["PRIVMSG"] = PRIVMSGParser;
+	_handlerFunction["NAMES"] = NAMESParser;
 	_handlerFunction["MOTD"] = MOTD;
 }
 
@@ -114,6 +115,11 @@ void removeUsersFromAllChans(UserIRC *user, Server &server)
 	{
 		(*it).second.removeUsersFromChan(user);
 	}
+}
+
+bool chanExist(const string& channel, Server &server)
+{
+	return server._channels.find(channel) != server._channels.end();
 }
 
 void Server::serverLoop(int &endpoint)

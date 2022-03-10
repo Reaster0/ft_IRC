@@ -75,6 +75,8 @@ void sendToAllChanInfo(PayloadIRC& payload, UserIRC *user, Server &server);
 //remove the user from all channels it was connected
 void removeUsersFromAllChans(UserIRC *user, Server &server);
 
+bool chanExist(const string& channel, Server &server);
+
 /*
 -------handlerFunction--------
 please put your functions here using the template [int function(MsgIRC&, ServerClass&)]
@@ -88,6 +90,7 @@ int QUITParser(MsgIRC& msg, Server& server);
 int JOINParser(MsgIRC& msg, Server& server);
 int MODEParser(MsgIRC& msg, Server& server);
 int PRIVMSGParser(MsgIRC& msg, Server& server);
+int NAMESParser(MsgIRC& msg, Server& server);
 int MOTD(MsgIRC& msg, Server& server);
 
 
