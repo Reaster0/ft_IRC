@@ -163,13 +163,8 @@ int QUITParser(MsgIRC& msg, Server& server)
 	return 1;
 }
 
-int JOINParser(MsgIRC& msg, Server& server)
+int	join_channel(MsgIRC& msg, Server& server, std::string chan_name)
 {
-	if (msg.payload.params.empty())
-		return 1;
-	if (msg.payload.params.front()[0] != '#')
-		msg.payload.params.front() = '#' + msg.payload.params.front();
-	std::string chan_name = msg.payload.params.front();
 	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
 		return 2;
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -218,7 +213,23 @@ int JOINParser(MsgIRC& msg, Server& server)
 	MsgIRC response366(msg.receiver, payload);
 	server._msgQueue.push(response366);
 	// 329
+	return 0;
+}
 
+int JOINParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.empty())
+		return 1;
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(msg.payload.params.front());
+	while (getline(tokenStream, token, ','))
+		tokens.push_back(token);
+	for (vector<string>::iterator it=tokens.begin(); it!=tokens.end(); ++it) 
+    {
+		std::string chan_name = *it;
+		join_channel(msg, server, chan_name);
+    }
 	return 0;
 }
 
