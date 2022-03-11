@@ -71,23 +71,32 @@ int funCap(MsgIRC& msg, Server& server)
 
 int NICKParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByNickname(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1; //probably other things too
-	server._users.findFirstUnfilled()->nickname = msg.payload.params.front();
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payload;
+		payload.command = "433";
+		payload.prefix = server._hostName;
+		payload.params.push_back("*");
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "Nickname is already in use";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+		msg.receiver->nickname = msg.payload.params.front();
+	if (msg.receiver->username != "")
+		welcomeMessage(msg.receiver, server);
 	return 0;
 }
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByUsername(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
+	if (server._users.findByUsername(msg.payload.params.front()))
 		return 1;
-	UserIRC* newOne = server._users.findFirstUnfilled();
+	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
-	newOne->needFill = false;
-	welcomeMessage(newOne, server);
+	if (newOne->nickname != "")
+		welcomeMessage(newOne, server);
 	return 0;
 }
 
