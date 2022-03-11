@@ -485,5 +485,13 @@ int PONGParser(MsgIRC& msg, Server& server)
 
 int TOPICParser(MsgIRC& msg, Server& server)
 {
+	PayloadIRC payload;
+	Channel chan = server._channels[msg.payload.params.front()];
+
+	payload.prefix = msg.receiver->nickname + "!" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.command = "TOPIC";
+	payload.params.push_back(chan._name);
+	payload.trailer = msg.payload.trailer;
+	chan.sendToAll(payload, server);
 	return 0;
 }
