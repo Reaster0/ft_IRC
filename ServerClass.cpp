@@ -24,6 +24,8 @@ void Server::initializeMap()
 	_handlerFunction["ISON"] 		= IsonParser;
 	_handlerFunction["PING"] 		= PINGParser;
 	_handlerFunction["TOPIC"] 		= TOPICParser;
+	_handlerFunction["LIST"] 		= LISTParser;
+
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
