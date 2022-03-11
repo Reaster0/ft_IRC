@@ -497,6 +497,7 @@ int PARTParser(MsgIRC& msg, Server& server)
 {
 	queue<char*> chans;
 	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
 	strcpy(buffer, msg.payload.params.begin()->c_str());
 	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
 	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
@@ -525,5 +526,50 @@ int TOPICParser(MsgIRC& msg, Server& server)
 	payload.params.push_back(chan._name);
 	payload.trailer = msg.payload.trailer;
 	chan.sendToAll(payload, server);
+	return 0;
+}
+
+int KICKParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.size() != 2)
+		return 0;
+	queue<char*> chans;
+	vector<char*> users;
+	char buffer[BUFFERMAX];
+	char buffer2[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	msg.payload.params.pop_front();
+	bzero(buffer2, BUFFERMAX);
+	strcpy(buffer2, msg.payload.params.begin()->c_str());
+	for (users.push_back(strtok(buffer2,",")); users.back() ; users.push_back(strtok(0, ",")));
+	
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
+	{
+		if (chanExist(channel, server))
+		{
+			for (vector<char*>::iterator user = users.begin(); users.size() && *user; user++)
+			{
+				PayloadIRC payload;
+				if(!server._channels[channel].isInChannel(server._users.findByNickname(*user)))
+				{
+					payload.command = "401";
+					payload.prefix = server._hostName;
+					payload.params.push_back("nickname " + (string)*user);
+					payload.trailer = "No such nick";
+					server._msgQueue.push(MsgIRC(msg.receiver, payload));
+					continue;
+				}
+				payload.command = "KICK";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.params.push_back(*user);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(server._users.findByNickname(*user));
+			}
+		}
+	}
 	return 0;
 }
