@@ -129,23 +129,32 @@ int funCap(MsgIRC& msg, Server& server)
 
 int NICKParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByNickname(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1; //probably other things too
-	server._users.findFirstUnfilled()->nickname = msg.payload.params.front();
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payload;
+		payload.command = "433";
+		payload.prefix = server._hostName;
+		payload.params.push_back("*");
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "Nickname is already in use";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+		msg.receiver->nickname = msg.payload.params.front();
+	if (msg.receiver->username != "")
+		welcomeMessage(msg.receiver, server);
 	return 0;
 }
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByUsername(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1;
-	UserIRC* newOne = server._users.findFirstUnfilled();
+	// if (server._users.findByUsername(msg.payload.params.front()))
+	// 	return 1;
+	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
-	newOne->needFill = false;
-	welcomeMessage(newOne, server);
+	if (newOne->nickname != "")
+		welcomeMessage(newOne, server);
 	return 0;
 }
 
@@ -164,13 +173,8 @@ int QUITParser(MsgIRC& msg, Server& server)
 	return 1;
 }
 
-int JOINParser(MsgIRC& msg, Server& server)
+int	join_channel(MsgIRC& msg, Server& server, std::string chan_name)
 {
-	if (msg.payload.params.empty())
-		return 1;
-	if (msg.payload.params.front()[0] != '#')
-		msg.payload.params.front() = '#' + msg.payload.params.front();
-	std::string chan_name = msg.payload.params.front();
 	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
 		return 2;
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -219,7 +223,23 @@ int JOINParser(MsgIRC& msg, Server& server)
 	MsgIRC response366(msg.receiver, payload);
 	server._msgQueue.push(response366);
 	// 329
+	return 0;
+}
 
+int JOINParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.empty())
+		return 1;
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(msg.payload.params.front());
+	while (getline(tokenStream, token, ','))
+		tokens.push_back(token);
+	for (vector<string>::iterator it=tokens.begin(); it!=tokens.end(); ++it) 
+    {
+		std::string chan_name = *it;
+		join_channel(msg, server, chan_name);
+    }
 	return 0;
 }
 
@@ -492,5 +512,18 @@ int PARTParser(MsgIRC& msg, Server& server)
 			server._channels[channel].removeUsersFromChan(msg.receiver);
 		}
 	}
+	return 0;
+}
+
+int TOPICParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	Channel chan = server._channels[msg.payload.params.front()];
+
+	payload.prefix = msg.receiver->nickname + "!" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.command = "TOPIC";
+	payload.params.push_back(chan._name);
+	payload.trailer = msg.payload.trailer;
+	chan.sendToAll(payload, server);
 	return 0;
 }

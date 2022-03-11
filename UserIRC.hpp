@@ -40,7 +40,7 @@ class UserList
 	UserIRC* findByUsername(const string& value);
 	UserIRC* findByNickname(const string& value);
 	UserIRC* findBySocket(const int& value);
-	UserIRC* findFirstUnfilled();
+	//UserIRC* findFirstUnfilled(); depreciated
 };
 
 string getIPAddress(const UserIRC* user);
