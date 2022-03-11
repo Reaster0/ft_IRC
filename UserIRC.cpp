@@ -20,7 +20,6 @@ UserIRC* UserList::acceptNew(const int& endpoint)
 {
 	UserIRC newOne;
 	newOne.fdSocket = accept(endpoint, (sockaddr*)&newOne.addr, &newOne.sockLen);
-	newOne.needFill = true;
 	listC.push_back(newOne);
 	return &listC.back();
 }
@@ -50,14 +49,14 @@ UserIRC* UserList::findBySocket(const int& value)
 }
 
 
-//return the first user that need filling or nothing
-UserIRC* UserList::findFirstUnfilled()
-{
-	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
-		if ((*it).needFill)
-			return &(*it);
-	return 0;
-}
+// //return the first user that need filling or nothing
+// UserIRC* UserList::findFirstUnfilled()
+// {
+// 	for (list<UserIRC>::iterator it = listC.begin(); it != listC.end(); ++it)
+// 		if ((*it).needFill)
+// 			return &(*it);
+// 	return 0;
+// }
 
 string getIPAddress(const UserIRC* user)
 {
