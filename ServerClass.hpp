@@ -102,6 +102,7 @@ int PINGParser(MsgIRC& msg, Server& server);
 int PONGParser(MsgIRC& msg, Server& server);
 int PARTParser(MsgIRC& msg, Server& server);
 int TOPICParser(MsgIRC& msg, Server& server);
+int LISTParser(MsgIRC& msg, Server& server);
 int KICKParser(MsgIRC& msg, Server& server);
 
 #endif
