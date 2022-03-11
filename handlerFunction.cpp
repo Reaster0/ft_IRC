@@ -90,8 +90,8 @@ int NICKParser(MsgIRC& msg, Server& server)
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByUsername(msg.payload.params.front()))
-		return 1;
+	// if (server._users.findByUsername(msg.payload.params.front()))
+	// 	return 1;
 	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
