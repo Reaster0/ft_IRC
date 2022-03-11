@@ -471,3 +471,8 @@ int PONGParser(MsgIRC& msg, Server& server)
 {
 	return 0;
 }
+
+int TOPICParser(MsgIRC& msg, Server& server)
+{
+	return 0;
+}
