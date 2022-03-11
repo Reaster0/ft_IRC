@@ -1,6 +1,7 @@
 #include "ServerClass.hpp"
 #include "replies.hpp"
 #include <fstream>
+#define BUFFERMAX 512 //need to change accordingly
 
 const string g_welcome[] = 
 {"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -474,18 +475,22 @@ int PONGParser(MsgIRC& msg, Server& server)
 
 int PARTParser(MsgIRC& msg, Server& server)
 {
-	if (chanExist(msg.payload.params.front(), server) && server._channels[msg.payload.params.front()].isInChannel(msg.receiver))
+	queue<char*> chans;
+	char buffer[BUFFERMAX];
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); *chans.back() ; chans.push(strtok(0, ",")));
+	for (char *channel = chans.front(); chans.size(); chans.pop())
 	{
-		server._channels[msg.payload.params.front()].removeUsersFromChan(msg.receiver);
-		server._channels[msg.payload.params.front()].getInfo();
-		PayloadIRC payload;
-		payload.command = "PART";
-		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
-		payload.params.push_back(msg.payload.params.front());
-		payload.trailer = msg.payload.trailer;
-		// if (payload.trailer == "")
-		// 	payload.trailer = " ";
-		server._channels[msg.payload.params.front()].sendToAll(payload, server);
+		if (chanExist(channel, server) && server._channels[channel].isInChannel(msg.receiver))
+		{
+			PayloadIRC payload;
+			payload.command = "PART";
+			payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+			payload.params.push_back(channel);
+			payload.trailer = msg.payload.trailer;
+			server._channels[channel].sendToAll(payload, server);
+			server._channels[channel].removeUsersFromChan(msg.receiver);
+		}
 	}
 	return 0;
 }

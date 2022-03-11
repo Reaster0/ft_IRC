@@ -1,5 +1,4 @@
 #include "MsgIRC.hpp"
-
 #define BUFFERMAX 512 //need to change accordingly
 
 MsgIRC::MsgIRC()
