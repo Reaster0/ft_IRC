@@ -26,6 +26,7 @@ void Server::initializeMap()
 	_handlerFunction["PART"]		= PARTParser;
 	_handlerFunction["TOPIC"] 		= TOPICParser;
 	_handlerFunction["KICK"]		= KICKParser;
+	_handlerFunction["KILL"]		= KILLParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())

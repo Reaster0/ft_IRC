@@ -103,5 +103,6 @@ int PONGParser(MsgIRC& msg, Server& server);
 int PARTParser(MsgIRC& msg, Server& server);
 int TOPICParser(MsgIRC& msg, Server& server);
 int KICKParser(MsgIRC& msg, Server& server);
+int KILLParser(MsgIRC& msg, Server& server);
 
 #endif

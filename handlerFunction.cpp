@@ -596,3 +596,39 @@ int KICKParser(MsgIRC& msg, Server& server)
 	}
 	return 0;
 }
+
+int KILLParser(MsgIRC& msg, Server& server)
+{
+	if (0/*msg.receiver != operator*/)
+	{
+		PayloadIRC payload;
+		payload.command = "481";
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "Permission denied, you don't have operator privileges";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 1;
+	}
+
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payloaderror;
+		payloaderror.command = "ERROR";
+		payloaderror.trailer = (string)"Closing link " + (string)"Kill: " + msg.payload.trailer;
+		server._msgQueue.push(MsgIRC(server._users.findByNickname(msg.payload.params.front()), payloaderror));
+		PayloadIRC payload;
+		payload.command = "KILL";
+		payload.trailer = "Kill: " + msg.payload.trailer;
+		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		sendToAllChan(payload, server._users.findByNickname(msg.payload.params.front()), server);
+		return 0;
+	}
+	PayloadIRC payload;
+	payload.command = "401";
+	payload.prefix = server._hostName;
+	payload.params.push_back("nickname " + msg.payload.params.front());
+	payload.trailer = "No such nick";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+
+}
