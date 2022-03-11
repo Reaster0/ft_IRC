@@ -498,8 +498,8 @@ int PARTParser(MsgIRC& msg, Server& server)
 	queue<char*> chans;
 	char buffer[BUFFERMAX];
 	strcpy(buffer, msg.payload.params.begin()->c_str());
-	for (chans.push(strtok(buffer,",")); *chans.back() ; chans.push(strtok(0, ",")));
-	for (char *channel = chans.front(); chans.size(); chans.pop())
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
 	{
 		if (chanExist(channel, server) && server._channels[channel].isInChannel(msg.receiver))
 		{
