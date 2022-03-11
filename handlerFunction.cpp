@@ -1,6 +1,7 @@
 #include "ServerClass.hpp"
 #include "replies.hpp"
 #include <fstream>
+#define BUFFERMAX 512 //need to change accordingly
 
 const string g_welcome[] = 
 {"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -128,23 +129,32 @@ int funCap(MsgIRC& msg, Server& server)
 
 int NICKParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByNickname(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1; //probably other things too
-	server._users.findFirstUnfilled()->nickname = msg.payload.params.front();
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payload;
+		payload.command = "433";
+		payload.prefix = server._hostName;
+		payload.params.push_back("*");
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "Nickname is already in use";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+		msg.receiver->nickname = msg.payload.params.front();
+	if (msg.receiver->username != "")
+		welcomeMessage(msg.receiver, server);
 	return 0;
 }
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByUsername(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1;
-	UserIRC* newOne = server._users.findFirstUnfilled();
+	// if (server._users.findByUsername(msg.payload.params.front()))
+	// 	return 1;
+	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
-	newOne->needFill = false;
-	welcomeMessage(newOne, server);
+	if (newOne->nickname != "")
+		welcomeMessage(newOne, server);
 	return 0;
 }
 
@@ -494,6 +504,52 @@ int PONGParser(MsgIRC& msg, Server& server)
 	return 0;
 }
 
+int PARTParser(MsgIRC& msg, Server& server)
+{
+	queue<char*> chans;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
+	{
+		if (chanExist(channel, server))
+		{
+			if (server._channels[channel].isInChannel(msg.receiver))
+			{
+				PayloadIRC payload;
+				payload.command = "PART";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(msg.receiver);
+			}
+			else
+			{
+				PayloadIRC payload;
+				payload.command = "442";
+				payload.prefix = server._hostName;
+				payload.params.push_back(msg.receiver->nickname);
+				payload.params.push_back(channel);
+				payload.trailer = "You're not on that channel";
+				server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			}
+		}
+		else
+		{
+			PayloadIRC payload;
+			payload.command = "403";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back(channel);
+			payload.trailer = "No such channel";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		}
+	}
+	return 0;
+}
+
 int TOPICParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
@@ -510,6 +566,7 @@ int TOPICParser(MsgIRC& msg, Server& server)
 	chan.sendToAll(payload, server);
 	return 0;
 }
+<<<<<<< HEAD
 int LISTParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
@@ -533,3 +590,50 @@ int LISTParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+=======
+
+int KICKParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.size() != 2)
+		return 0;
+	queue<char*> chans;
+	vector<char*> users;
+	char buffer[BUFFERMAX];
+	char buffer2[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	msg.payload.params.pop_front();
+	bzero(buffer2, BUFFERMAX);
+	strcpy(buffer2, msg.payload.params.begin()->c_str());
+	for (users.push_back(strtok(buffer2,",")); users.back() ; users.push_back(strtok(0, ",")));
+	
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
+	{
+		if (chanExist(channel, server))
+		{
+			for (vector<char*>::iterator user = users.begin(); users.size() && *user; user++)
+			{
+				PayloadIRC payload;
+				if(!server._channels[channel].isInChannel(server._users.findByNickname(*user)))
+				{
+					payload.command = "401";
+					payload.prefix = server._hostName;
+					payload.params.push_back("nickname " + (string)*user);
+					payload.trailer = "No such nick";
+					server._msgQueue.push(MsgIRC(msg.receiver, payload));
+					continue;
+				}
+				payload.command = "KICK";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.params.push_back(*user);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(server._users.findByNickname(*user));
+			}
+		}
+	}
+	return 0;
+}
+>>>>>>> 01e5e4bf3638cd486ac0117f87f15bf75ffbbf1e

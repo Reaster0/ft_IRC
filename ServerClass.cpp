@@ -23,9 +23,10 @@ void Server::initializeMap()
 	_handlerFunction["ison"] 		= IsonParser;
 	_handlerFunction["ISON"] 		= IsonParser;
 	_handlerFunction["PING"] 		= PINGParser;
+	_handlerFunction["PART"]		= PARTParser;
 	_handlerFunction["TOPIC"] 		= TOPICParser;
 	_handlerFunction["LIST"] 		= LISTParser;
-
+	_handlerFunction["KICK"]		= KICKParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
