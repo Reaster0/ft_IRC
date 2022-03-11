@@ -100,5 +100,6 @@ int USERHOSTParser(MsgIRC& msg, Server& server);
 int IsonParser(MsgIRC& msg, Server& server);
 int PINGParser(MsgIRC& msg, Server& server);
 int PONGParser(MsgIRC& msg, Server& server);
+int PARTParser(MsgIRC& msg, Server& server);
 
 #endif

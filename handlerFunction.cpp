@@ -471,3 +471,21 @@ int PONGParser(MsgIRC& msg, Server& server)
 {
 	return 0;
 }
+
+int PARTParser(MsgIRC& msg, Server& server)
+{
+	if (chanExist(msg.payload.params.front(), server) && server._channels[msg.payload.params.front()].isInChannel(msg.receiver))
+	{
+		server._channels[msg.payload.params.front()].removeUsersFromChan(msg.receiver);
+		server._channels[msg.payload.params.front()].getInfo();
+		PayloadIRC payload;
+		payload.command = "PART";
+		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = msg.payload.trailer;
+		// if (payload.trailer == "")
+		// 	payload.trailer = " ";
+		server._channels[msg.payload.params.front()].sendToAll(payload, server);
+	}
+	return 0;
+}
