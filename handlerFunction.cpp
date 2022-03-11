@@ -502,15 +502,38 @@ int PARTParser(MsgIRC& msg, Server& server)
 	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
 	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
 	{
-		if (chanExist(channel, server) && server._channels[channel].isInChannel(msg.receiver))
+		if (chanExist(channel, server))
+		{
+			if (server._channels[channel].isInChannel(msg.receiver))
+			{
+				PayloadIRC payload;
+				payload.command = "PART";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(msg.receiver);
+			}
+			else
+			{
+				PayloadIRC payload;
+				payload.command = "442";
+				payload.prefix = server._hostName;
+				payload.params.push_back(msg.receiver->nickname);
+				payload.params.push_back(channel);
+				payload.trailer = "You're not on that channel";
+				server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			}
+		}
+		else
 		{
 			PayloadIRC payload;
-			payload.command = "PART";
-			payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+			payload.command = "403";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
 			payload.params.push_back(channel);
-			payload.trailer = msg.payload.trailer;
-			server._channels[channel].sendToAll(payload, server);
-			server._channels[channel].removeUsersFromChan(msg.receiver);
+			payload.trailer = "No such channel";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
 		}
 	}
 	return 0;
