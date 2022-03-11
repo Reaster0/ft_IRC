@@ -10,6 +10,16 @@
 
 using namespace std;
 
+struct UserModes {
+	bool away;
+	bool invisible;
+	bool wallops;
+	bool restricted;
+	bool isOperator;
+	bool isLocalOperator;
+	bool serverNotices;
+};
+
 struct UserIRC
 {
 	int fdSocket;
@@ -22,6 +32,7 @@ struct UserIRC
 
 	bool away;
 	string awayMessage;
+	UserModes modes;
 };
 
 
