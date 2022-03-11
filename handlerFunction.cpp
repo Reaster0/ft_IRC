@@ -613,13 +613,14 @@ int KILLParser(MsgIRC& msg, Server& server)
 	if (server._users.findByNickname(msg.payload.params.front()))
 	{
 		PayloadIRC payloaderror;
-		payloaderror.command = "ERROR";
-		payloaderror.trailer = (string)"Closing link " + (string)"Kill: " + msg.payload.trailer;
+		//add the nickname to a banned list
+		payloaderror.command = "KILL"; //and maybe i don't send the correct packet, ho well
+		payloaderror.trailer = "Kill: " + msg.payload.trailer;
 		server._msgQueue.push(MsgIRC(server._users.findByNickname(msg.payload.params.front()), payloaderror));
 		PayloadIRC payload;
-		payload.command = "KILL";
-		payload.trailer = "Kill: " + msg.payload.trailer;
+		payload.command = "QUIT";
 		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.trailer = "Kill: " + msg.payload.trailer;
 		sendToAllChan(payload, server._users.findByNickname(msg.payload.params.front()), server);
 		return 0;
 	}

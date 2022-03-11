@@ -191,7 +191,7 @@ void Server::serverLoop(int &endpoint)
 				if (_msgQueue.front().receiver->fdSocket == i)
 				{
 				sendMsg(availableWSockets, _msgQueue.front());
-				if (_msgQueue.front().payload.command == "ERROR")
+				if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
 				{
 					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
 					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
