@@ -566,7 +566,7 @@ int TOPICParser(MsgIRC& msg, Server& server)
 	chan.sendToAll(payload, server);
 	return 0;
 }
-<<<<<<< HEAD
+
 int LISTParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
@@ -590,7 +590,6 @@ int LISTParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
-=======
 
 int KICKParser(MsgIRC& msg, Server& server)
 {
@@ -636,4 +635,3 @@ int KICKParser(MsgIRC& msg, Server& server)
 	}
 	return 0;
 }
->>>>>>> 01e5e4bf3638cd486ac0117f87f15bf75ffbbf1e
