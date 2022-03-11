@@ -25,6 +25,7 @@ void Server::initializeMap()
 	_handlerFunction["PING"] 		= PINGParser;
 	_handlerFunction["PART"]		= PARTParser;
 	_handlerFunction["TOPIC"] 		= TOPICParser;
+	_handlerFunction["LIST"] 		= LISTParser;
 	_handlerFunction["KICK"]		= KICKParser;
 	_handlerFunction["KILL"]		= KILLParser;
 }
