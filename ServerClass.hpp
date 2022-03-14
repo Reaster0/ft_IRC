@@ -106,5 +106,6 @@ int LISTParser(MsgIRC& msg, Server& server);
 int KICKParser(MsgIRC& msg, Server& server);
 int KILLParser(MsgIRC& msg, Server& server);
 int INVITEParser(MsgIRC& msg, Server& server);
+int WHOISParser(MsgIRC& msg, Server& server);
 
 #endif
