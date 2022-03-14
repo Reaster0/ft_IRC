@@ -28,6 +28,8 @@ void Server::initializeMap()
 	_handlerFunction["LIST"] 		= LISTParser;
 	_handlerFunction["KICK"]		= KICKParser;
 	_handlerFunction["KILL"]		= KILLParser;
+	_handlerFunction["INVITE"]		= INVITEParser;
+	
 	_handlerFunction["WHOIS"]		= WHOISParser;
 }
 
