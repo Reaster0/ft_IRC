@@ -678,6 +678,37 @@ int KILLParser(MsgIRC& msg, Server& server)
 
 }
 
+int INVITEParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.command = "INVITE";
+	for (list<string>::iterator it = msg.payload.params.begin(); it != msg.payload.params.end(); ++it)
+		payload.params.push_back(*it);
+	UserIRC *user_to_send = server._users.findByNickname(msg.payload.params.front());
+	if (user_to_send == 0)
+		return 1;
+
+	string chan_name =  msg.payload.params.back();
+	if (server._channels.find(chan_name) == server._channels.end())
+		return 1;
+	Channel chan = server._channels[chan_name];
+	if (find(chan.invited_users.begin(), chan.invited_users.end(), user_to_send) != chan.invited_users.end())
+		server._channels[chan_name].invited_users.push_back(user_to_send);
+	server._msgQueue.push(MsgIRC(user_to_send, payload));
+
+	payload = PayloadIRC();
+	payload.prefix = server._hostName;
+	payload.command = "341";
+	payload.params.push_back(msg.receiver->nickname);
+
+	for (list<string>::iterator it = msg.payload.params.begin(); it != msg.payload.params.end(); ++it)
+		payload.params.push_back(*it);
+	
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
 int WHOISParser(MsgIRC& msg, Server& server)
 {
 	queue<char*> users;
