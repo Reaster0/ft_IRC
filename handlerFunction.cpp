@@ -672,3 +672,74 @@ int KILLParser(MsgIRC& msg, Server& server)
 	return 0;
 
 }
+
+int WHOISParser(MsgIRC& msg, Server& server)
+{
+	queue<char*> users;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.back().c_str());
+	for (users.push(strtok(buffer,",")); users.back() ; users.push(strtok(0, ",")));
+
+	for (char* user = users.front(); users.size() && user; users.pop(), user = users.front())
+	{
+		PayloadIRC payload;
+		UserIRC* target = server._users.findByNickname(user);
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(user);
+
+		if (!target)
+		{
+			payload.trailer = "No such nick";
+			payload.command = "401";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			payload.command = "318";
+			payload.trailer = "End of /WHOIS list.";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			continue;
+		}
+		
+		payload.params.push_back(target->username);
+		payload.params.push_back(getIPAddress(target));
+		payload.params.push_back("*");
+		payload.trailer = target->realName;
+		payload.command = "311";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.trailer.clear();
+		for (map<string, Channel>::iterator iter = server._channels.begin(); iter != server._channels.end(); ++iter)
+		{
+			if ((*iter).second.isInChannel(target))
+			{
+				if (!payload.trailer.empty())
+					payload.trailer += " ";
+				payload.trailer += "@" + (*iter).first;
+			}
+		}
+		payload.command = "319";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.push_back(server._hostName);
+		payload.trailer = "the best irc server";
+		payload.command = "312";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.push_back(to_string(difftime(time(0), target->idle)));
+		payload.params.push_back(to_string(target->idle));
+		payload.trailer = "seconds idle";
+		payload.command = "317";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.trailer = "End of /WHOIS list.";
+		payload.command = "318";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	return 1;
+}
