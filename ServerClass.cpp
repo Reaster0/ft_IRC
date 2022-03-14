@@ -31,6 +31,7 @@ void Server::initializeMap()
 	_handlerFunction["INVITE"]		= INVITEParser;
 	
 	_handlerFunction["WHOIS"]		= WHOISParser;
+	_handlerFunction["WHOWAS"]		= WHOWASParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
