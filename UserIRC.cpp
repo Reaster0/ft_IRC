@@ -21,6 +21,7 @@ UserIRC* UserList::acceptNew(const int& endpoint)
 	UserIRC newOne;
 	newOne.idle = time(0);
 	newOne.fdSocket = accept(endpoint, (sockaddr*)&newOne.addr, &newOne.sockLen);
+	newOne.ip = getIPAddress(&newOne);
 	listC.push_back(newOne);
 	return &listC.back();
 }
