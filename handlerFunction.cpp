@@ -252,6 +252,61 @@ int JOINParser(MsgIRC& msg, Server& server)
 
 int MODEParser(MsgIRC& msg, Server& server)
 {
+	string& target = msg.payload.params.front();
+
+	if (target.at(0) == '#')
+		return MODEChannel(msg, server, target);
+	return MODEUser(msg, server, target);
+}
+
+int MODEUser(MsgIRC& msg, Server& server, string& target) {
+	PayloadIRC payload(server._hostName);
+	UserIRC* user = msg.receiver;
+
+	if (user->nickname != target) {
+		payload.command = REPLIES::toString(ERR_USERSDONTMATCH);
+		payload.trailer = REPLIES::ERR_USERSDONTMATCH();
+		payload.params.push_back(msg.receiver->nickname);
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
+	list<string>::iterator it = msg.payload.params.begin();
+	advance(it, 1);
+
+	string& modesToApply = *it;
+	char qualifier = modesToApply.at(0);
+
+
+	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+		if (!UserModes::exist(*it)) {
+			payload.command = REPLIES::toString(ERR_UMODEUNKNOWNFLAG);
+			payload.trailer = REPLIES::ERR_UMODEUNKNOWNFLAG();
+			payload.params.push_back(msg.receiver->nickname);
+			server.sendMessage(msg.receiver, payload);
+			return 1;
+		}
+	}
+
+	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+		try {
+			if (qualifier == '-') { user->setMode(*it, false); }
+			if (qualifier == '+') { user->setMode(*it, true); }
+		} catch (exception& e) {
+			cout << "ERROR: " << e.what() << endl;
+		}
+	}
+
+	payload.command = REPLIES::toString(RPL_UMODEIS);
+	payload.trailer = REPLIES::RPL_UMODEIS(user);
+	payload.params.push_back(msg.receiver->nickname);
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int MODEChannel(MsgIRC& msg, Server& server, string& target) {
+	//  TODO : All the things
 	PayloadIRC payload;
 	string origin_chan_name = msg.payload.params.front();
 	if (server._channels.find(origin_chan_name) == server._channels.end())
@@ -261,9 +316,11 @@ int MODEParser(MsgIRC& msg, Server& server)
 	payload.command = "324";
 	payload.params.push_back(msg.receiver->nickname);
 	payload.params.push_back(origin_chan_name);
+	// Should be channel modes and not only +n
 	payload.params.push_back("+n");
 	MsgIRC response324(msg.receiver, payload);
 	server._msgQueue.push(response324);
+
 	return 0;
 }
 
