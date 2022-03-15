@@ -19,6 +19,7 @@ struct PayloadIRC
 	string trailer;
 	
 	PayloadIRC(){}
+	PayloadIRC(const string& prefix) : prefix(prefix) {}
 	PayloadIRC(const PayloadIRC& other):
 	command(other.command), params(other.params),
 	prefix(other.prefix), trailer(other.trailer){}
