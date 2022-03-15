@@ -36,7 +36,7 @@ using namespace std;
 class Server {
 public:
 	Server();
-	Server(const int& port);
+	Server(const int& port, const string& pwd = "password");
 	~Server();
 	
 	void launch();
@@ -114,5 +114,6 @@ int WHOWASParser(MsgIRC& msg, Server& server);
 int ADMINParser(MsgIRC& msg, Server& server);
 int LUSERSParser(MsgIRC& msg, Server& server);
 int OPERATORParser(MsgIRC& msg, Server& server);
+int PASSParser(MsgIRC& msg, Server& server);
 
 #endif
