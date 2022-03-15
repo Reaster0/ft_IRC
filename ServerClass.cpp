@@ -20,8 +20,14 @@ void Server::initializeMap()
 	_handlerFunction["TIME"] 		= TIME;
 	_handlerFunction["USERHOST"] 	= USERHOSTParser;
 	_handlerFunction["AWAY"] 		= AWAY;
-	_handlerFunction["ison"] = IsonParser;
-	_handlerFunction["ISON"] = IsonParser;
+	_handlerFunction["ison"] 		= IsonParser;
+	_handlerFunction["ISON"] 		= IsonParser;
+	_handlerFunction["PING"] 		= PINGParser;
+	_handlerFunction["PART"]		= PARTParser;
+	_handlerFunction["TOPIC"] 		= TOPICParser;
+	_handlerFunction["LIST"] 		= LISTParser;
+	_handlerFunction["KICK"]		= KICKParser;
+	_handlerFunction["KILL"]		= KILLParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
@@ -186,7 +192,7 @@ void Server::serverLoop(int &endpoint)
 				if (_msgQueue.front().receiver->fdSocket == i)
 				{
 				sendMsg(availableWSockets, _msgQueue.front());
-				if (_msgQueue.front().payload.command == "ERROR")
+				if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
 				{
 					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
 					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);

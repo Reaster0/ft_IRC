@@ -1,6 +1,62 @@
 #include "ServerClass.hpp"
 #include "replies.hpp"
 #include <fstream>
+#define BUFFERMAX 512 //need to change accordingly
+
+const string g_welcome[] = 
+{"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⠤⠴⠒⠒⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠑⠒⠲⠦⢤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+"⠀⠀⠀⠀⠀⢀⣀⡤⠒⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠒⠤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀",
+"⠀⠀⢀⣠⠖⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠲⢄⣀⠀⠀⠀⠀⠀",
+"⠀⢠⠞⠁⠀⠀⠀⠀⠀⢀⣀⡤⠤⠖⠒⠚⠛⠉⠉⠉⠉⠀⠀⠉⠉⠉⠉⠉⠙⠛⠒⠒⠶⠤⢄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀",
+"⠀⣿⠀⠀⠀⢀⣠⠴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠑⠲⠦⣄⡀⠀⠀⠀⠀⡇⠀⠀⠀",
+"⠀⠙⠲⠶⠖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠒⠒⠊⠁⠀⠀⠀",
+"⠀⠀⠀⠀⠀⢀⡤⠶⠒⠋⠉⠉⠉⠉⠉⠓⠲⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⠤⠴⠶⠶⠶⠶⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀",
+"⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⢦⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⢦⡀⠀⠀⠀⠀",
+"⠀⢠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⡀⠀⠀",
+"⠀⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡀⠀⠀⢀⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢳⡄⠀",
+"⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⠀",
+"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀ft_irc⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀⡇⠀⠀⠀⠀⠀⠀   sucks⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀",
+"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠺⡗⠂⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇",
+"⠸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀",
+"⠀⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠁⠀⠀⠹⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀",
+"⠀⠀⠹⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡜⠁⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀",
+"⠀⠀⠀⠈⠳⢤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠋⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠋⠀⠀⠀",
+"⠀⠀⠀⠀⠀⠀⠈⠉⠓⠲⠦⠤⠤⠤⠤⠶⠒⠉⠁⠀⠀⡀⠀⠀⠀⠀⠀⠀⢀⠀⠈⠓⠶⠤⣤⣀⣀⣀⣀⣀⣠⡤⠴⠚⠉⠀⠀⠀⠀⠀",
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+"⠀⠀⠀⠑⠢⢄⣀⣀⡀⠀⠀⠀⠀⣀⣀⣠⠤⠂⠀⠀⠀⣇⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠀⠀⠀⠀",
+"⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠉⠙⠲⠦⠤⠤⠤⠤⠴⠚⠉⠁⠀⠀⠀⠀⠀",
+"⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡇⠀⠀⠀⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠤⠤⠤⠤⣄⣀⠀⠀",
+"⣀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⡾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠈⠓⢦",
+"⠁⠀⠀⢀⣠⣤⣶⣿⣿⣿⣏⠉⠉⠛⣻⣶⠢⢤⣄⡀⠀⠀⠘⢦⣀⣠⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠴⠒⠛⣷⣶⣤⣄⠀⠀",
+"⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⡀⠀⠀⠉⣳⢤⣀⠀⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠛⣧⡀⠀⠀⢠⣿⣿⣿⣿⣿⣄",
+"⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣶⣿⣿⠀⠈⠙⠲⣤⣀⣀⡀⢀⣀⣀⡤⠴⣾⡉⠀⠀⠀⢹⣿⣶⣶⣿⣿⣿⣿⣿⣿⣿",
+"⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣠⣾⣷⠀⠉⠉⣽⡏⠀⠀⠀⣸⣿⣦⣄⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
+"⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣾⣿⣷⣄⣀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
+"⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⠛⠛⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿lpassera⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
+"⠘⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿earnaud⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿",
+"⠀⠘⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⣠⣴⣶⣿⣿⣿⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿adenhez⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁",
+"⠀⠀⠈⠻⣏⡀⠀⠀⠀⣀⠤⠾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣿⣿⣿⡿⠋⠀⢀",
+"⣦⡀⠀⠀⠈⠙⠦⣄⡞⠁⠀⠀⢻⡿⠏⠉⠉⠻⣿⣿⡿⠛⠿⣿⣿⡿⠛⠛⠻⣿⣿⠟⠉⠻⣿⡿⠋⠉⢿⡿⠃⠀⢀⣨⠿⠋⠀⠀⣴⠚",
+"⠀⠉⠦⣄⠀⠀⠀⠈⠉⠲⠦⣄⣼⡁⠀⠀⠀⠀⣿⠏⠀⠀⠀⠸⡿⠁⠀⠀⠀⢹⠇⠀⠀⠀⢻⠃⠀⢀⣨⡧⠴⠒⠉⠀⠀⢀⡤⠏⠁⠀",
+"⠀⠀⠀⠀⠙⠒⠢⠄⠀⠀⠀⠀⠈⠉⠉⠛⠒⠒⠛⠒⠲⠤⠤⠴⠧⠤⠤⠤⠤⠼⠖⠒⠒⠒⠛⠋⠉⠉⠁⠀⠀⣀⣀⡴⠞⠉⠀  ⠀",
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠴⠖⠒⠒⠋⠉⠀⠀⠀⠀   ⠀",
+"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"};
+
+void	welcome_ascii_displayer(UserIRC* user, Server& server)
+{
+	PayloadIRC temp;
+	int i(-1);
+    while (++i < 37)
+    {
+     temp = PayloadIRC();
+     temp.prefix = "EpikEkipEkolegram";
+     temp.command = "372";
+     temp.params.push_back(user->nickname);
+     temp.trailer = g_welcome[i];
+     server._msgQueue.push(MsgIRC(user, temp));
+    }
+}
 
 void welcomeMessage(UserIRC* user, Server& server)
 {
@@ -60,6 +116,8 @@ void welcomeMessage(UserIRC* user, Server& server)
 	temp.params.push_back(user->nickname);
 	temp.trailer = "your realname is:" + user->realName;
 	server._msgQueue.push(MsgIRC(user, temp));
+
+	welcome_ascii_displayer(user, server);
 }
 
 int funCap(MsgIRC& msg, Server& server)
@@ -71,23 +129,32 @@ int funCap(MsgIRC& msg, Server& server)
 
 int NICKParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByNickname(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1; //probably other things too
-	server._users.findFirstUnfilled()->nickname = msg.payload.params.front();
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payload;
+		payload.command = "433";
+		payload.prefix = server._hostName;
+		payload.params.push_back("*");
+		payload.params.push_back(msg.payload.params.front());
+		payload.trailer = "Nickname is already in use";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+		msg.receiver->nickname = msg.payload.params.front();
+	if (msg.receiver->username != "")
+		welcomeMessage(msg.receiver, server);
 	return 0;
 }
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	if (server._users.findByUsername(msg.payload.params.front())
-	|| !server._users.findFirstUnfilled())
-		return 1;
-	UserIRC* newOne = server._users.findFirstUnfilled();
+	// if (server._users.findByUsername(msg.payload.params.front()))
+	// 	return 1;
+	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
-	newOne->needFill = false;
-	welcomeMessage(newOne, server);
+	if (newOne->nickname != "")
+		welcomeMessage(newOne, server);
 	return 0;
 }
 
@@ -106,13 +173,10 @@ int QUITParser(MsgIRC& msg, Server& server)
 	return 1;
 }
 
-int JOINParser(MsgIRC& msg, Server& server)
+int	join_channel(MsgIRC& msg, Server& server, std::string chan_name)
 {
-	if (msg.payload.params.empty())
-		return 1;
-	if (msg.payload.params.front()[0] != '#')
-		msg.payload.params.front() = '#' + msg.payload.params.front();
-	std::string chan_name = msg.payload.params.front();
+	if (chan_name[0] != '#')
+		chan_name = "#" + chan_name;
 	if (!server._channels.empty() && server._channels.find(chan_name) != server._channels.end() && server._channels[chan_name].isAuthorizedUser(msg.receiver) == false)
 		return 2;
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -161,29 +225,110 @@ int JOINParser(MsgIRC& msg, Server& server)
 	MsgIRC response366(msg.receiver, payload);
 	server._msgQueue.push(response366);
 	// 329
+	return 0;
+}
 
+int JOINParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.empty())
+		return 1;
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(msg.payload.params.front());
+	while (getline(tokenStream, token, ','))
+		tokens.push_back(token);
+	for (vector<string>::iterator it=tokens.begin(); it!=tokens.end(); ++it) 
+    {
+		std::string chan_name = *it;
+		join_channel(msg, server, chan_name);
+    }
 	return 0;
 }
 
 int MODEParser(MsgIRC& msg, Server& server)
 {
+	string& target = msg.payload.params.front();
+
+	if (target.at(0) == '#')
+		return MODEChannel(msg, server, target);
+	return MODEUser(msg, server, target);
+}
+
+int MODEUser(MsgIRC& msg, Server& server, string& target) {
+	PayloadIRC payload(server._hostName);
+	UserIRC* user = msg.receiver;
+
+	if (user->nickname != target) {
+		payload.command = REPLIES::toString(ERR_USERSDONTMATCH);
+		payload.trailer = REPLIES::ERR_USERSDONTMATCH();
+		payload.params.push_back(msg.receiver->nickname);
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
+	list<string>::iterator it = msg.payload.params.begin();
+	advance(it, 1);
+
+	string& modesToApply = *it;
+	char qualifier = modesToApply.at(0);
+
+
+	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+		if (!UserModes::exist(*it)) {
+			payload.command = REPLIES::toString(ERR_UMODEUNKNOWNFLAG);
+			payload.trailer = REPLIES::ERR_UMODEUNKNOWNFLAG();
+			payload.params.push_back(msg.receiver->nickname);
+			server.sendMessage(msg.receiver, payload);
+			return 1;
+		}
+	}
+
+	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+		try {
+			if (qualifier == '-') { user->setMode(*it, false); }
+			if (qualifier == '+') { user->setMode(*it, true); }
+		} catch (exception& e) {
+			cout << "ERROR: " << e.what() << endl;
+		}
+	}
+
+	payload.command = REPLIES::toString(RPL_UMODEIS);
+	payload.trailer = REPLIES::RPL_UMODEIS(user);
+	payload.params.push_back(msg.receiver->nickname);
+
+	server.sendMessage(msg.receiver, payload);
+	return 0;
+}
+
+int MODEChannel(MsgIRC& msg, Server& server, string& target) {
+	//  TODO : All the things
 	PayloadIRC payload;
 	string origin_chan_name = msg.payload.params.front();
+	if (server._channels.find(origin_chan_name) == server._channels.end())
+		return 1;
 
 	payload.prefix = server._hostName;
 	payload.command = "324";
 	payload.params.push_back(msg.receiver->nickname);
 	payload.params.push_back(origin_chan_name);
+	// Should be channel modes and not only +n
 	payload.params.push_back("+n");
 	MsgIRC response324(msg.receiver, payload);
 	server._msgQueue.push(response324);
+
 	return 0;
 }
 
 int PRIVMSGParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload = msg.payload;
+	string chan_name =  msg.payload.params.front();
+	if (server._channels.find(chan_name) == server._channels.end())
+		return 1;
 	Channel chan = server._channels[payload.params.front()];
+	
+	if (find(chan.current_users.begin(), chan.current_users.end(), msg.receiver) == chan.current_users.end())
+		return 1;
 	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	chan.sendToAll(payload, server, msg.receiver);
 	return 0;
@@ -192,11 +337,13 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 int WHOParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
+	string chan_name =  msg.payload.params.front();
+	if (server._channels.find(chan_name) == server._channels.end())
+		return 1;
 	Channel chan = server._channels[msg.payload.params.front()];
 	// 352
 	for(std::vector<UserIRC*>::iterator iter = chan.current_users.begin(); iter != chan.current_users.end(); ++iter)
     {
-		
 		payload.prefix = server._hostName;
 		payload.command = "352";
 		payload.params.push_back(msg.receiver->nickname);
@@ -210,7 +357,6 @@ int WHOParser(MsgIRC& msg, Server& server)
 		MsgIRC response352(msg.receiver, payload);
 		server._msgQueue.push(response352);
 		payload = PayloadIRC();
-		//chan.sendToAll(payload, server);
 	}
 
 	// 315
@@ -323,9 +469,9 @@ int INFOParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.trailer = "Luciano the away one, Lpassera";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "Alexandrie, the man who love beer without alcool like a chad, Adenhez";
+	payload.trailer = "Alexandre, the man who love beer with a lot of alcool like a chad, Adenhez";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, Earnaud";
+	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, (i love transexual guys and alcoholess pederastic beers) Earnaud ";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.command = "374";
 	payload.trailer = "End of INFO list";
@@ -398,4 +544,188 @@ int IsonParser(MsgIRC& msg, Server& server)
 	payload.trailer += " ";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
+}
+
+int PINGParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.command = "PONG";
+	payload.params.push_back(server._hostName);
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int PONGParser(MsgIRC& msg, Server& server)
+{
+	return 0;
+}
+
+int PARTParser(MsgIRC& msg, Server& server)
+{
+	queue<char*> chans;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
+	{
+		if (chanExist(channel, server))
+		{
+			if (server._channels[channel].isInChannel(msg.receiver))
+			{
+				PayloadIRC payload;
+				payload.command = "PART";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(msg.receiver);
+			}
+			else
+			{
+				PayloadIRC payload;
+				payload.command = "442";
+				payload.prefix = server._hostName;
+				payload.params.push_back(msg.receiver->nickname);
+				payload.params.push_back(channel);
+				payload.trailer = "You're not on that channel";
+				server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			}
+		}
+		else
+		{
+			PayloadIRC payload;
+			payload.command = "403";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back(channel);
+			payload.trailer = "No such channel";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		}
+	}
+	return 0;
+}
+
+int TOPICParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	string chan_name =  msg.payload.params.front();
+	if (server._channels.find(chan_name) == server._channels.end())
+		return 1;
+	Channel chan = server._channels[msg.payload.params.front()];
+
+	payload.prefix = msg.receiver->nickname + "!" +  msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.command = "TOPIC";
+	payload.params.push_back(chan._name);
+	payload.trailer = msg.payload.trailer;
+	server._channels[msg.payload.params.front()]._topic = msg.payload.trailer;
+	chan.sendToAll(payload, server);
+	return 0;
+}
+
+int LISTParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.command = "322";
+	for(std::map<string,Channel>::iterator it = server._channels.begin(); it != server._channels.end(); ++it) 
+	{
+		payload.params.clear();
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(it->first);
+		payload.params.push_back(to_string(it->second.current_users.size()));
+		payload.trailer = it->second._topic;
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	payload = PayloadIRC();
+	payload.prefix = server._hostName;
+	payload.command = "323";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.trailer = "End of LIST" ;
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int KICKParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.size() != 2)
+		return 0;
+	queue<char*> chans;
+	vector<char*> users;
+	char buffer[BUFFERMAX];
+	char buffer2[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	msg.payload.params.pop_front();
+	bzero(buffer2, BUFFERMAX);
+	strcpy(buffer2, msg.payload.params.begin()->c_str());
+	for (users.push_back(strtok(buffer2,",")); users.back() ; users.push_back(strtok(0, ",")));
+	
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
+	{
+		if (chanExist(channel, server))
+		{
+			for (vector<char*>::iterator user = users.begin(); users.size() && *user; user++)
+			{
+				PayloadIRC payload;
+				if(!server._channels[channel].isInChannel(server._users.findByNickname(*user)))
+				{
+					payload.command = "401";
+					payload.prefix = server._hostName;
+					payload.params.push_back("nickname " + (string)*user);
+					payload.trailer = "No such nick";
+					server._msgQueue.push(MsgIRC(msg.receiver, payload));
+					continue;
+				}
+				payload.command = "KICK";
+				payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+				payload.params.push_back(channel);
+				payload.params.push_back(*user);
+				payload.trailer = msg.payload.trailer;
+				server._channels[channel].sendToAll(payload, server);
+				server._channels[channel].removeUsersFromChan(server._users.findByNickname(*user));
+			}
+		}
+	}
+	return 0;
+}
+
+int KILLParser(MsgIRC& msg, Server& server)
+{
+	if (0/*msg.receiver != operator*/)
+	{
+		PayloadIRC payload;
+		payload.command = "481";
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "Permission denied, you don't have operator privileges";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 1;
+	}
+
+	if (server._users.findByNickname(msg.payload.params.front()))
+	{
+		PayloadIRC payloaderror;
+		//add the nickname to a banned list
+		payloaderror.command = "KILL"; //and maybe i don't send the correct packet, ho well
+		payloaderror.trailer = "Kill: " + msg.payload.trailer;
+		server._msgQueue.push(MsgIRC(server._users.findByNickname(msg.payload.params.front()), payloaderror));
+		PayloadIRC payload;
+		payload.command = "QUIT";
+		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.trailer = "Kill: " + msg.payload.trailer;
+		sendToAllChan(payload, server._users.findByNickname(msg.payload.params.front()), server);
+		return 0;
+	}
+	PayloadIRC payload;
+	payload.command = "401";
+	payload.prefix = server._hostName;
+	payload.params.push_back("nickname " + msg.payload.params.front());
+	payload.trailer = "No such nick";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+
 }
