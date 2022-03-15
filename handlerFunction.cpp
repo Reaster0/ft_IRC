@@ -883,3 +883,17 @@ int LUSERSParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int PASSParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.front() != server._password)
+	{
+		PayloadIRC payload;
+		payload.command = "QUIT";
+		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.trailer = "Kill: " + msg.payload.trailer;
+		sendToAllChan(payload, server._users.findByNickname(msg.payload.params.front()), server);
+		return 1;
+	}
+	return 0;
+}

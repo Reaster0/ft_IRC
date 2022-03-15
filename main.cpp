@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 		port = atoi(argv[1]);
 	else
 		port = 6667;
-	Server server(port);
+	Server server(port, "bonjour");
     server.launch();
 }
 
