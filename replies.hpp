@@ -226,7 +226,7 @@ namespace REPLIES {
 	// string RPL_ENDOFSTATS(string statsLetter) { return statsLetter + " :End of STATS report"; }
 	// string RPL_STATSUPTIME(string uptime) { return ":Server Up " + uptime; }
 	// string RPL_STATSOLINE(string hostMask, string name) { return "O " + hostMask + " * " + name; }
-	string RPL_UMODEIS(string userMode) { return userMode; }
+	string RPL_UMODEIS(UserIRC* user) { return user->getModes(); }
 	// string RPL_SERVLIST() { return ""; }
 	// string RPL_SERVLISTEND() { return ""; }
 

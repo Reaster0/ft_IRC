@@ -7,8 +7,53 @@
 #include <string>
 #include <iostream>
 #include <queue>
+#include <map>
 
 using namespace std;
+
+namespace MODES {
+	static const char AWAY				= 'a';
+	static const char INVISIBLE			= 'i';
+	static const char WALLOPS			= 'w';
+	static const char RESTRICTED		= 'r';
+	static const char OPERATOR			= 'o';
+	static const char LOCAL_OPERATOR	= 'O';
+	static const char SERVER_NOTICES	= 's';
+
+	static const string ALL				= "aiwroOs";
+}
+
+class UserModes {
+public:
+	UserModes()
+	: away(false)
+	, invisible(false)
+	, wallops(false)
+	, restricted(false)
+	, isOperator(false)
+	, isLocalOperator(false)
+	, serverNotices(false)
+	{}
+
+	bool away;
+	bool invisible;
+	bool wallops;
+	bool restricted;
+	bool isOperator;
+	bool isLocalOperator;
+	bool serverNotices;
+
+	static bool exist(char mode) {
+		for (string::const_iterator it = MODES::ALL.begin(); it != MODES::ALL.end(); it++) {
+			if (*it == mode) { return true; }
+		}
+		return false;
+	};
+
+	class UnknownMode : public exception {
+		const char* what(void) const throw();
+	};
+};
 
 struct UserIRC
 {
@@ -24,6 +69,11 @@ struct UserIRC
 
 	bool away;
 	string awayMessage;
+	UserModes modes;
+
+	string getModes(void) const;
+	bool getMode(char mode) const;
+	void setMode(char mode, bool value);
 };
 
 
