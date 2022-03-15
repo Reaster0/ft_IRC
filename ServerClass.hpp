@@ -110,5 +110,6 @@ int INVITEParser(MsgIRC& msg, Server& server);
 int WHOISParser(MsgIRC& msg, Server& server);
 int WHOWASParser(MsgIRC& msg, Server& server);
 int ADMINParser(MsgIRC& msg, Server& server);
+int LUSERSParser(MsgIRC& msg, Server& server);
 
 #endif

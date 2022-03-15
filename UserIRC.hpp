@@ -42,6 +42,7 @@ class UserList
 	UserIRC* findByUsername(const string& value);
 	UserIRC* findByNickname(const string& value);
 	UserIRC* findBySocket(const int& value);
+	size_t size() const;
 	//UserIRC* findFirstUnfilled(); depreciated
 };
 

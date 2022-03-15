@@ -50,6 +50,10 @@ UserIRC* UserList::findBySocket(const int& value)
 	return 0;
 }
 
+size_t UserList::size() const
+{
+	return listC.size();
+}
 
 // //return the first user that need filling or nothing
 // UserIRC* UserList::findFirstUnfilled()

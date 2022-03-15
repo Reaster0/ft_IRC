@@ -861,3 +861,25 @@ int ADMINParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int LUSERSParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.command = "251";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.trailer = "There are " + to_string(server._users.size()) + " users and 0 invisible on 1 servers";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.command = "254";
+	payload.params.push_back(to_string(server._channels.size()));
+	payload.trailer = "channels formed";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.params.pop_back();
+	payload.command = "255";
+	payload.trailer = "I have " + to_string(server._users.size()) + " clients and 1 servers";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
