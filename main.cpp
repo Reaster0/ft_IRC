@@ -7,16 +7,43 @@
 #include "ServerClass.hpp"
 #include "Channel.hpp"
 
+bool is_number(char *argv)
+{
+	int i = -1;
+
+	while (argv[++i])
+	{
+		if (!isdigit(argv[i]))
+			return false;
+	}
+	return true;
+}
+
+void	display_usage(void)
+{
+	cout << "usage:\n	";
+	cout << "./ircserv <port> <password>" << endl; 
+}
+
 int main(int argc, char **argv)
 {
 	int port;
-	if (argc > 2)
+	std::string password;
+	if (argc != 3)
+	{
+		display_usage();
+		cout << "error:\n	wrong argument number" << endl;
 		return 1;
-	if (argc == 2)
-		port = atoi(argv[1]);
-	else
-		port = 6667;
-	Server server(port, "bonjour");
+	}
+	if (!is_number(argv[1]))
+	{
+		display_usage();
+		cout << "error:\n	<port> must be an integer" << endl;
+		return 2;
+	}
+	port = atoi(argv[1]);
+	password = argv[2];
+	Server server(port, password);
     server.launch();
 }
 
