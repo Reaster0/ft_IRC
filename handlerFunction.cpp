@@ -940,3 +940,15 @@ int LUSERSParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int PASSParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.front() != server._password)
+	{
+		PayloadIRC payload;
+		payload.command = "KILL";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 1;
+	}
+	return 0;
+}

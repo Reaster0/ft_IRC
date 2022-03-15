@@ -33,16 +33,17 @@ void Server::initializeMap()
 	_handlerFunction["WHOWAS"]		= WHOWASParser;
 	_handlerFunction["ADMIN"]		= ADMINParser;
 	_handlerFunction["LUSERS"]		= LUSERSParser;
+	_handlerFunction["PASS"]		= PASSParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+Server::Server(const int& port, const string& pwd) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
