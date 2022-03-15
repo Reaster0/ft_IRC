@@ -140,7 +140,11 @@ int NICKParser(MsgIRC& msg, Server& server)
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	}
 	else
+	{
+		if (msg.receiver->nickname != "")
+			server._usersHistory.push_back(*msg.receiver);
 		msg.receiver->nickname = msg.payload.params.front();
+	}
 	if (msg.receiver->username != "")
 		welcomeMessage(msg.receiver, server);
 	return 0;
@@ -170,6 +174,7 @@ int QUITParser(MsgIRC& msg, Server& server)
 	payload.trailer = "Quit: " + msg.payload.trailer;
 	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	sendToAllChan(payload, msg.receiver, server);
+	server._usersHistory.push_back(*msg.receiver);
 	return 1;
 }
 
@@ -728,4 +733,210 @@ int KILLParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 
+}
+
+int INVITEParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	payload.command = "INVITE";
+	for (list<string>::iterator it = msg.payload.params.begin(); it != msg.payload.params.end(); ++it)
+		payload.params.push_back(*it);
+	UserIRC *user_to_send = server._users.findByNickname(msg.payload.params.front());
+	if (user_to_send == 0)
+		return 1;
+
+	string chan_name =  msg.payload.params.back();
+	if (server._channels.find(chan_name) == server._channels.end())
+		return 1;
+	Channel chan = server._channels[chan_name];
+	if (find(chan.invited_users.begin(), chan.invited_users.end(), user_to_send) != chan.invited_users.end())
+		server._channels[chan_name].invited_users.push_back(user_to_send);
+	server._msgQueue.push(MsgIRC(user_to_send, payload));
+
+	payload = PayloadIRC();
+	payload.prefix = server._hostName;
+	payload.command = "341";
+	payload.params.push_back(msg.receiver->nickname);
+
+	for (list<string>::iterator it = msg.payload.params.begin(); it != msg.payload.params.end(); ++it)
+		payload.params.push_back(*it);
+	
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int WHOISParser(MsgIRC& msg, Server& server)
+{
+	queue<char*> users;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.back().c_str());
+	for (users.push(strtok(buffer,",")); users.back() ; users.push(strtok(0, ",")));
+
+	for (char* user = users.front(); users.size() && user; users.pop(), user = users.front())
+	{
+		PayloadIRC payload;
+		UserIRC* target = server._users.findByNickname(user);
+		payload.prefix = server._hostName;
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(user);
+
+		if (!target)
+		{
+			payload.trailer = "No such nick";
+			payload.command = "401";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			payload.command = "318";
+			payload.trailer = "End of /WHOIS list.";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			continue;
+		}
+		
+		payload.params.push_back(target->username);
+		payload.params.push_back(getIPAddress(target));
+		payload.params.push_back("*");
+		payload.trailer = target->realName;
+		payload.command = "311";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.trailer.clear();
+		for (map<string, Channel>::iterator iter = server._channels.begin(); iter != server._channels.end(); ++iter)
+		{
+			if ((*iter).second.isInChannel(target))
+			{
+				if (!payload.trailer.empty())
+					payload.trailer += " ";
+				payload.trailer += "@" + (*iter).first;
+			}
+		}
+		payload.command = "319";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.push_back(server._hostName);
+		payload.trailer = "the best irc server";
+		payload.command = "312";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.push_back(to_string(difftime(time(0), target->idle)));
+		payload.params.push_back(to_string(target->idle));
+		payload.trailer = "seconds idle";
+		payload.command = "317";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.trailer = "End of /WHOIS list.";
+		payload.command = "318";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	return 1;
+}
+
+int WHOWASParser(MsgIRC& msg, Server& server)
+{
+	queue<char*> users;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.front().c_str());
+	for (users.push(strtok(buffer,",")); users.back() ; users.push(strtok(0, ",")));
+	list<UserIRC> history = server._usersHistory;
+
+	for (char* user = users.front(); users.size() && user; users.pop(), user = users.front())
+	{
+		PayloadIRC payload;
+		UserIRC* target = 0;
+		for (list<UserIRC>::iterator it = history.begin(); it != history.end(); ++it)
+			if ((*it).nickname == user)
+			{
+				target = &*it;
+				history.erase(it);
+				break;
+			}
+		if (!target)
+		{
+			payload.prefix = server._hostName;
+			payload.command = "406";
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back(user);
+			payload.trailer = "There was no such nickname";
+			server._msgQueue.push(MsgIRC(msg.receiver,payload));
+			payload.trailer = "End of WHOAS";
+			payload.command = "369";
+			server._msgQueue.push(MsgIRC(msg.receiver,payload));
+			continue;
+		}
+		payload.prefix = server._hostName;
+		payload.command = "314";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(target->nickname);
+		payload.params.push_back(target->username);
+		payload.params.push_back(target->ip);
+		payload.params.push_back("*");
+		payload.trailer = target->realName;
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.params.pop_back();
+		payload.params.push_back(server._hostName);
+		payload.trailer = getDateTime();
+		payload.command = "312";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+		payload.params.pop_back();
+		payload.trailer = "End of WHOWAS";
+		payload.command = "369";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	return 0;
+}
+
+int ADMINParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.command = "256";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(server._hostName);
+	payload.trailer = "Administrative Info";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.params.pop_back();
+	payload.command = "257";
+	payload.trailer = "Name: LinusTechTips";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "258";
+	payload.trailer = "Nickname: LTT";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "259";
+	payload.trailer = "Email: info@linusmediagroup.com";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int LUSERSParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.command = "251";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.trailer = "There are " + to_string(server._users.size()) + " users and 0 invisible on 1 servers";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.command = "254";
+	payload.params.push_back(to_string(server._channels.size()));
+	payload.trailer = "channels formed";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.params.pop_back();
+	payload.command = "255";
+	payload.trailer = "I have " + to_string(server._users.size()) + " clients and 1 servers";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
 }

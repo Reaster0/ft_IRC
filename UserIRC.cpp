@@ -84,7 +84,9 @@ void UserList::removeUser(int& fd)
 UserIRC* UserList::acceptNew(const int& endpoint)
 {
 	UserIRC newOne;
+	newOne.idle = time(0);
 	newOne.fdSocket = accept(endpoint, (sockaddr*)&newOne.addr, &newOne.sockLen);
+	newOne.ip = getIPAddress(&newOne);
 	listC.push_back(newOne);
 	return &listC.back();
 }
@@ -113,6 +115,10 @@ UserIRC* UserList::findBySocket(const int& value)
 	return 0;
 }
 
+size_t UserList::size() const
+{
+	return listC.size();
+}
 
 // //return the first user that need filling or nothing
 // UserIRC* UserList::findFirstUnfilled()

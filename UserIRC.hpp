@@ -64,6 +64,8 @@ struct UserIRC
 	sockaddr_in addr;
 	socklen_t sockLen;
 	bool needFill;
+	string ip;
+	time_t idle;
 
 	bool away;
 	string awayMessage;
@@ -90,6 +92,7 @@ class UserList
 	UserIRC* findByUsername(const string& value);
 	UserIRC* findByNickname(const string& value);
 	UserIRC* findBySocket(const int& value);
+	size_t size() const;
 	//UserIRC* findFirstUnfilled(); depreciated
 };
 

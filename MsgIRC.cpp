@@ -67,6 +67,7 @@ size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg)
 		buf.pop();
 	}
 	FD_CLR(user->fdSocket, &availableSockets);
+	user->idle = time(0);
 	return result;
 }
 
