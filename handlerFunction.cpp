@@ -263,6 +263,14 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 	PayloadIRC payload(server._hostName);
 	UserIRC* user = msg.receiver;
 
+	if (msg.payload.params.size() < 2) {
+		payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
+		payload.trailer = REPLIES::ERR_NEEDMOREPARAMS("MODE");
+		payload.params.push_back(msg.receiver->nickname);
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
 	if (user->nickname != target) {
 		payload.command = REPLIES::toString(ERR_USERSDONTMATCH);
 		payload.trailer = REPLIES::ERR_USERSDONTMATCH();
