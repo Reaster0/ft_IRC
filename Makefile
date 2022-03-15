@@ -45,4 +45,4 @@ fclean:		clean
 
 re:			fclean all
 
--include $(DEP)
+-include $(DEPS)
