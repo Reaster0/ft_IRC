@@ -883,3 +883,43 @@ int LUSERSParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
+
+int OPERATORParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	if (msg.params.size() != 2)
+	{
+		payload.prefix = server._hostName;
+		payload.command = "461";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back("OPER");
+		payload.trailer = "Parameters incorrect";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else if	(msg.params.front() != "macron")
+	{
+		payload.prefix = server._hostName;
+		payload.command = "491";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "No O-lines for your host";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else if (msg.params.back() != "demission")
+	{
+		payload.prefix = server._hostName;
+		payload.command = "464";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "Password incorrect";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+	{
+		payload.prefix = server._hostName;
+		payload.command = "381";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "You are an IRC operator";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	return 0;
+}
