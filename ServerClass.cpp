@@ -29,9 +29,9 @@ void Server::initializeMap()
 	_handlerFunction["KICK"]		= KICKParser;
 	_handlerFunction["KILL"]		= KILLParser;
 	_handlerFunction["INVITE"]		= INVITEParser;
-	
 	_handlerFunction["WHOIS"]		= WHOISParser;
 	_handlerFunction["WHOWAS"]		= WHOWASParser;
+	_handlerFunction["ADMIN"]		= ADMINParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())

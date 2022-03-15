@@ -109,5 +109,6 @@ int KILLParser(MsgIRC& msg, Server& server);
 int INVITEParser(MsgIRC& msg, Server& server);
 int WHOISParser(MsgIRC& msg, Server& server);
 int WHOWASParser(MsgIRC& msg, Server& server);
+int ADMINParser(MsgIRC& msg, Server& server);
 
 #endif

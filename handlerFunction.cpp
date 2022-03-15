@@ -837,3 +837,27 @@ int WHOWASParser(MsgIRC& msg, Server& server)
 	}
 	return 0;
 }
+
+int ADMINParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	payload.prefix = server._hostName;
+	payload.command = "256";
+	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(server._hostName);
+	payload.trailer = "Administrative Info";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+
+	payload.params.pop_back();
+	payload.command = "257";
+	payload.trailer = "Name: LinusTechTips";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "258";
+	payload.trailer = "Nickname: LTT";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	payload.command = "259";
+	payload.trailer = "Email: info@linusmediagroup.com";
+	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
