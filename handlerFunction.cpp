@@ -3,61 +3,6 @@
 #include <fstream>
 #define BUFFERMAX 512 //need to change accordingly
 
-const string g_welcome[] = 
-{"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⠤⠴⠒⠒⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠑⠒⠲⠦⢤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⢀⣀⡤⠒⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠒⠤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⢀⣠⠖⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠲⢄⣀⠀⠀⠀⠀⠀",
-"⠀⢠⠞⠁⠀⠀⠀⠀⠀⢀⣀⡤⠤⠖⠒⠚⠛⠉⠉⠉⠉⠀⠀⠉⠉⠉⠉⠉⠙⠛⠒⠒⠶⠤⢄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀",
-"⠀⣿⠀⠀⠀⢀⣠⠴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠑⠲⠦⣄⡀⠀⠀⠀⠀⡇⠀⠀⠀",
-"⠀⠙⠲⠶⠖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠒⠒⠊⠁⠀⠀⠀",
-"⠀⠀⠀⠀⠀⢀⡤⠶⠒⠋⠉⠉⠉⠉⠉⠓⠲⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⠤⠴⠶⠶⠶⠶⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⢦⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⢦⡀⠀⠀⠀⠀",
-"⠀⢠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⡀⠀⠀",
-"⠀⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡀⠀⠀⢀⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢳⡄⠀",
-"⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⠀",
-"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀ft_irc⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀⡇⠀⠀⠀⠀⠀⠀   sucks⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀",
-"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠺⡗⠂⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇",
-"⠸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀",
-"⠀⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠁⠀⠀⠹⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀",
-"⠀⠀⠹⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡜⠁⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀",
-"⠀⠀⠀⠈⠳⢤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠋⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠋⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠈⠉⠓⠲⠦⠤⠤⠤⠤⠶⠒⠉⠁⠀⠀⡀⠀⠀⠀⠀⠀⠀⢀⠀⠈⠓⠶⠤⣤⣀⣀⣀⣀⣀⣠⡤⠴⠚⠉⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠑⠢⢄⣀⣀⡀⠀⠀⠀⠀⣀⣀⣠⠤⠂⠀⠀⠀⣇⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠉⠙⠲⠦⠤⠤⠤⠤⠴⠚⠉⠁⠀⠀⠀⠀⠀",
-"⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡇⠀⠀⠀⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠤⠤⠤⠤⣄⣀⠀⠀",
-"⣀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⡾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠈⠓⢦",
-"⠁⠀⠀⢀⣠⣤⣶⣿⣿⣿⣏⠉⠉⠛⣻⣶⠢⢤⣄⡀⠀⠀⠘⢦⣀⣠⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠴⠒⠛⣷⣶⣤⣄⠀⠀",
-"⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⡀⠀⠀⠉⣳⢤⣀⠀⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠛⣧⡀⠀⠀⢠⣿⣿⣿⣿⣿⣄",
-"⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣶⣿⣿⠀⠈⠙⠲⣤⣀⣀⡀⢀⣀⣀⡤⠴⣾⡉⠀⠀⠀⢹⣿⣶⣶⣿⣿⣿⣿⣿⣿⣿",
-"⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣠⣾⣷⠀⠉⠉⣽⡏⠀⠀⠀⣸⣿⣦⣄⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣾⣿⣷⣄⣀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⠛⠛⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿lpassera⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⠘⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿earnaud⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿",
-"⠀⠘⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⣠⣴⣶⣿⣿⣿⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿adenhez⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁",
-"⠀⠀⠈⠻⣏⡀⠀⠀⠀⣀⠤⠾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣿⣿⣿⡿⠋⠀⢀",
-"⣦⡀⠀⠀⠈⠙⠦⣄⡞⠁⠀⠀⢻⡿⠏⠉⠉⠻⣿⣿⡿⠛⠿⣿⣿⡿⠛⠛⠻⣿⣿⠟⠉⠻⣿⡿⠋⠉⢿⡿⠃⠀⢀⣨⠿⠋⠀⠀⣴⠚",
-"⠀⠉⠦⣄⠀⠀⠀⠈⠉⠲⠦⣄⣼⡁⠀⠀⠀⠀⣿⠏⠀⠀⠀⠸⡿⠁⠀⠀⠀⢹⠇⠀⠀⠀⢻⠃⠀⢀⣨⡧⠴⠒⠉⠀⠀⢀⡤⠏⠁⠀",
-"⠀⠀⠀⠀⠙⠒⠢⠄⠀⠀⠀⠀⠈⠉⠉⠛⠒⠒⠛⠒⠲⠤⠤⠴⠧⠤⠤⠤⠤⠼⠖⠒⠒⠒⠛⠋⠉⠉⠁⠀⠀⣀⣀⡴⠞⠉⠀  ⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠴⠖⠒⠒⠋⠉⠀⠀⠀⠀   ⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"};
-
-void	welcome_ascii_displayer(UserIRC* user, Server& server)
-{
-	PayloadIRC temp;
-	int i(-1);
-    while (++i < 37)
-    {
-     temp = PayloadIRC();
-     temp.prefix = "EpikEkipEkolegram";
-     temp.command = "372";
-     temp.params.push_back(user->nickname);
-     temp.trailer = g_welcome[i];
-     server._msgQueue.push(MsgIRC(user, temp));
-    }
-}
-
 void welcomeMessage(UserIRC* user, Server& server)
 {
 	PayloadIRC temp;
@@ -89,35 +34,8 @@ void welcomeMessage(UserIRC* user, Server& server)
 	temp.trailer = "EpikEkipEkolegram 42.69 aiwroOs OovaimnpsrtklbeI";
 	server._msgQueue.push(MsgIRC(user, temp));
 
-	temp = PayloadIRC();
-	temp.prefix = "EpikEkipEkolegram";
-	temp.command = REPLIES::toString(RPL_MOTDSTART);
-	temp.params.push_back(user->nickname);
-	temp.trailer = REPLIES::RPL_MOTDSTART(server);
-	server._msgQueue.push(MsgIRC(user, temp));
-
-	temp = PayloadIRC();
-	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "372";
-	temp.params.push_back(user->nickname);
-	temp.trailer = "bienvenue cher tester! your nickname is:" + user->nickname;
-	server._msgQueue.push(MsgIRC(user, temp));
-
-	temp = PayloadIRC();
-	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "372";
-	temp.params.push_back(user->nickname);
-	temp.trailer = "your username is:" + user->username;
-	server._msgQueue.push(MsgIRC(user, temp));
-	
-	temp = PayloadIRC();
-	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "372";
-	temp.params.push_back(user->nickname);
-	temp.trailer = "your realname is:" + user->realName;
-	server._msgQueue.push(MsgIRC(user, temp));
-
-	welcome_ascii_displayer(user, server);
+	MsgIRC msg(user, temp);
+	MOTD(msg, server);
 }
 
 int funCap(MsgIRC& msg, Server& server)
@@ -313,7 +231,7 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 			}
 		}
 	}
-	
+
 	payload.command = REPLIES::toString(RPL_UMODEIS);
 	payload.trailer = REPLIES::RPL_UMODEIS(user);
 	payload.params.push_back(msg.receiver->nickname);
@@ -426,7 +344,8 @@ int NAMESParser(MsgIRC& msg, Server& server)
 }
 
 int MOTD(MsgIRC& msg, Server& server) {
-	static const int MAX_MOTD_SIZE = 80;
+	static const int CHAR_SIZE = 4; // Unicode char size
+	static const int MAX_MOTD_SIZE = 80 * CHAR_SIZE;
 
 	PayloadIRC payload;
 	fstream file("config/motd");
