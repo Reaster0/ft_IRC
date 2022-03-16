@@ -263,7 +263,7 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 	PayloadIRC payload(server._hostName);
 	UserIRC* user = msg.receiver;
 
-	if (msg.payload.params.size() < 2) {
+	if (msg.payload.params.size() < 1) {
 		payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
 		payload.trailer = REPLIES::ERR_NEEDMOREPARAMS("MODE");
 		payload.params.push_back(msg.receiver->nickname);
@@ -282,29 +282,38 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 	list<string>::iterator it = msg.payload.params.begin();
 	advance(it, 1);
 
-	string& modesToApply = *it;
-	char qualifier = modesToApply.at(0);
+	if (it != msg.payload.params.end()) {
+		string& modesToApply = *it;
+		char qualifier = modesToApply.at(0);
 
 
-	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
-		if (!UserModes::exist(*it)) {
-			payload.command = REPLIES::toString(ERR_UMODEUNKNOWNFLAG);
-			payload.trailer = REPLIES::ERR_UMODEUNKNOWNFLAG();
-			payload.params.push_back(msg.receiver->nickname);
-			server.sendMessage(msg.receiver, payload);
-			return 1;
+		for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+			if (!UserModes::exist(*it)) {
+				payload.command = REPLIES::toString(ERR_UMODEUNKNOWNFLAG);
+				payload.trailer = REPLIES::ERR_UMODEUNKNOWNFLAG();
+				payload.params.push_back(msg.receiver->nickname);
+				server.sendMessage(msg.receiver, payload);
+				return 1;
+			}
+		}
+
+		for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
+			try {
+				if (*it == MODES::AWAY) { continue; }
+				if (qualifier == '-') { 
+					if (*it != MODES::RESTRICTED)
+						user->setMode(*it, false);
+				}
+				if (qualifier == '+') {
+					if (*it != MODES::OPERATOR && *it != MODES::LOCAL_OPERATOR)
+						user->setMode(*it, true); 
+				}
+			} catch (exception& e) {
+				cout << "ERROR: " << e.what() << endl;
+			}
 		}
 	}
-
-	for (string::iterator it = modesToApply.begin() + 1; it != modesToApply.end(); it++) {
-		try {
-			if (qualifier == '-') { user->setMode(*it, false); }
-			if (qualifier == '+') { user->setMode(*it, true); }
-		} catch (exception& e) {
-			cout << "ERROR: " << e.what() << endl;
-		}
-	}
-
+	
 	payload.command = REPLIES::toString(RPL_UMODEIS);
 	payload.trailer = REPLIES::RPL_UMODEIS(user);
 	payload.params.push_back(msg.receiver->nickname);
