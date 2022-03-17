@@ -154,6 +154,15 @@ int USERParser(MsgIRC& msg, Server& server)
 {
 	// if (server._users.findByUsername(msg.payload.params.front()))
 	// 	return 1;
+	if (msg.receiver->allowed == false)
+	{
+		PayloadIRC payload;
+		payload.command = "KILL";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		cout << "connection refused with " << getIPAddress(msg.receiver) << ": missing password" << endl;
+
+		return 1;
+	}
 	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
@@ -989,7 +998,9 @@ int PASSParser(MsgIRC& msg, Server& server)
 		PayloadIRC payload;
 		payload.command = "KILL";
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		cout << "connection refused with " << getIPAddress(msg.receiver) << ": wrong password" << endl;
 		return 69;
 	}
+	msg.receiver->allowed = true;
 	return 0;
 }

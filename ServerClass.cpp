@@ -216,16 +216,16 @@ void Server::serverLoop(int &endpoint)
 			{
 				if (_msgQueue.front().receiver->fdSocket == i)
 				{
-				sendMsg(availableWSockets, _msgQueue.front());
-				if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
-				{
-					//need to remove all message in msgQueue from this user to avoid segfaults
-					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
-					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
-					close(i);
-					_users.removeUser(_msgQueue.front().receiver->fdSocket);
-				}
-				_msgQueue.pop();
+					sendMsg(availableWSockets, _msgQueue.front());
+					if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
+					{
+						//need to remove all message in msgQueue from this user to avoid segfaults
+						removeUsersFromAllChans(_msgQueue.front().receiver, *this);
+						FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
+						close(i);
+						_users.removeUser(_msgQueue.front().receiver->fdSocket);
+					}
+					_msgQueue.pop();
 				}
 			}
 		}
