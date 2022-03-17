@@ -989,7 +989,7 @@ int PASSParser(MsgIRC& msg, Server& server)
 		PayloadIRC payload;
 		payload.command = "KILL";
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
-		return 1;
+		return 69;
 	}
 	return 0;
 }

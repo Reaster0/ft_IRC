@@ -44,7 +44,7 @@ size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 	return send(msg.receiver->fdSocket, buffer.c_str(), buffer.length(), 0);
 }
 
-size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg)
+size_t receiveMsg(UserIRC* user, fd_set &availableSockets, list<MsgIRC>& msg)
 {
 	size_t result;
 	char buffer[BUFFERMAX];
@@ -63,7 +63,7 @@ size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg)
 	} while(temp);
 	while (!buf.empty())
 	{
-		msg.push(MsgIRC(user, parsingToPayload(buf.front())));
+		msg.push_back(MsgIRC(user, parsingToPayload(buf.front())));
 		buf.pop();
 	}
 	FD_CLR(user->fdSocket, &availableSockets);

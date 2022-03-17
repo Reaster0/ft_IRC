@@ -146,6 +146,16 @@ bool chanExist(const string& channel, Server &server)
 	return server._channels.find(channel) != server._channels.end();
 }
 
+list<MsgIRC>::iterator otherMsgReceiver(list<MsgIRC>& Msgs, UserIRC* user)
+{
+	for (list<MsgIRC>::iterator it = ++Msgs.begin(); it != Msgs.end(); ++it)
+	{
+		if ((*it).receiver == user)
+			return it;
+	}
+	return Msgs.end();
+}
+
 void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
@@ -174,7 +184,7 @@ void Server::serverLoop(int &endpoint)
 				}
 				else
 				{
-					queue<MsgIRC> newOnes;
+					list<MsgIRC> newOnes;
 					if (!receiveMsg(_users.findBySocket(i), availableSockets, newOnes))
 					{
 						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has ctrl.c..." << endl;
@@ -185,12 +195,19 @@ void Server::serverLoop(int &endpoint)
 					}
 					while (newOnes.size())
 					{
+						size_t logFunction;
 						printPayload(newOnes.front().payload);
 						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
-							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+							logFunction = _handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
 						else
 							cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
-						newOnes.pop();
+						if (logFunction == 69)
+						{
+							list<MsgIRC>::iterator iter;
+							while ((iter = otherMsgReceiver(newOnes, newOnes.front().receiver)) != newOnes.end())
+								newOnes.erase(iter);
+						}
+						newOnes.pop_front();
 					}
 				}
 			}
