@@ -6,7 +6,73 @@
 #include "MsgIRC.hpp"
 #include "ServerClass.hpp"
 
+namespace MODES {
+	namespace CHANNEL {
+		static const char ANONYMOUS				= 'a';
+		static const char INVITE_ONLY			= 'i';
+		static const char MODERATED				= 'm';
+		static const char NO_OUTSIDE_MESSAGES	= 'n';
+		static const char QUIET					= 'q';
+		static const char PRIVATE				= 'p';
+		static const char SECRET				= 's';
+		static const char REOP					= 'r';
+		static const char SETTABLE_TOPIC		= 't';
+		static const char KEY_SET				= 'k';
+		static const char USER_LIMIT_SET		= 'l';
+		static const char BAN_MASK_SET			= 'b';
+		static const char EXCEPTION_MASK_SET	= 'e';
+		static const char INVITATION_MASK_SET	= 'I';
+
+		static const string ALL					= "aimnqpsrtklbeI";
+	}
+}
+
+
 class Server;
+class ChannelModes {
+public:
+	ChannelModes() : anonymous(false)
+	, inviteOnly(false)
+	, moderated(false)
+	, noOutsideMessages(false)
+	, quiet(false)
+	, privateChannel(false)
+	, secret(false)
+	, reop(false)
+	, topicSettable(false)
+	, keySet(false)
+	, limitSet(false)
+	, banMaskSet(false)
+	, exceptionMaskSet(false)
+	, invitationMaskSet(false) {}
+
+	bool anonymous;
+	bool inviteOnly;
+	bool moderated;
+	bool noOutsideMessages;
+	bool quiet;
+	bool privateChannel;
+	bool secret;
+	bool reop;
+	bool topicSettable;
+	bool keySet;
+	bool limitSet;
+	bool banMaskSet;
+	bool exceptionMaskSet;
+	bool invitationMaskSet;
+
+	static bool exist(char mode) {
+		for (string::const_iterator it = MODES::CHANNEL::ALL.begin(); it != MODES::CHANNEL::ALL.end(); it++) {
+			if (*it == mode) { return true; }
+		}
+		return false;
+	};
+
+	class UnknownMode : public exception {
+		const char* what(void) const throw();
+	};
+};
+
 class Channel
 {
 	public:
@@ -21,11 +87,17 @@ class Channel
 		vector<UserIRC*> banned_users;
 		vector<UserIRC*> invited_users;
 
+		ChannelModes modes;
+
 		Channel();
 		Channel(string name);
 		Channel(const Channel &chan);
 		Channel& operator=(const Channel &rhs);
 		~Channel();
+
+		string getModes(void) const;
+		bool getMode(char mode) const;
+		void setMode(char mode, bool value);
 
 		bool	isAuthorizedUser(UserIRC *user);
 		void	acceptUser(UserIRC *user);

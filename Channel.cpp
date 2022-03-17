@@ -9,6 +9,7 @@ Channel::Channel(std::string name)
 	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
+	cout << "Channel modes: " << getModes() << endl;
 }
 
 Channel::Channel()
@@ -19,6 +20,7 @@ Channel::Channel()
 	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
+	cout << "Channel modes: " << getModes() << endl;
 }
 
 Channel::~Channel(){}
@@ -51,6 +53,105 @@ Channel& Channel::operator=(const Channel &rhs)
 		banned_users = rhs.banned_users;
 	}
 	return *this;
+}
+
+string Channel::getModes(void) const {
+	string modes;
+
+	for (string::const_iterator it = MODES::CHANNEL::ALL.begin(); it != MODES::CHANNEL::ALL.end(); it++) {
+		if (this->getMode(*it)) { modes += *it; }
+	}
+	if (modes.size() > 0)
+		return "+" + modes;
+	return "";
+}
+
+bool Channel::getMode(char mode) const {
+	switch (mode) {
+		case MODES::CHANNEL::ANONYMOUS:
+			return this->modes.anonymous;
+		case MODES::CHANNEL::INVITE_ONLY:
+			return this->modes.inviteOnly;
+		case MODES::CHANNEL::MODERATED:
+			return this->modes.moderated;
+		case MODES::CHANNEL::NO_OUTSIDE_MESSAGES:
+			return this->modes.noOutsideMessages;
+		case MODES::CHANNEL::QUIET:
+			return this->modes.quiet;
+		case MODES::CHANNEL::PRIVATE:
+			return this->modes.privateChannel;
+		case MODES::CHANNEL::SECRET:
+			return this->modes.secret;
+		case MODES::CHANNEL::REOP:
+			return this->modes.reop;
+		case MODES::CHANNEL::SETTABLE_TOPIC:
+			return this->modes.topicSettable;
+		case MODES::CHANNEL::KEY_SET:
+			return this->modes.keySet;
+		case MODES::CHANNEL::USER_LIMIT_SET:
+			return this->modes.limitSet;
+		case MODES::CHANNEL::BAN_MASK_SET:
+			return this->modes.banMaskSet;
+		case MODES::CHANNEL::EXCEPTION_MASK_SET:
+			return this->modes.exceptionMaskSet;
+		case MODES::CHANNEL::INVITATION_MASK_SET:
+			return this->modes.invitationMaskSet;
+		default:
+			throw ChannelModes::UnknownMode();
+	}
+}
+
+void Channel::setMode(char mode, bool value) {
+	switch (mode) {
+		case MODES::CHANNEL::ANONYMOUS:
+			this->modes.anonymous = value;
+			break;
+		case MODES::CHANNEL::INVITE_ONLY:
+			this->modes.inviteOnly = value;
+			break;
+		case MODES::CHANNEL::MODERATED:
+			this->modes.moderated = value;
+			break;
+		case MODES::CHANNEL::NO_OUTSIDE_MESSAGES:
+			this->modes.noOutsideMessages = value;
+			break;
+		case MODES::CHANNEL::QUIET:
+			this->modes.quiet = value;
+			break;
+		case MODES::CHANNEL::PRIVATE:
+			this->modes.privateChannel = value;
+			break;
+		case MODES::CHANNEL::SECRET:
+			this->modes.secret = value;
+			break;
+		case MODES::CHANNEL::REOP:
+			this->modes.reop = value;
+			break;
+		case MODES::CHANNEL::SETTABLE_TOPIC:
+			this->modes.topicSettable = value;
+			break;
+		case MODES::CHANNEL::KEY_SET:
+			this->modes.keySet = value;
+			break;
+		case MODES::CHANNEL::USER_LIMIT_SET:
+			this->modes.limitSet = value;
+			break;
+		case MODES::CHANNEL::BAN_MASK_SET:
+			this->modes.banMaskSet = value;
+			break;
+		case MODES::CHANNEL::EXCEPTION_MASK_SET:
+			this->modes.exceptionMaskSet = value;
+			break;
+		case MODES::CHANNEL::INVITATION_MASK_SET:
+			this->modes.invitationMaskSet = value;
+			break;
+		default:
+			throw ChannelModes::UnknownMode();
+	}
+}
+
+const char* ChannelModes::UnknownMode::what(void) const throw() {
+	return "Unknown mode";
 }
 
 // include authorized user inside chan's current_users and remove from chan's invited list
