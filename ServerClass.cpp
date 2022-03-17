@@ -35,6 +35,7 @@ void Server::initializeMap()
 	_handlerFunction["LUSERS"]		= LUSERSParser;
 	_handlerFunction["OPER"]		= OPERATORParser;
 	_handlerFunction["PASS"]		= PASSParser;
+	_handlerFunction["NOTICE"]		= PRIVMSGParser;
 }
 
 Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _endpoint(createEndpoint())
