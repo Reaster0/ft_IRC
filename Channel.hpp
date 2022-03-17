@@ -23,7 +23,15 @@ namespace MODES {
 		static const char EXCEPTION_MASK_SET	= 'e';
 		static const char INVITATION_MASK_SET	= 'I';
 
-		static const string ALL					= "aimnqpsrtklbeI";
+		static const char CREATOR				= 'O';
+		static const char OPERATOR				= 'o';
+		static const char VOICE					= 'v';
+
+		static const string ALL					= "aimnqpsrtklbeIOov";
+
+		static const string USER_RELATED		= "Oov";
+		static const string NEED_PARAMS			= "klbeIOov";
+		static const string TOGGLEABLE			= "aimnqpsrt";
 	}
 }
 
@@ -61,6 +69,13 @@ public:
 	bool exceptionMaskSet;
 	bool invitationMaskSet;
 
+	static bool is(char mode, const string& modes) {
+		for (string::const_iterator it = modes.begin(); it != modes.end(); it++) {
+			if (*it == mode) { return true; }
+		}
+		return false;
+	};
+
 	static bool exist(char mode) {
 		for (string::const_iterator it = MODES::CHANNEL::ALL.begin(); it != MODES::CHANNEL::ALL.end(); it++) {
 			if (*it == mode) { return true; }
@@ -73,6 +88,22 @@ public:
 	};
 };
 
+class UserChannelModes {
+public:
+	UserChannelModes() : creator(false)
+	, channelOperator(false)
+	, voice(false) {}
+
+	bool creator;
+	bool channelOperator;
+	bool voice;
+
+	class UnknownMode : public exception {
+		const char* what(void) const throw();
+	};
+};
+
+
 class Channel
 {
 	public:
@@ -82,6 +113,8 @@ class Channel
 		int			_maximum_users;
 		std::string	_topic;
 		std::string	_name;
+
+		map<UserIRC*, UserChannelModes> user_modes;
 
 		vector<UserIRC*> current_users;
 		vector<UserIRC*> banned_users;

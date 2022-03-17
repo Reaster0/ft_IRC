@@ -233,29 +233,96 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 	}
 
 	payload.command = REPLIES::toString(RPL_UMODEIS);
-	payload.trailer = REPLIES::RPL_UMODEIS(user);
 	payload.params.push_back(msg.receiver->nickname);
+	payload.params.push_back(REPLIES::RPL_UMODEIS(user));
 
 	server.sendMessage(msg.receiver, payload);
 	return 0;
 }
 
+// bool areModesValid(string::iterator begin, string::iterator end, string modes) {
+// 	for (string::iterator it = begin; it != end; it++)
+// 		if ()
+// 	return true;
+// }
+
 int MODEChannel(MsgIRC& msg, Server& server, string& target) {
-	//  TODO : All the things
-	PayloadIRC payload;
+	PayloadIRC payload(server._hostName);
 	string origin_chan_name = msg.payload.params.front();
-	if (server._channels.find(origin_chan_name) == server._channels.end())
+	Channel* channel;
+
+	if (server._channels.find(origin_chan_name) == server._channels.end()) {
+		payload.command = REPLIES::toString(ERR_NOSUCHCHANNEL);
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(origin_chan_name);
+		payload.params.push_back(REPLIES::ERR_NOSUCHCHANNEL(origin_chan_name));
+
+		server.sendMessage(msg.receiver, payload);
 		return 1;
+	}
 
-	payload.prefix = server._hostName;
-	payload.command = "324";
+	channel = &server._channels.find(origin_chan_name)->second;
+
+	list<string>::iterator itParams = msg.payload.params.begin();
+	advance(itParams, 1);
+
+	if (itParams == msg.payload.params.end()) {
+		payload.command = REPLIES::toString(RPL_CHANNELMODEIS);
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(REPLIES::RPL_CHANNELMODEIS(*channel, ""));
+
+		server.sendMessage(msg.receiver, payload);
+		return 1;
+	}
+
+	string& modesToApply = *itParams;
+	char qualifier = modesToApply.at(0);
+	int hasQualifier = (qualifier == '-' || qualifier == '+') ? 1 : 0;
+
+	for (string::iterator it = modesToApply.begin() + hasQualifier; it != modesToApply.end(); it++) {
+		if (!ChannelModes::exist(*it)) {
+			payload.command = REPLIES::toString(ERR_UMODEUNKNOWNFLAG);
+			payload.trailer = REPLIES::ERR_UMODEUNKNOWNFLAG();
+			payload.params.push_back(msg.receiver->nickname);
+			server.sendMessage(msg.receiver, payload);
+
+			return 1;
+
+		}
+	}
+
+	for (string::iterator it = modesToApply.begin() + hasQualifier; it != modesToApply.end(); it++) {
+		if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::NEED_PARAMS)) {
+			if (qualifier == '+') { advance(itParams, 1); }
+			if (*it == MODES::CHANNEL::USER_LIMIT_SET) {
+				
+			}
+		} else if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::TOGGLEABLE)) {
+			channel->setMode(*it, qualifier == '+');
+		} else if (ChannelModes::is(*it, MODES::CHANNEL::USER_RELATED)) {
+			advance(itParams, 1);
+			if (itParams == msg.payload.params.end()) {
+				payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
+				payload.params.push_back(msg.receiver->nickname);
+				payload.params.push_back("MODE");
+				payload.trailer = REPLIES::ERR_NEEDMOREPARAMS("MODE");
+				server.sendMessage(msg.receiver, payload);
+
+				return 1;
+			}
+
+			// channel->current_users.find(*itParams);
+			// channel->user_modes.find(*itParams)
+			// if not here
+			// 	  send error ERR_USERNOTINCHANNEL
+		}
+	}
+
+	payload.command = REPLIES::toString(RPL_CHANNELMODEIS);
 	payload.params.push_back(msg.receiver->nickname);
-	payload.params.push_back(origin_chan_name);
-	// Should be channel modes and not only +n
-	payload.params.push_back("+n");
-	MsgIRC response324(msg.receiver, payload);
-	server._msgQueue.push(response324);
+	payload.params.push_back(REPLIES::RPL_CHANNELMODEIS(*channel, ""));
 
+	server.sendMessage(msg.receiver, payload);	
 	return 0;
 }
 

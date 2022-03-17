@@ -9,7 +9,7 @@ Channel::Channel(std::string name)
 	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
-	cout << "Channel modes: " << getModes() << endl;
+	setMode(MODES::CHANNEL::NO_OUTSIDE_MESSAGES, true);
 }
 
 Channel::Channel()
@@ -20,7 +20,7 @@ Channel::Channel()
 	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
-	cout << "Channel modes: " << getModes() << endl;
+	setMode(MODES::CHANNEL::NO_OUTSIDE_MESSAGES, true);
 }
 
 Channel::~Channel(){}

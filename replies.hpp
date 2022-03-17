@@ -171,7 +171,7 @@ namespace REPLIES {
 	string RPL_LIST(string channel, string visibleUsersCount, string topic) { return channel + " " + visibleUsersCount + ":" + topic; }
 	string RPL_LISTEND(void) { return ":End of LIST"; }
 	string RPL_UNIQOPIS(string channel, string nickname) { return channel + " " + nickname; }
-	string RPL_CHANNELMODEIS(string channel, string mode, string modeParams) { return channel + " " + mode + " " + modeParams; }
+	string RPL_CHANNELMODEIS(Channel& channel, string modeParams) { return channel._name + " " + channel.getModes() + " " + modeParams; }
 	string RPL_NOTOPIC(string channel) { return channel + " :No topic is set"; }
 	string RPL_TOPIC(string channel, string topic) { return channel + " :" + topic; }
 	string RPL_INVITING(string channel, string nickname) { return channel + " " + nickname; }
