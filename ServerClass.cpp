@@ -105,10 +105,8 @@ void Server::bindEndpoint(void)
 	listen(_endpoint, 1);
 	char host[256];
   	struct hostent *host_entry;
-	//int hostname;// maybe not usefull in the end
-	//hostname = gethostname(host, sizeof(host));
+	gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
-	//time_t now = time(0);
 	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime;
 }
 
