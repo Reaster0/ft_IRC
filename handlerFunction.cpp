@@ -316,6 +316,7 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 
 int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	//  TODO : All the things
+	(void)target; // unused
 	PayloadIRC payload;
 	string origin_chan_name = msg.payload.params.front();
 	if (server._channels.find(origin_chan_name) == server._channels.end())
@@ -352,6 +353,8 @@ int dcc_send_response(MsgIRC& msg, Server& server)
 
 int dcc_resume_response(MsgIRC& msg, Server& server)
 {
+	(void)msg; // unused
+	(void)server; // unused
 	return 0;
 }
 
@@ -606,6 +609,8 @@ int PINGParser(MsgIRC& msg, Server& server)
 
 int PONGParser(MsgIRC& msg, Server& server)
 {
+	(void)msg; // unused
+	(void)server; // unused
 	return 0;
 }
 

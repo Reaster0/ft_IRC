@@ -25,12 +25,12 @@ int main()
 {
     int client;
     int portNum = 20000;
-    bool isExit = false;
+    //bool isExit = false;
     int bufsize = 1024;
     char buffer[bufsize];
 	bzero(buffer, bufsize);
 	string ip_str = "127.0.0.1";
-    char* ip = const_cast<char*>(ip_str.c_str());
+    //char* ip = const_cast<char*>(ip_str.c_str());
 	string input;
 	char *line = NULL;
 
