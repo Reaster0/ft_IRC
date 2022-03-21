@@ -47,12 +47,22 @@ size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg)
 size_t receiveMsg(UserIRC* user, fd_set &availableSockets, list<MsgIRC>& msg)
 {
 	size_t result;
-	char buffer[BUFFERMAX];
+	char buffer[BUFFERMAX * 2];
 	queue<char*> buf;
 	char *temp;
-	bzero(buffer, BUFFERMAX);
+	bzero(buffer, BUFFERMAX * 2);
 
 	result = recv(user->fdSocket, buffer, BUFFERMAX, 0);
+	while (result > 0 && buffer[result - 1] != '\n')
+	{
+		char tempBuffer[BUFFERMAX];
+		bzero(tempBuffer, BUFFERMAX);
+		size_t recvReturn = recv(user->fdSocket, tempBuffer, BUFFERMAX, 0);
+		strcpy(buffer + result, tempBuffer);
+		if (recvReturn == 0)
+			return recvReturn;
+		result += recvReturn;
+	}
 	if (!result)
 		return result;
 	temp = strtok(buffer, "\r\n");
