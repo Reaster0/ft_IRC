@@ -17,12 +17,11 @@ struct PayloadIRC
 	list<string> params;
 	string prefix;
 	string trailer;
+	string CTCP_Data;
 	
 	PayloadIRC(){}
 	PayloadIRC(const string& prefix) : prefix(prefix) {}
-	PayloadIRC(const PayloadIRC& other):
-	command(other.command), params(other.params),
-	prefix(other.prefix), trailer(other.trailer){}
+	PayloadIRC(const PayloadIRC& other): command(other.command), params(other.params),prefix(other.prefix), trailer(other.trailer){}
 	bool empty();
 };
 

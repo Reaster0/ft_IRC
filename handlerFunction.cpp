@@ -333,8 +333,41 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	return 0;
 }
 
+int dcc_send_response(MsgIRC& msg, Server& server)
+{
+	UserIRC *user_to_send = server._users.findByNickname(msg.payload.params.front());
+	if (user_to_send == NULL)
+		return 1;
+	PayloadIRC payload;
+	payload.command = "PRIVMSG";
+	payload.prefix = msg.receiver->nickname + "!" +  getIPAddress(msg.receiver);
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = msg.payload.trailer;
+	payload.CTCP_Data = msg.payload.trailer.substr(1, msg.payload.trailer.size() -1);
+
+	MsgIRC response(user_to_send, payload);
+	server._msgQueue.push(response);
+	return 0;
+}
+
+int dcc_resume_response(MsgIRC& msg, Server& server)
+{
+	return 0;
+}
+
 int PRIVMSGParser(MsgIRC& msg, Server& server)
 {
+	string trailer  = msg.payload.trailer;
+	if (trailer.substr(0, 9) == "\001DCC SEND" && trailer.back() == '\001')
+	{
+		dcc_send_response(msg, server);
+		return 2;
+	}
+	else if (trailer.substr(0, 11) == "\001DCC RESUME" && trailer.back() == '\001')
+	{
+		dcc_resume_response(msg, server);
+		return 2;
+	}
 	PayloadIRC payload = msg.payload;
 	string chan_name =  msg.payload.params.front();
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -347,6 +380,7 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 	chan.sendToAll(payload, server, msg.receiver);
 	return 0;
 }
+
 
 int WHOParser(MsgIRC& msg, Server& server)
 {
