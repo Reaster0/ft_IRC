@@ -1,6 +1,5 @@
 SRCS		:= main.cpp \
 				ServerClass.cpp \
-				random_password.cpp \
 				socket.cpp \
 				debug.cpp \
 				MsgIRC.cpp \

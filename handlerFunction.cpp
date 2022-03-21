@@ -3,59 +3,23 @@
 #include <fstream>
 #define BUFFERMAX 512 //need to change accordingly
 
-const string g_welcome[] = 
-{"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⠤⠴⠒⠒⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠑⠒⠲⠦⢤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⢀⣀⡤⠒⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠒⠤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⢀⣠⠖⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠲⢄⣀⠀⠀⠀⠀⠀",
-"⠀⢠⠞⠁⠀⠀⠀⠀⠀⢀⣀⡤⠤⠖⠒⠚⠛⠉⠉⠉⠉⠀⠀⠉⠉⠉⠉⠉⠙⠛⠒⠒⠶⠤⢄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀",
-"⠀⣿⠀⠀⠀⢀⣠⠴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠑⠲⠦⣄⡀⠀⠀⠀⠀⡇⠀⠀⠀",
-"⠀⠙⠲⠶⠖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠒⠒⠊⠁⠀⠀⠀",
-"⠀⠀⠀⠀⠀⢀⡤⠶⠒⠋⠉⠉⠉⠉⠉⠓⠲⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⠤⠴⠶⠶⠶⠶⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⢦⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⢦⡀⠀⠀⠀⠀",
-"⠀⢠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⡀⠀⠀",
-"⠀⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡀⠀⠀⢀⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢳⡄⠀",
-"⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⠀",
-"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀ft_irc⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀⡇⠀⠀⠀⠀⠀⠀   sucks⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀",
-"⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠺⡗⠂⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇",
-"⠸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀",
-"⠀⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠁⠀⠀⠹⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀",
-"⠀⠀⠹⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡜⠁⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀",
-"⠀⠀⠀⠈⠳⢤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠋⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠋⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠈⠉⠓⠲⠦⠤⠤⠤⠤⠶⠒⠉⠁⠀⠀⡀⠀⠀⠀⠀⠀⠀⢀⠀⠈⠓⠶⠤⣤⣀⣀⣀⣀⣀⣠⡤⠴⠚⠉⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-"⠀⠀⠀⠑⠢⢄⣀⣀⡀⠀⠀⠀⠀⣀⣀⣠⠤⠂⠀⠀⠀⣇⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠀⠀⠀⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠉⠙⠲⠦⠤⠤⠤⠤⠴⠚⠉⠁⠀⠀⠀⠀⠀",
-"⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡇⠀⠀⠀⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠤⠤⠤⠤⣄⣀⠀⠀",
-"⣀⡴⠚⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⠀⡾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠈⠓⢦",
-"⠁⠀⠀⢀⣠⣤⣶⣿⣿⣿⣏⠉⠉⠛⣻⣶⠢⢤⣄⡀⠀⠀⠘⢦⣀⣠⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠴⠒⠛⣷⣶⣤⣄⠀⠀",
-"⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⡀⠀⠀⠉⣳⢤⣀⠀⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠔⠛⣧⡀⠀⠀⢠⣿⣿⣿⣿⣿⣄",
-"⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣶⣿⣿⠀⠈⠙⠲⣤⣀⣀⡀⢀⣀⣀⡤⠴⣾⡉⠀⠀⠀⢹⣿⣶⣶⣿⣿⣿⣿⣿⣿⣿",
-"⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣠⣾⣷⠀⠉⠉⣽⡏⠀⠀⠀⣸⣿⣦⣄⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣾⣿⣷⣄⣀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⠛⠛⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿lpassera⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿",
-"⠘⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿earnaud⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿",
-"⠀⠘⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⣠⣴⣶⣿⣿⣿⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿adenhez⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁",
-"⠀⠀⠈⠻⣏⡀⠀⠀⠀⣀⠤⠾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣿⣿⣿⡿⠋⠀⢀",
-"⣦⡀⠀⠀⠈⠙⠦⣄⡞⠁⠀⠀⢻⡿⠏⠉⠉⠻⣿⣿⡿⠛⠿⣿⣿⡿⠛⠛⠻⣿⣿⠟⠉⠻⣿⡿⠋⠉⢿⡿⠃⠀⢀⣨⠿⠋⠀⠀⣴⠚",
-"⠀⠉⠦⣄⠀⠀⠀⠈⠉⠲⠦⣄⣼⡁⠀⠀⠀⠀⣿⠏⠀⠀⠀⠸⡿⠁⠀⠀⠀⢹⠇⠀⠀⠀⢻⠃⠀⢀⣨⡧⠴⠒⠉⠀⠀⢀⡤⠏⠁⠀",
-"⠀⠀⠀⠀⠙⠒⠢⠄⠀⠀⠀⠀⠈⠉⠉⠛⠒⠒⠛⠒⠲⠤⠤⠴⠧⠤⠤⠤⠤⠼⠖⠒⠒⠒⠛⠋⠉⠉⠁⠀⠀⣀⣀⡴⠞⠉⠀  ⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠴⠖⠒⠒⠋⠉⠀⠀⠀⠀   ⠀",
-"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"};
-
 void	welcome_ascii_displayer(UserIRC* user, Server& server)
 {
-	PayloadIRC temp;
-	int i(-1);
-    while (++i < 37)
-    {
-     temp = PayloadIRC();
-     temp.prefix = "EpikEkipEkolegram";
-     temp.command = "372";
-     temp.params.push_back(user->nickname);
-     temp.trailer = g_welcome[i];
-     server._msgQueue.push(MsgIRC(user, temp));
-    }
+	PayloadIRC	temp;
+	fstream 	file("config/ascii_art");
+	string 		line;
+
+	if (!file.is_open())
+		return;
+	while (getline(file, line))
+	{
+		temp = PayloadIRC();
+		temp.prefix = "EpikEkipEkolegram";
+		temp.command = "372";
+		temp.params.push_back(user->nickname);
+		temp.trailer = line;
+		server._msgQueue.push(MsgIRC(user, temp));
+	}
 }
 
 void welcomeMessage(UserIRC* user, Server& server)
@@ -634,6 +598,8 @@ int PARTParser(MsgIRC& msg, Server& server)
 				payload.trailer = msg.payload.trailer;
 				server._channels[channel].sendToAll(payload, server);
 				server._channels[channel].removeUsersFromChan(msg.receiver);
+				if (server._channels[channel].current_users.empty())
+					server._channels.erase(channel);
 			}
 			else
 			{
@@ -656,6 +622,7 @@ int PARTParser(MsgIRC& msg, Server& server)
 			payload.trailer = "No such channel";
 			server._msgQueue.push(MsgIRC(msg.receiver, payload));
 		}
+		
 	}
 	return 0;
 }
@@ -1036,8 +1003,8 @@ int PASSParser(MsgIRC& msg, Server& server)
 	{
 		PayloadIRC payload;
 		payload.command = "KILL";
+		payload.trailer = "connection refused: wrong password";
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
-		cout << "connection refused with " << getIPAddress(msg.receiver) << ": wrong password" << endl;
 		return 69;
 	}
 	msg.receiver->allowed = true;
