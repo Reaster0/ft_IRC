@@ -268,7 +268,7 @@ namespace REPLIES {
 	string ERR_NICKCOLLISION(string nickname, string user, string host) { return nickname + " :Nickname collision KILL from " + user + "@" + host; }
 
 	string ERR_UNAVAILRESOURCE(string ressource) { return ressource + " :Nick/channel is temporarily unavailable"; }
-	string ERR_USERNOTINCHANNEL(string nickname, string channel) { return nickname + " " + channel + " :They aren't on that channel"; }
+	string ERR_USERNOTINCHANNEL(void) { return "They aren't on that channel"; }
 	string ERR_NOTONCHANNEL(string channel) { return channel + " :You're not on that channel"; }
 	string ERR_USERONCHANNEL(string nickname, string channel) { return nickname + " " + channel + " :is already on channel"; }
 	string ERR_NOLOGIN(string user) { return user + " :user not logged in"; }

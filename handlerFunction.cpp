@@ -287,19 +287,26 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 			server.sendMessage(msg.receiver, payload);
 
 			return 1;
-
 		}
 	}
 
 	for (string::iterator it = modesToApply.begin() + hasQualifier; it != modesToApply.end(); it++) {
 		if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::NEED_PARAMS)) {
-			if (qualifier == '+') { advance(itParams, 1); }
+			string* parameter = NULL;
+			if (qualifier == '+') {
+				advance(itParams, 1);
+				parameter = &(*itParams);
+			}
+
 			if (*it == MODES::CHANNEL::USER_LIMIT_SET) {
-				
+				if (parameter) { channel->_maximum_users = atoi(parameter->c_str()); }
+				channel->setMode(*it, qualifier == '+');
 			}
 		} else if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::TOGGLEABLE)) {
 			channel->setMode(*it, qualifier == '+');
 		} else if (ChannelModes::is(*it, MODES::CHANNEL::USER_RELATED)) {
+			UserIRC* user;
+
 			advance(itParams, 1);
 			if (itParams == msg.payload.params.end()) {
 				payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
@@ -311,10 +318,27 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 				return 1;
 			}
 
-			// channel->current_users.find(*itParams);
-			// channel->user_modes.find(*itParams)
-			// if not here
-			// 	  send error ERR_USERNOTINCHANNEL
+			user = server._users.findByNickname(*itParams);
+			if (!user || !channel->isInChannel(user)) {
+				payload.command = REPLIES::toString(ERR_USERNOTINCHANNEL);
+				payload.params.push_back(msg.receiver->nickname);
+				payload.params.push_back(*itParams);
+				payload.params.push_back(channel->_name);
+				payload.trailer = REPLIES::ERR_USERNOTINCHANNEL();
+				server.sendMessage(msg.receiver, payload);
+
+				return 1;
+			}
+
+			if (*it == MODES::CHANNEL::CREATOR) {
+
+			} else if (*it == MODES::CHANNEL::OPERATOR) {
+
+			} else if (*it == MODES::CHANNEL::VOICE) {
+
+			}
+
+
 		}
 	}
 

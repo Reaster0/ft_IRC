@@ -17,21 +17,23 @@ namespace MODES {
 		static const char SECRET				= 's';
 		static const char REOP					= 'r';
 		static const char SETTABLE_TOPIC		= 't';
-		static const char KEY_SET				= 'k';
 		static const char USER_LIMIT_SET		= 'l';
-		static const char BAN_MASK_SET			= 'b';
-		static const char EXCEPTION_MASK_SET	= 'e';
-		static const char INVITATION_MASK_SET	= 'I';
+		// static const char KEY_SET				= 'k';
+		// static const char BAN_MASK_SET			= 'b';
+		// static const char EXCEPTION_MASK_SET	= 'e';
+		// static const char INVITATION_MASK_SET	= 'I';
 
 		static const char CREATOR				= 'O';
 		static const char OPERATOR				= 'o';
 		static const char VOICE					= 'v';
 
-		static const string ALL					= "aimnqpsrtklbeIOov";
+		static const string ALL					= "aimnqpsrtl";
+		// static const string ALL					= "aimnqpsrtklbeI";
 
 		static const string USER_RELATED		= "Oov";
-		static const string NEED_PARAMS			= "klbeIOov";
-		static const string TOGGLEABLE			= "aimnqpsrt";
+		static const string NEED_PARAMS			= "lOov";
+		// static const string NEED_PARAMS			= "lkbeIOov";
+		static const string TOGGLEABLE			= "aimnqpsrtl";
 	}
 }
 
@@ -78,6 +80,10 @@ public:
 
 	static bool exist(char mode) {
 		for (string::const_iterator it = MODES::CHANNEL::ALL.begin(); it != MODES::CHANNEL::ALL.end(); it++) {
+			if (*it == mode) { return true; }
+		}
+
+		for (string::const_iterator it = MODES::CHANNEL::USER_RELATED.begin(); it != MODES::CHANNEL::USER_RELATED.end(); it++) {
 			if (*it == mode) { return true; }
 		}
 		return false;
