@@ -38,14 +38,14 @@ void Server::initializeMap()
 	_handlerFunction["NOTICE"]		= PRIVMSGParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _endpoint(createEndpoint())
+Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port, const string& pwd) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _endpoint(createEndpoint())
+Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _port(port), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
@@ -105,10 +105,10 @@ void Server::bindEndpoint(void)
 	listen(_endpoint, 1);
 	char host[256];
   	struct hostent *host_entry;
-	int hostname;// maybe not usefull in the end
-	hostname = gethostname(host, sizeof(host));
+	//int hostname;// maybe not usefull in the end
+	//hostname = gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
-	time_t now = time(0);
+	//time_t now = time(0);
 	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime;
 }
 
@@ -163,7 +163,6 @@ void Server::serverLoop(int &endpoint)
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	string input;
-	char buffer[BUFFER_SIZE];
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
@@ -196,7 +195,7 @@ void Server::serverLoop(int &endpoint)
 					}
 					while (newOnes.size())
 					{
-						size_t logFunction;
+						size_t logFunction = 0;
 						printPayload(newOnes.front().payload);
 						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
 							logFunction = _handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
@@ -219,7 +218,6 @@ void Server::serverLoop(int &endpoint)
 					sendMsg(availableWSockets, _msgQueue.front());
 					if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
 					{
-						//need to remove all message in msgQueue from this user to avoid segfaults
 						removeUsersFromAllChans(_msgQueue.front().receiver, *this);
 						FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
 						close(i);
