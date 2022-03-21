@@ -598,6 +598,8 @@ int PARTParser(MsgIRC& msg, Server& server)
 				payload.trailer = msg.payload.trailer;
 				server._channels[channel].sendToAll(payload, server);
 				server._channels[channel].removeUsersFromChan(msg.receiver);
+				if (server._channels[channel].current_users.empty())
+					server._channels.erase(channel);
 			}
 			else
 			{
@@ -620,6 +622,7 @@ int PARTParser(MsgIRC& msg, Server& server)
 			payload.trailer = "No such channel";
 			server._msgQueue.push(MsgIRC(msg.receiver, payload));
 		}
+		
 	}
 	return 0;
 }
@@ -1000,8 +1003,8 @@ int PASSParser(MsgIRC& msg, Server& server)
 	{
 		PayloadIRC payload;
 		payload.command = "KILL";
+		payload.trailer = "connection refused: wrong password";
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
-		cout << "connection refused with " << getIPAddress(msg.receiver) << ": wrong password" << endl;
 		return 69;
 	}
 	msg.receiver->allowed = true;
