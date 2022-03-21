@@ -53,7 +53,7 @@ size_t receiveMsg(UserIRC* user, fd_set &availableSockets, list<MsgIRC>& msg)
 	bzero(buffer, BUFFERMAX * 2);
 
 	result = recv(user->fdSocket, buffer, BUFFERMAX, 0);
-	while (result > 0 && buffer[result - 1] != '\n')
+	while (result > 0 && result <= BUFFERMAX && buffer[result - 1] != '\n')
 	{
 		char tempBuffer[BUFFERMAX];
 		bzero(tempBuffer, BUFFERMAX);
