@@ -8,3 +8,39 @@ http://sdz.tdct.org/sdz/irssi-le-client-irc-du-futur.html#IrssileclientIRCdufutu
 https://www.nirgal.com/irc/irc_rfc_fr.htm#411
 
 https://stackoverflow.com/questions/43399621/join-command-for-irc-protocol
+
+## List of commands
+
+- INVITE
+- PASS
+- JOIN
+- KICK
+- LIST
+- NAMES
+- PART
+- TOPIC
+- MODE
+- NICK
+- OPER
+- QUIT
+- USER
+- KILL
+- PING
+- PONG
+- AWAY
+- ISON
+- USERHOST
+- USERS (handled but disabled)
+- WALLOPS
+- NOTICE
+- PRIVMSG
+- ADMIN
+- INFO
+- LUSERS
+- MOTD
+- TIME
+- VERSION
+- WHO
+- WHOIS
+- WHOWAS
+
