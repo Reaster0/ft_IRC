@@ -142,6 +142,7 @@ class Channel
 		string getModes(void) const;
 		bool getMode(char mode) const;
 		void setMode(char mode, bool value);
+		string getUserModes(UserIRC* user) const;
 		bool getUserMode(UserIRC* user, char mode) const;
 		void setUserMode(UserIRC* user, char mode, bool value);
 

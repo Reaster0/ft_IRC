@@ -181,7 +181,8 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 
 	if (msg.payload.params.size() < 1) {
 		payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
-		payload.trailer = REPLIES::ERR_NEEDMOREPARAMS("MODE");
+		payload.params.push_back("MODE");
+		payload.trailer = REPLIES::ERR_NEEDMOREPARAMS();
 		payload.params.push_back(msg.receiver->nickname);
 		server.sendMessage(msg.receiver, payload);
 		return 1;
@@ -247,7 +248,7 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 		payload.command = REPLIES::toString(ERR_NOSUCHCHANNEL);
 		payload.params.push_back(msg.receiver->nickname);
 		payload.params.push_back(origin_chan_name);
-		payload.params.push_back(REPLIES::ERR_NOSUCHCHANNEL(origin_chan_name));
+		payload.params.push_back(REPLIES::ERR_NOSUCHCHANNEL());
 
 		server.sendMessage(msg.receiver, payload);
 		return 1;
@@ -261,7 +262,8 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	if (itParams == msg.payload.params.end()) {
 		payload.command = REPLIES::toString(RPL_CHANNELMODEIS);
 		payload.params.push_back(msg.receiver->nickname);
-		payload.params.push_back(REPLIES::RPL_CHANNELMODEIS(*channel, ""));
+		payload.params.push_back(channel->_name);
+		payload.params.push_back(channel->getModes());
 
 		server.sendMessage(msg.receiver, payload);
 		return 1;
@@ -283,17 +285,14 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	}
 
 	for (string::iterator it = modesToApply.begin() + hasQualifier; it != modesToApply.end(); it++) {
-		if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::NEED_PARAMS)) {
+		if (*it == MODES::CHANNEL::USER_LIMIT_SET) {
 			string* parameter = NULL;
-			if (qualifier == '+') {
+			if (hasQualifier && qualifier == '+') {
 				advance(itParams, 1);
 				parameter = &(*itParams);
 			}
-
-			if (*it == MODES::CHANNEL::USER_LIMIT_SET) {
-				if (parameter) { channel->_maximum_users = atoi(parameter->c_str()); }
-				channel->setMode(*it, qualifier == '+');
-			}
+			if (parameter) { channel->_maximum_users = atoi(parameter->c_str()); }
+			channel->setMode(*it, qualifier == '+');
 		} else if (hasQualifier && ChannelModes::is(*it, MODES::CHANNEL::TOGGLEABLE)) {
 			channel->setMode(*it, qualifier == '+');
 		} else if (ChannelModes::is(*it, MODES::CHANNEL::USER_RELATED)) {
@@ -304,7 +303,7 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 				payload.command = REPLIES::toString(ERR_NEEDMOREPARAMS);
 				payload.params.push_back(msg.receiver->nickname);
 				payload.params.push_back("MODE");
-				payload.trailer = REPLIES::ERR_NEEDMOREPARAMS("MODE");
+				payload.trailer = REPLIES::ERR_NEEDMOREPARAMS();
 				server.sendMessage(msg.receiver, payload);
 
 				return 1;
@@ -321,21 +320,19 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 
 				return 1;
 			}
-
-			if (*it == MODES::CHANNEL::CREATOR) {
-
-			} else if (*it == MODES::CHANNEL::OPERATOR) {
-
-			} else if (*it == MODES::CHANNEL::VOICE) {
-
-			}
+			if (*it == MODES::CHANNEL::CREATOR) { continue; }
+			channel->setUserMode(user, *it, qualifier == '+');
+			cout << "========== INFOS ==========" << endl;
+			channel->getInfo();
+			cout << "= User modes: (" << channel->getUserModes(user) << ")" << endl;
+			cout << "=========== END ===========" << endl;
 		}
-		channel->getInfo();
 	}
 
 	payload.command = REPLIES::toString(RPL_CHANNELMODEIS);
 	payload.params.push_back(msg.receiver->nickname);
-	payload.params.push_back(REPLIES::RPL_CHANNELMODEIS(*channel, ""));
+	payload.params.push_back(channel->_name);
+	payload.params.push_back(channel->getModes());
 
 	server.sendMessage(msg.receiver, payload);	
 	return 0;

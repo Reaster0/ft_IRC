@@ -203,6 +203,16 @@ void Channel::setUserMode(UserIRC* user, char mode, bool value) {
 	}
 }
 
+string Channel::getUserModes(UserIRC* user) const {
+	string modes;
+
+	for (string::const_iterator it = MODES::CHANNEL::USER_RELATED.begin(); it != MODES::CHANNEL::USER_RELATED.end(); it++) {
+		if (this->getUserMode(user, *it)) { modes += *it; }
+	}
+	if (modes.size() > 0)
+		return "+" + modes;
+	return "";
+}
 // include authorized user inside chan's current_users and remove from chan's invited list
 void	Channel::acceptUser(UserIRC *user)
 {

@@ -150,7 +150,7 @@ namespace REPLIES {
 	string RPL_WELCOME(string nick, string user, string host) {return "Welcome the the Internet Relay Network " + nick + "!" + user + "@" + host; }
 	string RPL_YOURHOST(string serverName, string version) { return"Your host is " + serverName + ", running version " + version; }
 	string RPL_CREATED(string dateTime) { return "This server was created" + dateTime; }
-	string RPL_MYINFO(string serverName, string version, string channelModes) { return serverName + " " + version + " " + channelModes; }
+	string RPL_MYINFO(string serverName, string version, string modes, string channelModes) { return serverName + " " + version + " " + modes + " " + channelModes; }
 	string RPL_BOUNCE(string server, string port) { return "Try server " + server + ", port " + port; }
 
 	string RPL_USERHOST(string replies) { return ":" + replies; }
@@ -244,7 +244,7 @@ namespace REPLIES {
 	// ---- Errors
 	string ERR_NOSUCHNICK(string nickname) { return nickname + " :No such nick/channel"; }
 	string ERR_NOSUCHSERVER(string server) { return server + " :No such server"; }
-	string ERR_NOSUCHCHANNEL(string channel) { return channel + " :No such channel"; }
+	string ERR_NOSUCHCHANNEL(void) { return "No such channel"; }
 	string ERR_CANNOTSENDTOCHAN(string channel) { return channel + " :Cannot send to channel"; }
 	string ERR_TOOMANYCHANNELS(string channel) { return channel + " :You have joined too many channels"; }
 
@@ -275,7 +275,7 @@ namespace REPLIES {
 	string ERR_SUMMONDISABLED(void) { return ":SUMMON has been disabled"; }
 	string ERR_USERSDISABLED(void) { return ":USERS has been disabled"; }
 	string ERR_NOTREGISTERED(void) { return ":You have not registered"; }
-	string ERR_NEEDMOREPARAMS(string command) { return command + " :Not enough parameters"; }
+	string ERR_NEEDMOREPARAMS(void) { return "Not enough parameters"; }
 	string ERR_ALREADYREGISTRED(void) { return ":Unauthorized command (already registered)"; }
 	string ERR_NOPERMFORHOST(void) { return ":Your host isn't among the privileged"; }
 	string ERR_PASSWDMISMATCH(void) { return ":Password incorrect"; }
@@ -298,7 +298,7 @@ namespace REPLIES {
 	string ERR_RESTRICTED(void) { return ":Your connection is restricted!"; }
 	string ERR_UNIQOPPRIVSNEEDED(void) { return ":You're not the original channel operator"; }
 	string ERR_NOOPERHOST(void) { return ":No O-lines for your host"; }
-	string ERR_UMODEUNKNOWNFLAG(void) { return ":Unknown MODE flag"; }
+	string ERR_UMODEUNKNOWNFLAG(void) { return "Unknown MODE flag"; }
 	string ERR_USERSDONTMATCH(void) { return ":Cannot change mode for other users"; }
 
 
