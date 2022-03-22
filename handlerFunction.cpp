@@ -322,6 +322,36 @@ int dcc_resume_response(MsgIRC& msg, Server& server)
 	return 0;
 }
 
+int	ping_user(MsgIRC& msg, Server& server)
+{
+	string username = msg.payload.params.front();
+	UserIRC* user = server._users.findByNickname(msg.payload.params.front());
+	PayloadIRC payload;
+
+	if (user == NULL)
+	{
+		payload.prefix = server._hostName;
+		payload.command = "401";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back(username);
+		payload.trailer = "No such nick";
+		MsgIRC response(msg.receiver, payload);
+		server._msgQueue.push(response);
+	}
+	else
+	{
+		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.command = "PRIVMSG";
+		payload.params.push_back(username);
+		payload.trailer = msg.payload.trailer;
+		payload.CTCP_Data = msg.payload.trailer.substr(1, msg.payload.trailer.size() - 1);
+		MsgIRC response(user, payload);
+		server._msgQueue.push(response);
+	}
+	
+	return 0;
+}
+
 int PRIVMSGParser(MsgIRC& msg, Server& server)
 {
 	string trailer  = msg.payload.trailer;
@@ -335,6 +365,11 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 		dcc_resume_response(msg, server);
 		return 2;
 	}
+	else if (trailer.substr(0, 5) == "\001PING" && trailer.back() == '\001')
+	{
+		ping_user(msg, server);
+		return 2;
+	}
 	PayloadIRC payload = msg.payload;
 	string chan_name =  msg.payload.params.front();
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -346,6 +381,18 @@ int PRIVMSGParser(MsgIRC& msg, Server& server)
 	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
 	chan.sendToAll(payload, server, msg.receiver);
 	return 0;
+}
+
+int NOTICEParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload = msg.payload;
+	UserIRC *user = server._users.findByNickname(msg.payload.params.front());
+	if (user == NULL)
+		return 1;
+	payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+	MsgIRC response(user, payload);
+	server._msgQueue.push(response);
+	return 0;	
 }
 
 
