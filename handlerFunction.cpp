@@ -1033,6 +1033,11 @@ int OPERATORParser(MsgIRC& msg, Server& server)
 		payload.params.push_back(msg.receiver->nickname);
 		payload.trailer = "You are an IRC operator (good answer btw)";
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		for (map<string, Channel>::iterator iter = server._channels.begin(); iter != server._channels.end(); ++iter)
+		{
+			if ((*iter).second.isInChannel(msg.receiver))
+				(*iter).second.setUserMode(msg.receiver, 'o', true);
+		}
 	}
 	return 0;
 }

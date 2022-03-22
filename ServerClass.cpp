@@ -195,7 +195,7 @@ void Server::serverLoop(int &endpoint)
 					{
 						size_t logFunction = 0;
 						printPayload(newOnes.front().payload);
-						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS")
+						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS" && newOnes.front().payload.command != "CAP")
 						{	
 							PayloadIRC payload;
 							payload.command = "KILL";
