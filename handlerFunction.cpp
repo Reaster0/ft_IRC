@@ -70,8 +70,6 @@ int NICKParser(MsgIRC& msg, Server& server)
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	// if (server._users.findByUsername(msg.payload.params.front()))
-	// 	return 1;
 	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
@@ -240,12 +238,6 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 	return 0;
 }
 
-// bool areModesValid(string::iterator begin, string::iterator end, string modes) {
-// 	for (string::iterator it = begin; it != end; it++)
-// 		if ()
-// 	return true;
-// }
-
 int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	PayloadIRC payload(server._hostName);
 	string origin_chan_name = msg.payload.params.front();
@@ -349,8 +341,43 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	return 0;
 }
 
+int dcc_send_response(MsgIRC& msg, Server& server)
+{
+	UserIRC *user_to_send = server._users.findByNickname(msg.payload.params.front());
+	if (user_to_send == NULL)
+		return 1;
+	PayloadIRC payload;
+	payload.command = "PRIVMSG";
+	payload.prefix = msg.receiver->nickname + "!" +  getIPAddress(msg.receiver);
+	payload.params.push_back(msg.payload.params.front());
+	payload.trailer = msg.payload.trailer;
+	payload.CTCP_Data = msg.payload.trailer.substr(1, msg.payload.trailer.size() -1);
+
+	MsgIRC response(user_to_send, payload);
+	server._msgQueue.push(response);
+	return 0;
+}
+
+int dcc_resume_response(MsgIRC& msg, Server& server)
+{
+	(void)msg; // unused
+	(void)server; // unused
+	return 0;
+}
+
 int PRIVMSGParser(MsgIRC& msg, Server& server)
 {
+	string trailer  = msg.payload.trailer;
+	if (trailer.substr(0, 9) == "\001DCC SEND" && trailer.back() == '\001')
+	{
+		dcc_send_response(msg, server);
+		return 2;
+	}
+	else if (trailer.substr(0, 11) == "\001DCC RESUME" && trailer.back() == '\001')
+	{
+		dcc_resume_response(msg, server);
+		return 2;
+	}
 	PayloadIRC payload = msg.payload;
 	string chan_name =  msg.payload.params.front();
 	if (server._channels.find(chan_name) == server._channels.end())
@@ -500,9 +527,9 @@ int INFOParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.trailer = "Luciano the away one, Lpassera";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "Alexandre, the man who love beer with a lot of alcool like a chad, Adenhez";
+	payload.trailer = "Alexandre, the man who love beer with a lot of alcool like a Wojak, Adenhez";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, (i love transexual guys and alcoholess pederastic beers) Earnaud ";
+	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, (i code better than Adenhez) Earnaud ";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.command = "374";
 	payload.trailer = "End of INFO list";
@@ -589,6 +616,8 @@ int PINGParser(MsgIRC& msg, Server& server)
 
 int PONGParser(MsgIRC& msg, Server& server)
 {
+	(void)msg; // unused
+	(void)server; // unused
 	return 0;
 }
 
@@ -612,6 +641,8 @@ int PARTParser(MsgIRC& msg, Server& server)
 				payload.trailer = msg.payload.trailer;
 				server._channels[channel].sendToAll(payload, server);
 				server._channels[channel].removeUsersFromChan(msg.receiver);
+				if (server._channels[channel].current_users.empty())
+					server._channels.erase(channel);
 			}
 			else
 			{
@@ -634,6 +665,7 @@ int PARTParser(MsgIRC& msg, Server& server)
 			payload.trailer = "No such channel";
 			server._msgQueue.push(MsgIRC(msg.receiver, payload));
 		}
+		
 	}
 	return 0;
 }
@@ -726,7 +758,7 @@ int KICKParser(MsgIRC& msg, Server& server)
 
 int KILLParser(MsgIRC& msg, Server& server)
 {
-	if (0/*msg.receiver != operator*/)
+	if (!msg.receiver->getMode(MODES::OPERATOR))
 	{
 		PayloadIRC payload;
 		payload.command = "481";
@@ -736,17 +768,17 @@ int KILLParser(MsgIRC& msg, Server& server)
 		server._msgQueue.push(MsgIRC(msg.receiver, payload));
 		return 1;
 	}
-
 	if (server._users.findByNickname(msg.payload.params.front()))
 	{
 		PayloadIRC payloaderror;
+		UserIRC* target = server._users.findByNickname(msg.payload.params.front());
 		//add the nickname to a banned list
 		payloaderror.command = "KILL"; //and maybe i don't send the correct packet, ho well
 		payloaderror.trailer = "Kill: " + msg.payload.trailer;
-		server._msgQueue.push(MsgIRC(server._users.findByNickname(msg.payload.params.front()), payloaderror));
+		server._msgQueue.push(MsgIRC(target, payloaderror));
 		PayloadIRC payload;
 		payload.command = "QUIT";
-		payload.prefix = msg.receiver->nickname + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+		payload.prefix = target->nickname + "!" + target->username + "@" + getIPAddress(target);
 		payload.trailer = "Kill: " + msg.payload.trailer;
 		sendToAllChan(payload, server._users.findByNickname(msg.payload.params.front()), server);
 		return 0;
@@ -869,7 +901,7 @@ int WHOWASParser(MsgIRC& msg, Server& server)
 	char buffer[BUFFERMAX];
 	bzero(buffer, BUFFERMAX);
 	strcpy(buffer, msg.payload.params.front().c_str());
-	for (users.push(strtok(buffer,",")); users.back() ; users.push(strtok(0, ",")));
+	for (users.push(strtok(buffer,",")); users.back(); users.push(strtok(0, ",")));
 	list<UserIRC> history = server._usersHistory;
 
 	for (char* user = users.front(); users.size() && user; users.pop(), user = users.front())
@@ -964,5 +996,60 @@ int LUSERSParser(MsgIRC& msg, Server& server)
 	payload.command = "255";
 	payload.trailer = "I have " + to_string(server._users.size()) + " clients and 1 servers";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	return 0;
+}
+
+int OPERATORParser(MsgIRC& msg, Server& server)
+{
+	PayloadIRC payload;
+
+	if (msg.payload.params.size() != 2)
+	{
+		payload.prefix = server._hostName;
+		payload.command = "461";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.params.push_back("OPER");
+		payload.trailer = "Parameters incorrect";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else if	(msg.payload.params.front() != "macron")
+	{
+		payload.prefix = server._hostName;
+		payload.command = "491";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "No O-lines for your host";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else if (msg.payload.params.back() != "demission")
+	{
+		payload.prefix = server._hostName;
+		payload.command = "464";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "Password incorrect";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	else
+	{
+		msg.receiver->setMode(MODES::OPERATOR, true);
+		payload.prefix = server._hostName;
+		payload.command = "381";
+		payload.params.push_back(msg.receiver->nickname);
+		payload.trailer = "You are an IRC operator (good answer btw)";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+	}
+	return 0;
+}
+
+int PASSParser(MsgIRC& msg, Server& server)
+{
+	if (msg.payload.params.front() != server._password)
+	{
+		PayloadIRC payload;
+		payload.command = "KILL";
+		payload.trailer = "connection refused: wrong password";
+		server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		return 69;
+	}
+	msg.receiver->allowed = true;
 	return 0;
 }

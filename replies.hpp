@@ -150,7 +150,7 @@ namespace REPLIES {
 	string RPL_WELCOME(string nick, string user, string host) {return "Welcome the the Internet Relay Network " + nick + "!" + user + "@" + host; }
 	string RPL_YOURHOST(string serverName, string version) { return"Your host is " + serverName + ", running version " + version; }
 	string RPL_CREATED(string dateTime) { return "This server was created" + dateTime; }
-	string RPL_MYINFO(string serverName, string version, string modes, string channelModes) { return serverName + " " + version + " " + channelModes; }
+	string RPL_MYINFO(string serverName, string version, string channelModes) { return serverName + " " + version + " " + channelModes; }
 	string RPL_BOUNCE(string server, string port) { return "Try server " + server + ", port " + port; }
 
 	string RPL_USERHOST(string replies) { return ":" + replies; }

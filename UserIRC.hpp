@@ -66,6 +66,7 @@ struct UserIRC
 	bool needFill;
 	string ip;
 	time_t idle;
+	bool	allowed;
 
 	bool away;
 	string awayMessage;

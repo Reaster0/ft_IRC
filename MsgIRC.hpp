@@ -17,12 +17,11 @@ struct PayloadIRC
 	list<string> params;
 	string prefix;
 	string trailer;
+	string CTCP_Data;
 	
 	PayloadIRC(){}
 	PayloadIRC(const string& prefix) : prefix(prefix) {}
-	PayloadIRC(const PayloadIRC& other):
-	command(other.command), params(other.params),
-	prefix(other.prefix), trailer(other.trailer){}
+	PayloadIRC(const PayloadIRC& other): command(other.command), params(other.params),prefix(other.prefix), trailer(other.trailer){}
 	bool empty();
 };
 
@@ -45,7 +44,7 @@ struct MsgIRC
 size_t sendMsg(fd_set &availableWSockets, MsgIRC& msg);
 
 //read and parse the msg 
-size_t receiveMsg(UserIRC* user, fd_set &availableSockets, queue<MsgIRC>& msg);
+size_t receiveMsg(UserIRC* user, fd_set &availableSockets, list<MsgIRC>& msg);
 
 PayloadIRC parsingToPayload(char* buffer);
 

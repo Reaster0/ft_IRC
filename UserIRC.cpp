@@ -84,6 +84,7 @@ void UserList::removeUser(int& fd)
 UserIRC* UserList::acceptNew(const int& endpoint)
 {
 	UserIRC newOne;
+	newOne.allowed = false;
 	newOne.idle = time(0);
 	newOne.fdSocket = accept(endpoint, (sockaddr*)&newOne.addr, &newOne.sockLen);
 	newOne.ip = getIPAddress(&newOne);

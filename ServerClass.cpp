@@ -33,16 +33,19 @@ void Server::initializeMap()
 	_handlerFunction["WHOWAS"]		= WHOWASParser;
 	_handlerFunction["ADMIN"]		= ADMINParser;
 	_handlerFunction["LUSERS"]		= LUSERSParser;
+	_handlerFunction["OPER"]		= OPERATORParser;
+	_handlerFunction["PASS"]		= PASSParser;
+	_handlerFunction["NOTICE"]		= PRIVMSGParser;
 }
 
-Server::Server() : _port(DEFAULT_PORT), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port) : _port(port), _startTime(getDateTime()), _hostName(SERVER_NAME), _password(randomPwd(10)), _endpoint(createEndpoint())
+Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _port(port), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
@@ -102,10 +105,8 @@ void Server::bindEndpoint(void)
 	listen(_endpoint, 1);
 	char host[256];
   	struct hostent *host_entry;
-	int hostname;// maybe not usefull in the end
-	hostname = gethostname(host, sizeof(host));
+	gethostname(host, sizeof(host));
 	host_entry = gethostbyname(host);
-	time_t now = time(0);
 	cout << "server ip: " << inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])) << " listening on port " << _port << " | " << _startTime;
 }
 
@@ -144,13 +145,22 @@ bool chanExist(const string& channel, Server &server)
 	return server._channels.find(channel) != server._channels.end();
 }
 
+list<MsgIRC>::iterator otherMsgReceiver(list<MsgIRC>& Msgs, UserIRC* user)
+{
+	for (list<MsgIRC>::iterator it = ++Msgs.begin(); it != Msgs.end(); ++it)
+	{
+		if ((*it).receiver == user)
+			return it;
+	}
+	return Msgs.end();
+}
+
 void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	string input;
-	char buffer[BUFFER_SIZE];
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
@@ -172,7 +182,7 @@ void Server::serverLoop(int &endpoint)
 				}
 				else
 				{
-					queue<MsgIRC> newOnes;
+					list<MsgIRC> newOnes;
 					if (!receiveMsg(_users.findBySocket(i), availableSockets, newOnes))
 					{
 						cout << "the client " << getIPAddress(_users.findBySocket(i)) << " has ctrl.c..." << endl;
@@ -183,12 +193,30 @@ void Server::serverLoop(int &endpoint)
 					}
 					while (newOnes.size())
 					{
+						size_t logFunction = 0;
 						printPayload(newOnes.front().payload);
-						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
-							_handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS")
+						{	
+							PayloadIRC payload;
+							payload.command = "KILL";
+							payload.trailer = "connection refused: unauthenticated";
+							_msgQueue.push(MsgIRC(newOnes.front().receiver, payload));
+							logFunction = 69;
+						}
 						else
-							cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
-						newOnes.pop();
+						{
+							if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
+								logFunction = _handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+							else
+								cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
+						}
+						if (logFunction == 69)
+						{
+							list<MsgIRC>::iterator iter;
+							while ((iter = otherMsgReceiver(newOnes, newOnes.front().receiver)) != newOnes.end())
+								newOnes.erase(iter);
+						}
+						newOnes.pop_front();
 					}
 				}
 			}
@@ -196,15 +224,15 @@ void Server::serverLoop(int &endpoint)
 			{
 				if (_msgQueue.front().receiver->fdSocket == i)
 				{
-				sendMsg(availableWSockets, _msgQueue.front());
-				if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
-				{
-					removeUsersFromAllChans(_msgQueue.front().receiver, *this);
-					FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
-					close(i);
-					_users.removeUser(_msgQueue.front().receiver->fdSocket);
-				}
-				_msgQueue.pop();
+					sendMsg(availableWSockets, _msgQueue.front());
+					if (_msgQueue.front().payload.command == "ERROR" || _msgQueue.front().payload.command == "KILL")
+					{
+						removeUsersFromAllChans(_msgQueue.front().receiver, *this);
+						FD_CLR(_msgQueue.front().receiver->fdSocket, &currentSockets);
+						close(i);
+						_users.removeUser(_msgQueue.front().receiver->fdSocket);
+					}
+					_msgQueue.pop();
 				}
 			}
 		}

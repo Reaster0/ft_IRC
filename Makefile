@@ -1,6 +1,5 @@
 SRCS		:= main.cpp \
 				ServerClass.cpp \
-				random_password.cpp \
 				socket.cpp \
 				debug.cpp \
 				MsgIRC.cpp \
@@ -19,7 +18,7 @@ DEP_2		:= $(patsubst %, $(OBJS_PATH)/%, $(SRCS_2:.cpp=.d))
 NAME_2		:= client
 
 CXX			:= clang++
-CXXFLAGS	:= -std=c++98 -g3 -fstandalone-debug -fsanitize=address -MMD -MP -g #-Wall -Wextra -Werror
+CXXFLAGS	:= -std=c++98 -g3 -fstandalone-debug -fsanitize=address -MMD -MP -g -Wall -Wextra -Werror
 RM       	= rm -rf
 
 all:		$(NAME) $(NAME_2)
@@ -45,4 +44,4 @@ fclean:		clean
 
 re:			fclean all
 
--include $(DEP)
+-include $(DEPS)
