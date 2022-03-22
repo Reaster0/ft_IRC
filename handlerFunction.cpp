@@ -458,7 +458,7 @@ int NAMESParser(MsgIRC& msg, Server& server)
 }
 
 int MOTD(MsgIRC& msg, Server& server) {
-	static const int CHAR_SIZE = 4; // Unicode char size
+	static const int CHAR_SIZE = 1; // Unicode is 4
 	static const int MAX_MOTD_SIZE = 80 * CHAR_SIZE;
 
 	PayloadIRC payload;
