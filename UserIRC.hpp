@@ -20,7 +20,7 @@ namespace MODES {
 	static const char LOCAL_OPERATOR	= 'O';
 	static const char SERVER_NOTICES	= 's';
 
-	static const string ALL				= "aiwroOs";
+	static const string USER_ALL		= "aiwroOs";
 }
 
 class UserModes {
@@ -44,7 +44,7 @@ public:
 	bool serverNotices;
 
 	static bool exist(char mode) {
-		for (string::const_iterator it = MODES::ALL.begin(); it != MODES::ALL.end(); it++) {
+		for (string::const_iterator it = MODES::USER_ALL.begin(); it != MODES::USER_ALL.end(); it++) {
 			if (*it == mode) { return true; }
 		}
 		return false;
