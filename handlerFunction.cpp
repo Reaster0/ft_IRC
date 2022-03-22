@@ -429,31 +429,42 @@ int WHOParser(MsgIRC& msg, Server& server)
 int NAMESParser(MsgIRC& msg, Server& server)
 {
 	PayloadIRC payload;
-
-	if (!chanExist(msg.payload.params.front(), server))
+	queue<char*> chans;
+	char buffer[BUFFERMAX];
+	bzero(buffer, BUFFERMAX);
+	strcpy(buffer, msg.payload.params.begin()->c_str());
+	for (chans.push(strtok(buffer,",")); chans.back() ; chans.push(strtok(0, ",")));
+	for (char *channel = chans.front(); chans.size() && chans.front(); chans.pop(),channel = chans.front())
 	{
-		payload.command = "403";
-		payload.prefix = server._hostName;
-		payload.params.push_back(msg.receiver->nickname);
-		payload.params.push_back(msg.payload.params.front());
-		payload.trailer = "No such channel";
-		server._msgQueue.push(MsgIRC(msg.receiver, payload));
-		return 0;
+		if (!chanExist(channel, server))
+		{
+			payload.command = "403";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back(msg.payload.params.front());
+			payload.trailer = "No such channel";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			return 0;
+		}
+		else
+		{
+			payload = PayloadIRC();
+			payload.command = "353";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back("=");
+			payload.params.push_back(channel);
+			payload.trailer = server._channels[channel].userList();
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+			payload = PayloadIRC();
+			payload.command = "366";
+			payload.prefix = server._hostName;
+			payload.params.push_back(msg.receiver->nickname);
+			payload.params.push_back(msg.payload.params.front());
+			payload.trailer = "End of /NAMES list.";
+			server._msgQueue.push(MsgIRC(msg.receiver, payload));
+		}
 	}
-	payload.command = "353";
-	payload.prefix = server._hostName;
-	payload.params.push_back(msg.receiver->nickname);
-	payload.params.push_back("=");
-	payload.params.push_back(msg.payload.params.front());
-	payload.trailer = server._channels[msg.payload.params.front()].userList();
-	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload = PayloadIRC();
-	payload.command = "366";
-	payload.prefix = server._hostName;
-	payload.params.push_back(msg.receiver->nickname);
-	payload.params.push_back(msg.payload.params.front());
-	payload.trailer = "End of /NAMES list.";
-	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	return 0;
 }
 
