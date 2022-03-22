@@ -195,10 +195,21 @@ void Server::serverLoop(int &endpoint)
 					{
 						size_t logFunction = 0;
 						printPayload(newOnes.front().payload);
-						if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
-							logFunction = _handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS")
+						{	
+							PayloadIRC payload;
+							payload.command = "KILL";
+							payload.trailer = "connection refused: unauthenticated";
+							_msgQueue.push(MsgIRC(newOnes.front().receiver, payload));
+							logFunction = 69;
+						}
 						else
-							cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
+						{
+							if (_handlerFunction.find(newOnes.front().payload.command) != _handlerFunction.end())
+								logFunction = _handlerFunction[newOnes.front().payload.command](newOnes.front(), *this);
+							else
+								cout << "the function " << newOnes.front().payload.command << " dosen't exist (yet?)" << endl;
+						}
 						if (logFunction == 69)
 						{
 							list<MsgIRC>::iterator iter;

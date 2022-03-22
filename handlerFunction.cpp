@@ -116,17 +116,6 @@ int NICKParser(MsgIRC& msg, Server& server)
 
 int USERParser(MsgIRC& msg, Server& server)
 {
-	// if (server._users.findByUsername(msg.payload.params.front()))
-	// 	return 1;
-	if (msg.receiver->allowed == false)
-	{
-		PayloadIRC payload;
-		payload.command = "KILL";
-		server._msgQueue.push(MsgIRC(msg.receiver, payload));
-		cout << "connection refused with " << getIPAddress(msg.receiver) << ": missing password" << endl;
-
-		return 1;
-	}
 	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
@@ -484,9 +473,9 @@ int INFOParser(MsgIRC& msg, Server& server)
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.trailer = "Luciano the away one, Lpassera";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "Alexandre, the man who love beer with a lot of alcool like a chad, Adenhez";
+	payload.trailer = "Alexandre, the man who love beer with a lot of alcool like a Wojak, Adenhez";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
-	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, (i love transexual guys and alcoholess pederastic beers) Earnaud ";
+	payload.trailer = "VanVan the best one, i coded this function and can say whatever i want in it, che!, (i code better than Adenhez) Earnaud ";
 	server._msgQueue.push(MsgIRC(msg.receiver, payload));
 	payload.command = "374";
 	payload.trailer = "End of INFO list";
