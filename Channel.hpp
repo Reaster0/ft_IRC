@@ -2,6 +2,7 @@
 #define _CHANNEL_
 #include <iostream>
 #include <vector>
+#include <map>
 #include "UserIRC.hpp"
 #include "MsgIRC.hpp"
 #include "ServerClass.hpp"

@@ -337,9 +337,8 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 			} else if (*it == MODES::CHANNEL::VOICE) {
 
 			}
-
-
 		}
+		channel->getInfo();
 	}
 
 	payload.command = REPLIES::toString(RPL_CHANNELMODEIS);

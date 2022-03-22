@@ -86,16 +86,16 @@ bool Channel::getMode(char mode) const {
 			return this->modes.reop;
 		case MODES::CHANNEL::SETTABLE_TOPIC:
 			return this->modes.topicSettable;
-		case MODES::CHANNEL::KEY_SET:
-			return this->modes.keySet;
 		case MODES::CHANNEL::USER_LIMIT_SET:
 			return this->modes.limitSet;
-		case MODES::CHANNEL::BAN_MASK_SET:
-			return this->modes.banMaskSet;
-		case MODES::CHANNEL::EXCEPTION_MASK_SET:
-			return this->modes.exceptionMaskSet;
-		case MODES::CHANNEL::INVITATION_MASK_SET:
-			return this->modes.invitationMaskSet;
+		// case MODES::CHANNEL::KEY_SET:
+			// return this->modes.keySet;
+		// case MODES::CHANNEL::BAN_MASK_SET:
+		// 	return this->modes.banMaskSet;
+		// case MODES::CHANNEL::EXCEPTION_MASK_SET:
+		// 	return this->modes.exceptionMaskSet;
+		// case MODES::CHANNEL::INVITATION_MASK_SET:
+		// 	return this->modes.invitationMaskSet;
 		default:
 			throw ChannelModes::UnknownMode();
 	}
@@ -130,21 +130,21 @@ void Channel::setMode(char mode, bool value) {
 		case MODES::CHANNEL::SETTABLE_TOPIC:
 			this->modes.topicSettable = value;
 			break;
-		case MODES::CHANNEL::KEY_SET:
-			this->modes.keySet = value;
-			break;
 		case MODES::CHANNEL::USER_LIMIT_SET:
 			this->modes.limitSet = value;
 			break;
-		case MODES::CHANNEL::BAN_MASK_SET:
-			this->modes.banMaskSet = value;
-			break;
-		case MODES::CHANNEL::EXCEPTION_MASK_SET:
-			this->modes.exceptionMaskSet = value;
-			break;
-		case MODES::CHANNEL::INVITATION_MASK_SET:
-			this->modes.invitationMaskSet = value;
-			break;
+		// case MODES::CHANNEL::KEY_SET:
+		// 	this->modes.keySet = value;
+		// 	break;
+		// case MODES::CHANNEL::BAN_MASK_SET:
+		// 	this->modes.banMaskSet = value;
+		// 	break;
+		// case MODES::CHANNEL::EXCEPTION_MASK_SET:
+		// 	this->modes.exceptionMaskSet = value;
+		// 	break;
+		// case MODES::CHANNEL::INVITATION_MASK_SET:
+		// 	this->modes.invitationMaskSet = value;
+		// 	break;
 		default:
 			throw ChannelModes::UnknownMode();
 	}
@@ -157,6 +157,7 @@ const char* ChannelModes::UnknownMode::what(void) const throw() {
 // include authorized user inside chan's current_users and remove from chan's invited list
 void	Channel::acceptUser(UserIRC *user)
 {
+	UserChannelModes modes;
 	for(std::vector<UserIRC*>::iterator iter2 = current_users.begin(); iter2 != current_users.end(); ++iter2)
 	{
 		if(*iter2 == user)
@@ -177,6 +178,7 @@ void	Channel::acceptUser(UserIRC *user)
 		}
 	}
 	current_users.push_back(user);
+	user_modes.insert(pair<UserIRC*, UserChannelModes>(user, modes));
 	// cout << user->username << "(" << getIPAddress(user) <<  ")";
 	// cout << " is connected to " << _name << endl;
 }
@@ -247,6 +249,7 @@ void	Channel::removeUsersFromChan(UserIRC *user)
         if ((*iter) == user)
 		{
 			current_users.erase(iter);
+			user_modes.erase(user_modes.find(user));
 			return;
 		}
     }
