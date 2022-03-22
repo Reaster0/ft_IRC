@@ -3,7 +3,7 @@
 string UserIRC::getModes(void) const {
 	string modes;
 
-	for (string::const_iterator it = MODES::ALL.begin(); it != MODES::ALL.end(); it++) {
+	for (string::const_iterator it = MODES::USER_ALL.begin(); it != MODES::USER_ALL.end(); it++) {
 		if (this->getMode(*it)) { modes += *it; }
 	}
 	if (modes.size() > 0)
