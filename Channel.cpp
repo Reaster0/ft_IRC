@@ -154,6 +154,55 @@ const char* ChannelModes::UnknownMode::what(void) const throw() {
 	return "Unknown mode";
 }
 
+const char* UserChannelModes::UnknownMode::what(void) const throw() {
+	return "Unknown mode";
+}
+
+const char* UserChannelModes::UnknownUser::what(void) const throw() {
+	return "Unknown user";
+}
+
+bool Channel::getUserMode(UserIRC* user, char mode) const {
+	map<UserIRC*, UserChannelModes>::const_iterator itNode = this->user_modes.find(user);
+
+	if (itNode == this->user_modes.end()) {
+		throw UserChannelModes::UnknownUser();
+	}
+
+	switch (mode) {
+		case MODES::CHANNEL::CREATOR:
+			return itNode->second.creator;
+		case MODES::CHANNEL::OPERATOR:
+			return itNode->second.channelOperator;
+		case MODES::CHANNEL::VOICE:
+			return itNode->second.voice;
+		default:
+			throw UserChannelModes::UnknownMode();
+	}
+}
+
+void Channel::setUserMode(UserIRC* user, char mode, bool value) {
+	map<UserIRC*, UserChannelModes>::iterator itNode = this->user_modes.find(user);
+
+	if (itNode == this->user_modes.end()) {
+		throw UserChannelModes::UnknownUser();
+	}
+
+	switch (mode) {
+		case MODES::CHANNEL::CREATOR:
+			itNode->second.creator = value;
+			break;
+		case MODES::CHANNEL::OPERATOR:
+			itNode->second.channelOperator = value;
+			break;
+		case MODES::CHANNEL::VOICE:
+			itNode->second.voice = value;
+			break;
+		default:
+			throw UserChannelModes::UnknownMode();
+	}
+}
+
 // include authorized user inside chan's current_users and remove from chan's invited list
 void	Channel::acceptUser(UserIRC *user)
 {
@@ -179,6 +228,10 @@ void	Channel::acceptUser(UserIRC *user)
 	}
 	current_users.push_back(user);
 	user_modes.insert(pair<UserIRC*, UserChannelModes>(user, modes));
+	if (current_users.size() == 1) {
+		setUserMode(user, MODES::CHANNEL::CREATOR, true);
+	}
+
 	// cout << user->username << "(" << getIPAddress(user) <<  ")";
 	// cout << " is connected to " << _name << endl;
 }

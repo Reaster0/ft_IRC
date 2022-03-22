@@ -108,6 +108,10 @@ public:
 	class UnknownMode : public exception {
 		const char* what(void) const throw();
 	};
+
+	class UnknownUser : public exception {
+		const char* what(void) const throw();
+	};
 };
 
 
@@ -138,6 +142,8 @@ class Channel
 		string getModes(void) const;
 		bool getMode(char mode) const;
 		void setMode(char mode, bool value);
+		bool getUserMode(UserIRC* user, char mode) const;
+		void setUserMode(UserIRC* user, char mode, bool value);
 
 		bool	isAuthorizedUser(UserIRC *user);
 		void	acceptUser(UserIRC *user);

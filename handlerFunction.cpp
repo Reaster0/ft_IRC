@@ -240,7 +240,7 @@ int MODEUser(MsgIRC& msg, Server& server, string& target) {
 
 int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 	PayloadIRC payload(server._hostName);
-	string origin_chan_name = msg.payload.params.front();
+	string origin_chan_name = target;
 	Channel* channel;
 
 	if (server._channels.find(origin_chan_name) == server._channels.end()) {
