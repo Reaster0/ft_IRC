@@ -604,13 +604,13 @@ int AWAY(MsgIRC& msg, Server& server) {
 		msg.receiver->awayMessage = msg.payload.trailer;
 	}
 
-	if (msg.receiver->away) {
-		msg.receiver->away = false;
+	if (msg.receiver->getMode(MODES::AWAY)) {
+		msg.receiver->setMode(MODES::AWAY, false);
 
 		payload.command = REPLIES::toString(RPL_UNAWAY);
 		payload.trailer = REPLIES::RPL_UNAWAY();
 	} else {
-		msg.receiver->away = true;
+		msg.receiver->setMode(MODES::AWAY, true);
 
 		payload.command = REPLIES::toString(RPL_NOWAWAY);
 		payload.trailer = REPLIES::RPL_NOWAWAY();
