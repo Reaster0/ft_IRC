@@ -155,20 +155,28 @@ list<MsgIRC>::iterator otherMsgReceiver(list<MsgIRC>& Msgs, UserIRC* user)
 	return Msgs.end();
 }
 
+void ctrlC(int code)
+{
+	(void)code;
+	cout << "stopping the serveur, bye bye" << endl;
+	g_exit = true;
+}
+
 void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	string input;
+	signal(SIGINT, ctrlC);
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
 		availableWSockets = currentSockets;
 		if (select(1024, &availableSockets, &availableWSockets, 0, 0) < 0)
 		{
-			cout << "select error" << endl;
-			exit(0);
+			//cout << "select error" << endl;
+			// exit(0);
 		}
 		for (int i = 0; i < 1024; i++)
 		{
