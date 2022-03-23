@@ -4,9 +4,6 @@
 Channel::Channel(std::string name)
 {
 	_name = name;
-	_private = false;
-	_secrete = false;
-	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
 	setMode(MODES::CHANNEL::NO_OUTSIDE_MESSAGES, true);
@@ -15,9 +12,6 @@ Channel::Channel(std::string name)
 Channel::Channel()
 {
 	_name = "undefined_name";
-	_private = false;
-	_secrete = false;
-	_limited_capacity = false;
 	_maximum_users = 0;
 	_topic = "undefined_topic";
 	setMode(MODES::CHANNEL::NO_OUTSIDE_MESSAGES, true);
@@ -43,14 +37,13 @@ Channel& Channel::operator=(const Channel &rhs)
 	if (this != &rhs)
 	{
 		_name = rhs._name;
-		_private = rhs._private;
-		_secrete = rhs._secrete;
-		_limited_capacity = rhs._limited_capacity;
 		_maximum_users = rhs._maximum_users;
 		_topic = rhs._topic;
 		current_users = rhs.current_users;
 		invited_users = rhs.invited_users;
 		banned_users = rhs.banned_users;
+		modes = rhs.modes;
+		user_modes = rhs.user_modes;
 	}
 	return *this;
 }
@@ -88,14 +81,6 @@ bool Channel::getMode(char mode) const {
 			return this->modes.topicSettable;
 		case MODES::CHANNEL::USER_LIMIT_SET:
 			return this->modes.limitSet;
-		// case MODES::CHANNEL::KEY_SET:
-			// return this->modes.keySet;
-		// case MODES::CHANNEL::BAN_MASK_SET:
-		// 	return this->modes.banMaskSet;
-		// case MODES::CHANNEL::EXCEPTION_MASK_SET:
-		// 	return this->modes.exceptionMaskSet;
-		// case MODES::CHANNEL::INVITATION_MASK_SET:
-		// 	return this->modes.invitationMaskSet;
 		default:
 			throw ChannelModes::UnknownMode();
 	}
@@ -133,18 +118,6 @@ void Channel::setMode(char mode, bool value) {
 		case MODES::CHANNEL::USER_LIMIT_SET:
 			this->modes.limitSet = value;
 			break;
-		// case MODES::CHANNEL::KEY_SET:
-		// 	this->modes.keySet = value;
-		// 	break;
-		// case MODES::CHANNEL::BAN_MASK_SET:
-		// 	this->modes.banMaskSet = value;
-		// 	break;
-		// case MODES::CHANNEL::EXCEPTION_MASK_SET:
-		// 	this->modes.exceptionMaskSet = value;
-		// 	break;
-		// case MODES::CHANNEL::INVITATION_MASK_SET:
-		// 	this->modes.invitationMaskSet = value;
-		// 	break;
 		default:
 			throw ChannelModes::UnknownMode();
 	}
@@ -251,9 +224,9 @@ void	Channel::getInfo(void)
 	std::cout << "===========================================" << std::endl;
 	std::cout << "CHANNEL" << std::endl;
 	std::cout << "_name:    " <<  setw(20) << right  << _name  << std::endl;
-	std::cout << "_private: " << setw(20) << right  << (_private ? "true" : "false") << std::endl; 
-	std::cout << "_secrete: " << setw(20) << right  << (_secrete ? "true" : "false") << std::endl; 
-	std::cout << "_limited_capacity:  " << setw(10) << right  << (_limited_capacity ? "true" : "false") << std::endl; 
+	std::cout << "_private: " << setw(20) << right  << (getMode(MODES::CHANNEL::PRIVATE) ? "true" : "false") << std::endl; 
+	std::cout << "_secrete: " << setw(20) << right  << (getMode(MODES::CHANNEL::SECRET) ? "true" : "false") << std::endl; 
+	std::cout << "_limited_capacity:  " << setw(10) << right  << (getMode(MODES::CHANNEL::USER_LIMIT_SET) ? "true" : "false") << std::endl; 
 	std::cout << "_maximum_users:" << setw(15) << right  << _maximum_users << std::endl;
 	std::cout << "_topic:   "  <<  setw(20) << right  << _topic << std::endl;
 

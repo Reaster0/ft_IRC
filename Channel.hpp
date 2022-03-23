@@ -19,21 +19,15 @@ namespace MODES {
 		static const char REOP					= 'r';
 		static const char SETTABLE_TOPIC		= 't';
 		static const char USER_LIMIT_SET		= 'l';
-		// static const char KEY_SET				= 'k';
-		// static const char BAN_MASK_SET			= 'b';
-		// static const char EXCEPTION_MASK_SET	= 'e';
-		// static const char INVITATION_MASK_SET	= 'I';
 
 		static const char CREATOR				= 'O';
 		static const char OPERATOR				= 'o';
 		static const char VOICE					= 'v';
 
 		static const string ALL					= "aimnqpsrtl";
-		// static const string ALL					= "aimnqpsrtklbeI";
 
 		static const string USER_RELATED		= "Oov";
 		static const string NEED_PARAMS			= "lOov";
-		// static const string NEED_PARAMS			= "lkbeIOov";
 		static const string TOGGLEABLE			= "aimnqpsrtl";
 	}
 }
@@ -118,9 +112,6 @@ public:
 class Channel
 {
 	public:
-		bool		_private;
-		bool		_secrete;
-		bool		_limited_capacity;
 		int			_maximum_users;
 		std::string	_topic;
 		std::string	_name;
