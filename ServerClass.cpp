@@ -175,8 +175,8 @@ void Server::serverLoop(int &endpoint)
 		availableWSockets = currentSockets;
 		if (select(1024, &availableSockets, &availableWSockets, 0, 0) < 0)
 		{
-			//cout << "select error" << endl;
-			// exit(0);
+			close(endpoint);
+			exit(0);
 		}
 		for (int i = 0; i < 1024; i++)
 		{
