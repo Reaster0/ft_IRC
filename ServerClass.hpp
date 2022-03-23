@@ -33,6 +33,7 @@ class Channel;
 using namespace std;
 
 # define SERVER_NAME "EpikEkipEkolegram"
+# define SERVER_VERSION "42.69"
 class Server {
 public:
 	Server();
@@ -50,6 +51,7 @@ public:
 	list<UserIRC>			_usersHistory;
 	const string 			_startTime;
 	const string			_hostName;
+	const string			_version;
 	const string			_password;
 
 private:

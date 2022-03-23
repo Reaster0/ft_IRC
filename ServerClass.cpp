@@ -38,14 +38,14 @@ void Server::initializeMap()
 	_handlerFunction["NOTICE"]		= NOTICEParser;
 }
 
-Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
+Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _version(SERVER_VERSION), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _port(port), _endpoint(createEndpoint())
+Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _version(SERVER_VERSION), _password(pwd), _port(port), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();

@@ -8,30 +8,30 @@ void welcomeMessage(UserIRC* user, Server& server)
 	PayloadIRC temp;
 	
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "001";
+	temp.command = REPLIES::toString(RPL_WELCOME);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "Welcome to the Internet Relay Network " + user->nickname;
+	temp.trailer = REPLIES::RPL_WELCOME(user);
 	server._msgQueue.push(MsgIRC(user, temp));
 	
 	temp = PayloadIRC();
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "002";
+	temp.command = REPLIES::toString(RPL_YOURHOST);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "Your host is EpikEkipEkolegram, running version 42.69";
+	temp.trailer = REPLIES::RPL_YOURHOST(&server);
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "003";
+	temp.command = REPLIES::toString(RPL_CREATED);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "This server was created " + server._startTime;
+	temp.trailer = REPLIES::RPL_CREATED(&server);
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	temp = PayloadIRC();
 	temp.prefix = "EpikEkipEkolegram";
-	temp.command = "004";
+	temp.command = REPLIES::toString(RPL_MYINFO);
 	temp.params.push_back(user->nickname);
-	temp.trailer = "EpikEkipEkolegram 42.69 aiwroOs OovaimnpsrtklbeI";
+	temp.trailer = REPLIES::RPL_MYINFO(&server);
 	server._msgQueue.push(MsgIRC(user, temp));
 
 	MsgIRC msg(user, temp);
@@ -322,10 +322,6 @@ int MODEChannel(MsgIRC& msg, Server& server, string& target) {
 			}
 			if (*it == MODES::CHANNEL::CREATOR) { continue; }
 			channel->setUserMode(user, *it, qualifier == '+');
-			cout << "========== INFOS ==========" << endl;
-			channel->getInfo();
-			cout << "= User modes: (" << channel->getUserModes(user) << ")" << endl;
-			cout << "=========== END ===========" << endl;
 		}
 	}
 
