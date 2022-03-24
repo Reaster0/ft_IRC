@@ -268,6 +268,16 @@ bool	Channel::isInChannel(UserIRC *user)
 	return false;
 }
 
+bool	Channel::isInvited(UserIRC *user)
+{
+	for(std::vector<UserIRC*>::iterator iter = invited_users.begin(); iter != invited_users.end(); ++iter)
+    {
+        if ((*iter) == user)
+			return true;
+    }
+	return false;
+}
+
 vector<UserIRC*>::iterator Channel::UserIterator(UserIRC *user)
 {
 	for(std::vector<UserIRC*>::iterator iter = current_users.begin(); iter != current_users.end(); ++iter)

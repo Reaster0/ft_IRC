@@ -142,6 +142,8 @@ class Channel
 		void	getInfo(void);
 		void	sendToAll(PayloadIRC& payload, Server& server, UserIRC* exception = 0);
 		bool	isInChannel(UserIRC *user);
+		bool	isInvited(UserIRC *user);
+
 		//return a string of all users in the chan separated by space
 		string	userList();
 		//is protected against user that dosen't are in the chan

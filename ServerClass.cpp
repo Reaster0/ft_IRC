@@ -202,7 +202,7 @@ void Server::serverLoop(int &endpoint)
 					while (newOnes.size())
 					{
 						size_t logFunction = 0;
-						printPayload(newOnes.front().payload);
+						// printPayload(newOnes.front().payload);
 						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS" && newOnes.front().payload.command != "CAP")
 						{	
 							PayloadIRC payload;
