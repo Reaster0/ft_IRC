@@ -68,7 +68,6 @@ struct UserIRC
 	time_t idle;
 	bool	allowed;
 
-	bool away;
 	string awayMessage;
 	UserModes modes;
 
