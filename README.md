@@ -1,46 +1,43 @@
-# ft_IRC
-Create your own IRC server in C++, fully compatible with an official client. 
+# FT_IRC
 
-https://mathieu-lemoine.developpez.com/tutoriels/irc/protocole/
+## LAUNCH IRCII
 
-http://sdz.tdct.org/sdz/irssi-le-client-irc-du-futur.html#IrssileclientIRCdufutur
+```
+irc <nickname> <server_ip>:<port>:<server_password>
+```
 
-https://www.nirgal.com/irc/irc_rfc_fr.htm#411
+## COMMAND TO TEST
 
-https://stackoverflow.com/questions/43399621/join-command-for-irc-protocol
+/JOIN <chan_name>
+/PART
+/INVITE <nickname> <chan_name>
+/TOPIC <topic of chan>
+/PING <nickname>
+/LIST
+/NAMES <chan_name>
+/NOTICE <nickname> <your_message>
+/PASS <password>
+/MODES <chan_name> <+|-><mode>
 
-## List of commands
+### CHAN_MODES
 
-- INVITE
-- PASS
-- JOIN
-- KICK
-- LIST
-- NAMES
-- PART
-- TOPIC
-- MODE
-- NICK
-- OPER
-- QUIT
-- USER
-- KILL
-- PING
-- PONG
-- AWAY
-- ISON
-- USERHOST
-- USERS (handled but disabled)
-- WALLOPS
-- NOTICE
-- PRIVMSG
-- ADMIN
-- INFO
-- LUSERS
-- MOTD
-- TIME
-- VERSION
-- WHO
-- WHOIS
-- WHOWAS
+t (locked topic)
+i (invited only)
+s (secret)
+p (private)
+a (anonymous)
+n (receive message from chan only)
+m (only moderators can speaks)
+l (number of user limited)
 
+## BONUS
+
+To send
+```
+/DCC SEND <receiver_nickname> <path_to_file>
+```
+
+To receive
+```
+/DCC GET <sender_nickname> <filename>
+```
