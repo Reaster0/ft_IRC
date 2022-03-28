@@ -299,7 +299,7 @@ namespace REPLIES {
 	string ERR_UNIQOPPRIVSNEEDED(void) { return ":You're not the original channel operator"; }
 	string ERR_NOOPERHOST(void) { return ":No O-lines for your host"; }
 	string ERR_UMODEUNKNOWNFLAG(void) { return "Unknown MODE flag"; }
-	string ERR_USERSDONTMATCH(void) { return ":Cannot change mode for other users"; }
+	string ERR_USERSDONTMATCH(void) { return "Cannot change mode for other users"; }
 
 
 	string toString(int code) {
