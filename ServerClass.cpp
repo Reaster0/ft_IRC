@@ -35,17 +35,17 @@ void Server::initializeMap()
 	_handlerFunction["LUSERS"]		= LUSERSParser;
 	_handlerFunction["OPER"]		= OPERATORParser;
 	_handlerFunction["PASS"]		= PASSParser;
-	_handlerFunction["NOTICE"]		= PRIVMSGParser;
+	_handlerFunction["NOTICE"]		= NOTICEParser;
 }
 
-Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
+Server::Server() : _startTime(getDateTime()), _hostName(SERVER_NAME), _version(SERVER_VERSION), _password("password"), _port(DEFAULT_PORT), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
 	std::cout << "password:\n	" << _password << std::endl;
 }
 
-Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _password(pwd), _port(port), _endpoint(createEndpoint())
+Server::Server(const int& port, const string& pwd) : _startTime(getDateTime()), _hostName(SERVER_NAME), _version(SERVER_VERSION), _password(pwd), _port(port), _endpoint(createEndpoint())
 {
 	initializeMap();
 	bindEndpoint();
@@ -155,19 +155,27 @@ list<MsgIRC>::iterator otherMsgReceiver(list<MsgIRC>& Msgs, UserIRC* user)
 	return Msgs.end();
 }
 
+void ctrlC(int code)
+{
+	(void)code;
+	cout << "stopping the serveur, bye bye" << endl;
+	g_exit = true;
+}
+
 void Server::serverLoop(int &endpoint)
 {
 	fd_set currentSockets, availableSockets, availableWSockets;
 	FD_ZERO(&currentSockets);
 	FD_SET(endpoint, &currentSockets);
 	string input;
+	signal(SIGINT, ctrlC);
 	while(g_exit == false)
 	{
 		availableSockets = currentSockets;
 		availableWSockets = currentSockets;
 		if (select(1024, &availableSockets, &availableWSockets, 0, 0) < 0)
 		{
-			cout << "select error" << endl;
+			close(endpoint);
 			exit(0);
 		}
 		for (int i = 0; i < 1024; i++)
@@ -194,8 +202,8 @@ void Server::serverLoop(int &endpoint)
 					while (newOnes.size())
 					{
 						size_t logFunction = 0;
-						printPayload(newOnes.front().payload);
-						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS")
+						// printPayload(newOnes.front().payload);
+						if (!newOnes.front().receiver->allowed && newOnes.front().payload.command != "PASS" && newOnes.front().payload.command != "CAP")
 						{	
 							PayloadIRC payload;
 							payload.command = "KILL";

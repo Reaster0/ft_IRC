@@ -147,10 +147,10 @@ enum numeric_replies_t {
 
 namespace REPLIES {
 	// ---- Replies
-	string RPL_WELCOME(string nick, string user, string host) {return "Welcome the the Internet Relay Network " + nick + "!" + user + "@" + host; }
-	string RPL_YOURHOST(string serverName, string version) { return"Your host is " + serverName + ", running version " + version; }
-	string RPL_CREATED(string dateTime) { return "This server was created" + dateTime; }
-	string RPL_MYINFO(string serverName, string version, string modes, string channelModes) { return serverName + " " + version + " " + modes + " " + channelModes; }
+	string RPL_WELCOME(UserIRC* user) {return "Welcome to the Internet Relay Network " + user->nickname + "!" + user->username + "@" + user->ip; }
+	string RPL_YOURHOST(Server* server) { return "Your host is " + server->_hostName + ", running version " + server->_version; }
+	string RPL_CREATED(Server* server) { return "This server was created" + server->_startTime; }
+	string RPL_MYINFO(Server* server) { return server->_hostName + " " + server->_version + " " + MODES::USER_ALL + " " + MODES::CHANNEL::ALL + MODES::CHANNEL::USER_RELATED; }
 	string RPL_BOUNCE(string server, string port) { return "Try server " + server + ", port " + port; }
 
 	string RPL_USERHOST(string replies) { return ":" + replies; }
@@ -259,7 +259,7 @@ namespace REPLIES {
 	string ERR_BADMASK(string mask) { return mask + ":Bad Server/host mask"; }
 
 	string ERR_UNKNOWNCOMMAND(string command) { return command + " :Unknown command"; }
-	string ERR_NOMOTD(void) { return ":MOTD File is missing"; }
+	string ERR_NOMOTD(void) { return "MOTD File is missing"; }
 	string ERR_NOADMININFO(string server) { return server + " :No administrative info available"; }
 	string ERR_FILEERROR(string fileOp, string file) { return ":File error doing " + fileOp + " on " + file; }
 	string ERR_NONICKNAMEGIVEN(void) { return ":No nickname given"; }
