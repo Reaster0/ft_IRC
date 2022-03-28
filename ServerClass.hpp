@@ -73,6 +73,8 @@ string getDateTime();
 
 //send a message to all users that are on the same channel that input user
 void sendToAllChan(PayloadIRC& payload, UserIRC *user, Server &server);
+//same but without the exeption on the user
+void sendToAllChan2(PayloadIRC& payload, UserIRC *user,  Server &server);
 void sendToAllChanInfo(PayloadIRC& payload, UserIRC *user, Server &server);
 
 //remove the user from all channels it was connected

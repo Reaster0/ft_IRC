@@ -48,6 +48,10 @@ int funCap(MsgIRC& msg, Server& server)
 
 int NICKParser(MsgIRC& msg, Server& server)
 {
+	bool existingBefore = false;
+	string oldNick = msg.receiver->nickname;
+	if (msg.receiver->nickname != "")
+		existingBefore = true;
 	if (server._users.findByNickname(msg.payload.params.front()))
 	{
 		PayloadIRC payload;
@@ -63,18 +67,29 @@ int NICKParser(MsgIRC& msg, Server& server)
 		if (msg.receiver->nickname != "")
 			server._usersHistory.push_back(*msg.receiver);
 		msg.receiver->nickname = msg.payload.params.front();
+		if (existingBefore)
+		{
+			PayloadIRC payload;
+			payload.prefix = oldNick + "!" + msg.receiver->username + "@" + getIPAddress(msg.receiver);
+			payload.command = "NICK";
+			payload.trailer = msg.receiver->nickname;
+			sendToAllChan2(payload, msg.receiver, server);
+		}
 	}
-	if (msg.receiver->username != "")
+	if (msg.receiver->username != "" && !existingBefore)
 		welcomeMessage(msg.receiver, server);
 	return 0;
 }
 
 int USERParser(MsgIRC& msg, Server& server)
 {
+	bool existingBefore = false;
+	if (msg.receiver->username != "")
+		existingBefore = true;
 	UserIRC* newOne = msg.receiver;
 	newOne->username = msg.payload.params.front();
 	newOne->realName = msg.payload.trailer;
-	if (newOne->nickname != "")
+	if (newOne->nickname != "" && !existingBefore)
 		welcomeMessage(newOne, server);
 	return 0;
 }
